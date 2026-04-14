@@ -23,6 +23,7 @@ class UserOut(BaseModel):
     id: str
     name: str | None
     email: str
+    email_verified: bool = False
 
 
 class TokenResponse(BaseModel):

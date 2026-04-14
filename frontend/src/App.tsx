@@ -12,6 +12,7 @@ import Proposals from "./pages/Proposals";
 import Contracts from "./pages/Contracts";
 import Invoices from "./pages/Invoices";
 import Schedule from "./pages/Schedule";
+import VerifyEmail from "./pages/VerifyEmail";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
 
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>

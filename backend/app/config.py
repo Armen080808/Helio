@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
     refresh_token_expire_days: int = 7
     frontend_url: str = "http://localhost:5173"
+    resend_api_key: str = ""
 
     model_config = SettingsConfigDict(
         env_file=".env",
