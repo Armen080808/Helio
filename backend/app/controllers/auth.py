@@ -60,20 +60,24 @@ def register(body: RegisterRequest, response: Response, db: Session = Depends(ge
     code = f"{random.randint(0, 999999):06d}"
     expires_at = datetime.utcnow() + timedelta(minutes=15)
 
+    # TODO: re-enable email verification when SMTP is configured
+    VERIFY_EMAIL = False
+
     user = User(
         name=body.name,
         email=body.email,
         password_hash=hash_password(body.password),
-        email_verified=False,
-        verification_token=code,
-        verification_token_expires_at=expires_at,
+        email_verified=not VERIFY_EMAIL,  # auto-verify when disabled
+        verification_token=code if VERIFY_EMAIL else None,
+        verification_token_expires_at=expires_at if VERIFY_EMAIL else None,
     )
     db.add(user)
     db.commit()
     db.refresh(user)
 
-    # Send verification email (non-blocking — failure doesn't break registration)
-    send_verification_email(body.email, body.name, code)
+    if VERIFY_EMAIL:
+        # Send verification email (non-blocking — failure doesn't break registration)
+        send_verification_email(body.email, body.name, code)
 
     tokens = _build_token_response(user)
     _set_refresh_cookie(response, tokens["refresh_token"])
