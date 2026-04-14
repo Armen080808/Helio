@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["prisma-adapter-sqlite", "@prisma/client"],
+  serverExternalPackages: ["@prisma/adapter-neon", "@neondatabase/serverless", "@prisma/client"],
   webpack(config, { isServer }) {
     if (!isServer) {
       // Stub out Node.js built-ins that server-only packages (Prisma, Auth.js)
