@@ -1,15 +1,6 @@
-import Link from "next/link";
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
-
-const NAV = [
-  { href: "/dashboard", label: "Dashboard", icon: "⬡" },
-  { href: "/proposals", label: "Proposals", icon: "📄" },
-  { href: "/contracts", label: "Contracts", icon: "✍️" },
-  { href: "/invoices", label: "Invoices", icon: "💳" },
-  { href: "/schedule", label: "Schedule", icon: "📅" },
-  { href: "/clients", label: "Clients", icon: "👥" },
-];
+import { NavLinks } from "@/app/ui/nav-links";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -20,18 +11,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       {/* Sidebar */}
       <aside className="flex w-60 flex-col border-r border-zinc-100 bg-white px-4 py-6">
         <span className="mb-8 px-2 text-xl font-bold text-indigo-600">helio</span>
-        <nav className="flex flex-col gap-1 flex-1">
-          {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-600 transition hover:bg-indigo-50 hover:text-indigo-600"
-            >
-              <span>{item.icon}</span>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <NavLinks />
         {/* User */}
         <div className="border-t border-zinc-100 pt-4">
           <p className="truncate px-2 text-xs font-medium text-zinc-900">
