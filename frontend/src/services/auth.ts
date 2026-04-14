@@ -1,6 +1,4 @@
-import axios from "axios";
-
-const BASE_URL = "http://localhost:8000";
+import api from "./api";
 
 export interface AuthUser {
   id: string;
@@ -15,11 +13,7 @@ export interface AuthResponse {
 }
 
 export async function loginRequest(email: string, password: string): Promise<AuthResponse> {
-  const res = await axios.post(
-    `${BASE_URL}/api/auth/login`,
-    { email, password },
-    { withCredentials: true }
-  );
+  const res = await api.post("/api/auth/login", { email, password });
   return res.data;
 }
 
@@ -28,22 +22,17 @@ export async function registerRequest(
   email: string,
   password: string
 ): Promise<AuthResponse> {
-  const res = await axios.post(
-    `${BASE_URL}/api/auth/register`,
-    { name, email, password },
-    { withCredentials: true }
-  );
+  const res = await api.post("/api/auth/register", { name, email, password });
   return res.data;
 }
 
 export async function logoutRequest(): Promise<void> {
-  await axios.post(`${BASE_URL}/api/auth/logout`, {}, { withCredentials: true });
+  await api.post("/api/auth/logout");
 }
 
 export async function getMeRequest(token: string): Promise<AuthUser> {
-  const res = await axios.get(`${BASE_URL}/api/auth/me`, {
+  const res = await api.get("/api/auth/me", {
     headers: { Authorization: `Bearer ${token}` },
-    withCredentials: true,
   });
   return res.data;
 }
