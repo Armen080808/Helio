@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npm install:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npm search:*)",
+      "Bash(openssl rand:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx next:*)",
+      "Bash(sqlite3 /Users/armenhovhannisyan/helio/prisma/dev.db \".tables\")",
+      "Bash(sqlite3 /Users/armenhovhannisyan/helio/dev.db \".tables\")",
+      "Bash(npm run:*)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(kill 58635)",
+      "Read(//tmp/**)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{redirect_url}\" http://localhost:3000/dashboard)",
+      "Bash(node -e ':*)",
+      "Bash(xargs kill:*)",
+      "Bash(sqlite3 /Users/armenhovhannisyan/helio/dev.db \"SELECT email, passwordHash FROM User;\")",
+      "Bash(node -e \"const bcrypt = require\\('bcryptjs'\\); bcrypt.compare\\('password123', '\\\\$2b\\\\$12\\\\$9JbHv7WgajL867Dt/ohNbe.sG8mxphM43EHuXcWg.Aw6wVAeegO.u'\\).then\\(r => console.log\\('valid:', r\\)\\);\")",
+      "Bash(curl -s -c /tmp/cookies.txt -b /tmp/cookies.txt -X POST http://localhost:3000/login -H 'Content-Type: application/x-www-form-urlencoded' -d 'email=test%40helio.app&password=password123' -D - -o /dev/null)",
+      "Bash(curl -s http://localhost:3000/api/auth/csrf)",
+      "Bash(curl -s -c /tmp/auth-cookies.txt -b /tmp/auth-cookies.txt -X POST http://localhost:3000/api/auth/callback/credentials -H 'Content-Type: application/x-www-form-urlencoded' -d 'email=test%40helio.app&password=password123&csrfToken=c13db6af6e3e89315718fa0a08c020513eb6f73f4b3690e26cb11c9811aea142&callbackUrl=%2Fdashboard' -D - -o /dev/null)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/login)",
+      "Bash(python3 -c ':*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}
