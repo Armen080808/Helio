@@ -5,7 +5,7 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Zap } from "lucide-react";
 
 export default function Login() {
   const { login } = useAuth();
@@ -24,9 +24,10 @@ export default function Login() {
       navigate("/dashboard");
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.detail ?? "Invalid email or password.");
+        const detail = err.response?.data?.detail;
+        setError(typeof detail === "string" ? detail : "Invalid email or password.");
       } else {
-        setError("Something went wrong. Please try again.");
+        setError("Something went wrong.");
       }
     } finally {
       setLoading(false);
@@ -34,65 +35,81 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
-      <div className="w-full max-w-sm">
-        <div className="mb-6 text-center">
-          <Link to="/" className="text-2xl font-bold tracking-tight">
-            alyo
-          </Link>
+    <div className="grid min-h-screen lg:grid-cols-2">
+      {/* Left panel — hidden on mobile */}
+      <div className="hidden flex-col justify-between bg-zinc-900 p-10 text-white lg:flex">
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white">
+            <Zap className="h-4 w-4 text-zinc-900" />
+          </div>
+          <span className="text-lg font-bold">alyo</span>
         </div>
+        <div>
+          <blockquote className="text-lg font-medium leading-relaxed text-zinc-200">
+            &ldquo;alyo cut my invoicing time in half and made me look way more professional to
+            clients.&rdquo;
+          </blockquote>
+          <div className="mt-4 text-sm text-zinc-400">— A happy freelancer</div>
+        </div>
+        <div className="text-xs text-zinc-500">© 2026 alyo</div>
+      </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Sign in</CardTitle>
-            <CardDescription>Enter your email and password to access your account</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  required
-                  autoFocus
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                />
-              </div>
+      {/* Right panel — form */}
+      <div className="flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm">
+          <div className="mb-2 flex items-center gap-2 lg:hidden">
+            <Zap className="h-5 w-5" />
+            <span className="font-bold">alyo</span>
+          </div>
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Sign in to your alyo account</p>
+          </div>
 
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                />
-              </div>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                required
+                autoFocus
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+              />
+            </div>
+            {error && (
+              <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                {error}
+              </p>
+            )}
+            <Button type="submit" disabled={loading} className="mt-1 w-full">
+              {loading ? "Signing in..." : "Sign in"}
+            </Button>
+          </form>
 
-              {error && (
-                <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                  {error}
-                </p>
-              )}
-
-              <Button type="submit" disabled={loading} className="mt-1 w-full">
-                {loading ? "Signing in..." : "Sign in"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
-          <Link to="/register" className="font-medium text-foreground underline-offset-4 hover:underline">
-            Get started free
-          </Link>
-        </p>
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            Don&apos;t have an account?{" "}
+            <Link
+              to="/register"
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+            >
+              Sign up
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

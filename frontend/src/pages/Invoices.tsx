@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -35,11 +36,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Receipt, Plus, Trash2, X } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Receipt, Plus, Trash2, X, Search } from "lucide-react";
 
 const INVOICE_STATUSES = ["DRAFT", "SENT", "PAID", "OVERDUE"] as const;
-type InvoiceStatus = typeof INVOICE_STATUSES[number];
+type InvoiceStatus = (typeof INVOICE_STATUSES)[number];
 
 const statusVariant: Record<InvoiceStatus, BadgeProps["variant"]> = {
   DRAFT: "secondary",
@@ -92,7 +93,10 @@ function NewInvoiceDialog({
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    if (lineItems.length === 0) { setError("Add at least one line item."); return; }
+    if (lineItems.length === 0) {
+      setError("Add at least one line item.");
+      return;
+    }
     const fd = new FormData(e.currentTarget);
     setPending(true);
     try {
@@ -128,9 +132,15 @@ function NewInvoiceDialog({
             <div className="flex flex-col gap-1.5">
               <Label>Client *</Label>
               <Select value={clientId} onValueChange={setClientId} required>
-                <SelectTrigger><SelectValue placeholder="Select client..." /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select client..." />
+                </SelectTrigger>
                 <SelectContent>
-                  {clients.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  {clients.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -141,7 +151,9 @@ function NewInvoiceDialog({
             <div className="flex flex-col gap-1.5">
               <Label>Currency</Label>
               <Select value={currency} onValueChange={setCurrency}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="USD">USD</SelectItem>
                   <SelectItem value="EUR">EUR</SelectItem>
@@ -151,7 +163,16 @@ function NewInvoiceDialog({
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="inv-tax">Tax %</Label>
-              <Input id="inv-tax" type="number" value={tax} onChange={(e) => setTax(e.target.value)} min="0" max="100" step="0.01" placeholder="0" />
+              <Input
+                id="inv-tax"
+                type="number"
+                value={tax}
+                onChange={(e) => setTax(e.target.value)}
+                min="0"
+                max="100"
+                step="0.01"
+                placeholder="0"
+              />
             </div>
             <div className="flex flex-col gap-1.5 col-span-2">
               <Label htmlFor="inv-due">Due date</Label>
@@ -164,30 +185,69 @@ function NewInvoiceDialog({
           {/* Line items */}
           <div>
             <div className="mb-2 grid grid-cols-12 gap-2">
-              <div className="col-span-5 text-xs font-medium text-muted-foreground uppercase tracking-wide">Description</div>
-              <div className="col-span-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">Qty</div>
-              <div className="col-span-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">Unit price</div>
-              <div className="col-span-1 text-right text-xs font-medium text-muted-foreground uppercase tracking-wide">Sub</div>
+              <div className="col-span-5 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                Description
+              </div>
+              <div className="col-span-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                Qty
+              </div>
+              <div className="col-span-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                Unit price
+              </div>
+              <div className="col-span-1 text-right text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                Sub
+              </div>
               <div className="col-span-1" />
             </div>
             <div className="flex flex-col gap-2">
               {lineItems.map((item, i) => (
                 <div key={i} className="grid grid-cols-12 gap-2 items-center">
                   <div className="col-span-5">
-                    <Input value={item.description} onChange={(e) => handleLineChange(i, "description", e.target.value)} placeholder="Description" required />
+                    <Input
+                      value={item.description}
+                      onChange={(e) => handleLineChange(i, "description", e.target.value)}
+                      placeholder="Description"
+                      required
+                    />
                   </div>
                   <div className="col-span-2">
-                    <Input type="number" value={item.qty} onChange={(e) => handleLineChange(i, "qty", parseFloat(e.target.value) || 0)} placeholder="Qty" min="0" step="0.01" required />
+                    <Input
+                      type="number"
+                      value={item.qty}
+                      onChange={(e) =>
+                        handleLineChange(i, "qty", parseFloat(e.target.value) || 0)
+                      }
+                      placeholder="Qty"
+                      min="0"
+                      step="0.01"
+                      required
+                    />
                   </div>
                   <div className="col-span-3">
-                    <Input type="number" value={item.unit_price} onChange={(e) => handleLineChange(i, "unit_price", parseFloat(e.target.value) || 0)} placeholder="0.00" min="0" step="0.01" required />
+                    <Input
+                      type="number"
+                      value={item.unit_price}
+                      onChange={(e) =>
+                        handleLineChange(i, "unit_price", parseFloat(e.target.value) || 0)
+                      }
+                      placeholder="0.00"
+                      min="0"
+                      step="0.01"
+                      required
+                    />
                   </div>
                   <div className="col-span-1 text-right text-sm text-muted-foreground">
                     ${(item.qty * item.unit_price).toFixed(2)}
                   </div>
                   <div className="col-span-1 flex justify-end">
                     {lineItems.length > 1 && (
-                      <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => handleLineRemove(i)}>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        onClick={() => handleLineRemove(i)}
+                      >
                         <X className="h-3.5 w-3.5" />
                       </Button>
                     )}
@@ -195,7 +255,13 @@ function NewInvoiceDialog({
                 </div>
               ))}
             </div>
-            <Button type="button" variant="ghost" size="sm" className="mt-2 text-muted-foreground" onClick={() => setLineItems((p) => [...p, emptyLine()])}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="mt-2 text-muted-foreground"
+              onClick={() => setLineItems((p) => [...p, emptyLine()])}
+            >
               <Plus className="mr-1 h-3.5 w-3.5" />
               Add line item
             </Button>
@@ -206,21 +272,30 @@ function NewInvoiceDialog({
           {/* Totals */}
           <div className="rounded-md bg-muted/50 p-4 text-sm space-y-1.5">
             <div className="flex justify-between text-muted-foreground">
-              <span>Subtotal</span><span>${subtotal.toFixed(2)}</span>
+              <span>Subtotal</span>
+              <span>${subtotal.toFixed(2)}</span>
             </div>
             {tax && (
               <div className="flex justify-between text-muted-foreground">
-                <span>Tax ({tax}%)</span><span>${taxAmount.toFixed(2)}</span>
+                <span>Tax ({tax}%)</span>
+                <span>${taxAmount.toFixed(2)}</span>
               </div>
             )}
             <div className="flex justify-between font-semibold border-t pt-1.5 mt-1.5">
-              <span>Total</span><span>${total.toFixed(2)}</span>
+              <span>Total</span>
+              <span>${total.toFixed(2)}</span>
             </div>
           </div>
 
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && (
+            <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {error}
+            </p>
+          )}
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
             <Button type="submit" disabled={pending || !clientId}>
               {pending ? "Creating..." : "Create invoice"}
             </Button>
@@ -236,6 +311,7 @@ export default function Invoices() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
   const [addOpen, setAddOpen] = useState(false);
 
   async function fetchData() {
@@ -250,13 +326,17 @@ export default function Invoices() {
     }
   }
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   async function handleStatusChange(id: string, status: string) {
     try {
       await updateInvoiceStatus(id, status);
       fetchData();
-    } catch { /* silently fail */ }
+    } catch {
+      /* silently fail */
+    }
   }
 
   async function handleDelete(id: string) {
@@ -264,23 +344,45 @@ export default function Invoices() {
     try {
       await deleteInvoice(id);
       fetchData();
-    } catch { /* silently fail */ }
+    } catch {
+      /* silently fail */
+    }
   }
 
+  const filtered = invoices.filter((inv) => {
+    const q = search.toLowerCase();
+    return (
+      inv.title.toLowerCase().includes(q) ||
+      (inv.client_name ?? "").toLowerCase().includes(q) ||
+      String(inv.number).includes(q)
+    );
+  });
+
   if (loading) {
-    return <div className="flex h-48 items-center justify-center"><p className="text-sm text-muted-foreground">Loading...</p></div>;
+    return (
+      <div className="flex h-48 items-center justify-center">
+        <p className="text-sm text-muted-foreground">Loading...</p>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="rounded-md border border-destructive/20 bg-destructive/10 p-6"><p className="text-sm text-destructive">{error}</p></div>;
+    return (
+      <div className="rounded-md border border-destructive/20 bg-destructive/10 p-6">
+        <p className="text-sm text-destructive">{error}</p>
+      </div>
+    );
   }
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      {/* Page header */}
+      <div className="border-b bg-background px-6 py-4 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Invoices</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{invoices.length} invoice{invoices.length !== 1 ? "s" : ""}</p>
+          <h1 className="text-xl font-semibold">Invoices</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {invoices.length} invoice{invoices.length !== 1 ? "s" : ""}
+          </p>
         </div>
         <Button onClick={() => setAddOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
@@ -288,54 +390,104 @@ export default function Invoices() {
         </Button>
       </div>
 
-      {invoices.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-16 text-center">
-          <Receipt className="mb-3 h-10 w-10 text-muted-foreground/50" />
-          <p className="font-medium text-muted-foreground">No invoices yet</p>
-          <p className="mt-1 text-sm text-muted-foreground">Create your first invoice to get started.</p>
+      {/* Content */}
+      <div className="p-6 flex flex-col gap-4">
+        {/* Toolbar */}
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search invoices..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
         </div>
-      ) : (
-        <div className="rounded-lg border bg-card shadow-sm">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Number</TableHead>
-                <TableHead>Client</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Due</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {invoices.map((inv) => (
-                <TableRow key={inv.id}>
-                  <TableCell className="font-mono text-xs text-muted-foreground">{inv.number}</TableCell>
-                  <TableCell className="text-muted-foreground">{inv.client_name}</TableCell>
-                  <TableCell className="font-medium">{inv.title}</TableCell>
-                  <TableCell className="text-muted-foreground">${inv.total.toLocaleString()}</TableCell>
-                  <TableCell><InvoiceBadge status={inv.status} /></TableCell>
-                  <TableCell className="text-muted-foreground">{inv.due_date ? new Date(inv.due_date).toLocaleDateString() : "—"}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Select value={inv.status} onValueChange={(v) => handleStatusChange(inv.id, v)}>
-                        <SelectTrigger className="h-8 w-28 text-xs"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {INVOICE_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                      <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => handleDelete(inv.id)}>
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+
+        {filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-16 text-center">
+            <Receipt className="mb-3 h-10 w-10 text-muted-foreground/50" />
+            <p className="font-medium text-muted-foreground">
+              {search ? "No invoices match your search" : "No invoices yet"}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {search
+                ? "Try a different search term."
+                : "Create your first invoice to get started."}
+            </p>
+            {!search && (
+              <Button className="mt-4" onClick={() => setAddOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                New invoice
+              </Button>
+            )}
+          </div>
+        ) : (
+          <Card>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Number</TableHead>
+                    <TableHead>Client</TableHead>
+                    <TableHead>Total</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Due Date</TableHead>
+                    <TableHead className="w-[160px]">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filtered.map((inv) => (
+                    <TableRow key={inv.id}>
+                      <TableCell className="font-mono text-xs text-muted-foreground">
+                        {inv.number}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">{inv.client_name}</TableCell>
+                      <TableCell className="font-medium">
+                        ${inv.total.toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        <InvoiceBadge status={inv.status} />
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {inv.due_date ? new Date(inv.due_date).toLocaleDateString() : "—"}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Select
+                            value={inv.status}
+                            onValueChange={(v) => handleStatusChange(inv.id, v)}
+                          >
+                            <SelectTrigger className="h-8 w-28 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {INVOICE_STATUSES.map((s) => (
+                                <SelectItem key={s} value={s}>
+                                  {s}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive hover:text-destructive"
+                            onClick={() => handleDelete(inv.id)}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
       <NewInvoiceDialog
         open={addOpen}
