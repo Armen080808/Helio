@@ -1,29 +1,34 @@
 import { useEffect, useState } from "react";
-import { getDashboard, type DashboardStats } from "../services/dashboard";
+import { getDashboard, type DashboardStats } from "@/services/dashboard";
+import { useAuth } from "@/context/AuthContext";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileText, FileCheck, DollarSign, CalendarDays } from "lucide-react";
+import { type LucideIcon } from "lucide-react";
 
 interface StatCardProps {
   label: string;
   value: string | number;
-  icon: string;
-  description?: string;
+  icon: LucideIcon;
+  description: string;
 }
 
-function StatCard({ label, value, icon, description }: StatCardProps) {
+function StatCard({ label, value, icon: Icon, description }: StatCardProps) {
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-zinc-500">{label}</span>
-        <span className="text-2xl">{icon}</span>
-      </div>
-      <p className="mt-3 text-3xl font-bold text-zinc-900">{value}</p>
-      {description && (
-        <p className="mt-1 text-xs text-zinc-400">{description}</p>
-      )}
-    </div>
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
+        <Icon className="h-4 w-4 text-muted-foreground" />
+      </CardHeader>
+      <CardContent>
+        <p className="text-3xl font-bold">{value}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+      </CardContent>
+    </Card>
   );
 }
 
 export default function Dashboard() {
+  const { user } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,42 +43,42 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex h-48 items-center justify-center">
-        <p className="text-sm text-zinc-500">Loading…</p>
+        <p className="text-sm text-muted-foreground">Loading...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="rounded-2xl border border-red-100 bg-red-50 p-6">
-        <p className="text-sm text-red-600">{error}</p>
+      <div className="rounded-md border border-destructive/20 bg-destructive/10 p-6">
+        <p className="text-sm text-destructive">{error}</p>
       </div>
     );
   }
 
-  const cards = [
+  const cards: StatCardProps[] = [
     {
       label: "Active Proposals",
       value: stats?.active_proposals ?? 0,
-      icon: "📄",
+      icon: FileText,
       description: "Proposals awaiting response",
     },
     {
       label: "Unsigned Contracts",
       value: stats?.unsigned_contracts ?? 0,
-      icon: "📝",
+      icon: FileCheck,
       description: "Contracts pending signature",
     },
     {
       label: "Outstanding Amount",
       value: `$${(stats?.outstanding_amount ?? 0).toLocaleString()}`,
-      icon: "💳",
+      icon: DollarSign,
       description: "Total unpaid invoices",
     },
     {
       label: "Upcoming Calls",
       value: stats?.upcoming_calls ?? 0,
-      icon: "📅",
+      icon: CalendarDays,
       description: "Scheduled in the next 7 days",
     },
   ];
@@ -81,9 +86,9 @@ export default function Dashboard() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-zinc-900">Dashboard</h1>
-        <p className="mt-1 text-sm text-zinc-500">
-          Overview of your freelance business
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {user?.name ? `Welcome back, ${user.name.split(" ")[0]}.` : "Overview of your freelance business."}
         </p>
       </div>
 

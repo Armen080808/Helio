@@ -1,63 +1,77 @@
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { FileText, Users, Receipt, CalendarDays } from "lucide-react";
+
+const features = [
+  { icon: FileText, label: "Proposals", desc: "Send polished proposals that win clients" },
+  { icon: Users, label: "Clients", desc: "Manage all your client relationships in one place" },
+  { icon: Receipt, label: "Invoices", desc: "Get paid faster with professional invoices" },
+  { icon: CalendarDays, label: "Schedule", desc: "Book calls and track upcoming meetings" },
+];
 
 export default function Landing() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-indigo-950 via-indigo-800 to-purple-700 px-4 text-white">
-      {/* Logo */}
-      <div className="mb-6 flex items-center gap-2">
-        <span className="text-4xl font-extrabold tracking-tight">helio</span>
-        <span className="mt-1 rounded-full bg-indigo-400/30 px-2.5 py-0.5 text-xs font-medium text-indigo-200">
-          beta
-        </span>
-      </div>
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-900 to-slate-800 text-white">
+      {/* Nav */}
+      <header className="flex items-center justify-between px-8 py-5">
+        <span className="text-xl font-bold tracking-tight">alyo</span>
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" className="text-slate-300 hover:text-white hover:bg-white/10" asChild>
+            <Link to="/login">Sign in</Link>
+          </Button>
+          <Button className="bg-white text-slate-900 hover:bg-slate-100" asChild>
+            <Link to="/register">Get started free</Link>
+          </Button>
+        </div>
+      </header>
 
-      {/* Headline */}
-      <h1 className="max-w-xl text-center text-4xl font-bold leading-tight sm:text-5xl">
-        AI-native platform for freelancers
-      </h1>
-      <p className="mt-4 max-w-md text-center text-lg text-indigo-200">
-        Proposals, contracts, invoices, and scheduling — all in one place.
-        Close deals faster and get paid on time.
-      </p>
-
-      {/* CTAs */}
-      <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-        <Link
-          to="/register"
-          className="rounded-xl bg-white px-8 py-3 text-sm font-bold text-indigo-700 shadow-lg transition hover:bg-indigo-50 active:scale-95"
-        >
-          Get started free
-        </Link>
-        <Link
-          to="/login"
-          className="rounded-xl border border-indigo-400/50 bg-white/10 px-8 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
-        >
-          Log in
-        </Link>
-      </div>
-
-      {/* Feature tiles */}
-      <div className="mt-20 grid max-w-3xl grid-cols-2 gap-4 sm:grid-cols-4">
-        {[
-          { icon: "📄", label: "Proposals" },
-          { icon: "📝", label: "Contracts" },
-          { icon: "💳", label: "Invoices" },
-          { icon: "📅", label: "Schedule" },
-        ].map((f) => (
-          <div
-            key={f.label}
-            className="flex flex-col items-center gap-2 rounded-2xl bg-white/10 px-6 py-5 backdrop-blur-sm"
+      {/* Hero */}
+      <section className="flex flex-1 flex-col items-center justify-center px-4 py-24 text-center">
+        <h1 className="max-w-2xl text-5xl font-extrabold leading-tight tracking-tight sm:text-6xl">
+          The freelancer OS.
+        </h1>
+        <p className="mt-5 max-w-lg text-xl text-slate-300">
+          Proposals, contracts, invoices — all in one place.
+        </p>
+        <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+          <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100 px-10" asChild>
+            <Link to="/register">Get started free</Link>
+          </Button>
+          <Button
+            size="lg"
+            variant="outline"
+            className="border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white px-10"
+            asChild
           >
-            <span className="text-3xl">{f.icon}</span>
-            <span className="text-sm font-medium text-indigo-100">{f.label}</span>
-          </div>
-        ))}
-      </div>
+            <Link to="/login">Sign in</Link>
+          </Button>
+        </div>
+      </section>
+
+      {/* Feature grid */}
+      <section className="px-8 pb-24">
+        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map(({ icon: Icon, label, desc }) => (
+            <Card key={label} className="border-white/10 bg-white/5 text-white backdrop-blur-sm">
+              <CardContent className="flex flex-col items-start gap-3 p-6">
+                <div className="rounded-md bg-white/10 p-2">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-semibold">{label}</p>
+                  <p className="mt-1 text-sm text-slate-400">{desc}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
 
       {/* Footer */}
-      <p className="mt-16 text-xs text-indigo-300/70">
-        &copy; {new Date().getFullYear()} Helio. Built for modern freelancers.
-      </p>
+      <footer className="border-t border-white/10 px-8 py-5 text-center text-xs text-slate-500">
+        &copy; {new Date().getFullYear()} alyo. Built for modern freelancers.
+      </footer>
     </div>
   );
 }

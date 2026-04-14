@@ -6,19 +6,38 @@ import {
   deleteClient,
   type Client,
   type ClientInput,
-} from "../services/clients";
-import EmptyState from "../components/EmptyState";
+} from "@/services/clients";
 import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Users, Plus, Pencil, Trash2 } from "lucide-react";
 
-// ---- Edit row ----
-function EditRow({
-  client,
-  onDone,
-  onRefresh,
+function ClientDialog({
+  open,
+  onOpenChange,
+  initial,
+  onSave,
 }: {
-  client: Client;
-  onDone: () => void;
-  onRefresh: () => void;
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  initial?: Client;
+  onSave: (data: ClientInput) => Promise<void>;
 }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,14 +55,13 @@ function EditRow({
     };
     setPending(true);
     try {
-      await updateClient(client.id, data);
-      onRefresh();
-      onDone();
+      await onSave(data);
+      onOpenChange(false);
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.detail ?? "Update failed.");
+        setError(err.response?.data?.detail ?? "Operation failed.");
       } else {
-        setError("Update failed.");
+        setError("Operation failed.");
       }
     } finally {
       setPending(false);
@@ -51,100 +69,106 @@ function EditRow({
   }
 
   return (
-    <tr className="bg-indigo-50/50">
-      <td colSpan={6} className="px-4 py-3">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-          <div className="grid grid-cols-4 gap-2">
-            <input name="name" required defaultValue={client.name} placeholder="Full name" className="input" />
-            <input name="email" type="email" required defaultValue={client.email} placeholder="Email" className="input" />
-            <input name="phone" defaultValue={client.phone ?? ""} placeholder="Phone (optional)" className="input" />
-            <input name="company" defaultValue={client.company ?? ""} placeholder="Company (optional)" className="input" />
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>{initial ? "Edit client" : "Add client"}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="c-name">Name *</Label>
+            <Input id="c-name" name="name" required defaultValue={initial?.name} placeholder="Jane Smith" />
           </div>
-          {error && <p className="text-xs text-red-500">{error}</p>}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="c-email">Email *</Label>
+            <Input id="c-email" name="email" type="email" required defaultValue={initial?.email} placeholder="jane@example.com" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="c-phone">Phone</Label>
+              <Input id="c-phone" name="phone" defaultValue={initial?.phone ?? ""} placeholder="Optional" />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="c-company">Company</Label>
+              <Input id="c-company" name="company" defaultValue={initial?.company ?? ""} placeholder="Optional" />
+            </div>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="c-notes">Notes</Label>
             <textarea
+              id="c-notes"
               name="notes"
-              defaultValue={client.notes ?? ""}
-              placeholder="Notes (optional)"
-              rows={1}
-              className="input flex-1 resize-none"
+              defaultValue={initial?.notes ?? ""}
+              placeholder="Optional"
+              rows={3}
+              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
             />
-            <button type="button" onClick={onDone} className="btn-ghost shrink-0">
-              Cancel
-            </button>
-            <button type="submit" disabled={pending} className="btn-primary shrink-0">
-              {pending ? "Saving…" : "Save"}
-            </button>
           </div>
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button type="submit" disabled={pending}>
+              {pending ? "Saving..." : initial ? "Save changes" : "Add client"}
+            </Button>
+          </DialogFooter>
         </form>
-      </td>
-    </tr>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-// ---- Client row ----
-function ClientRow({
+function DeleteDialog({
   client,
-  onEdit,
-  onRefresh,
+  open,
+  onOpenChange,
+  onDeleted,
 }: {
-  client: Client;
-  onEdit: () => void;
-  onRefresh: () => void;
+  client: Client | null;
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  onDeleted: () => void;
 }) {
   const [pending, setPending] = useState(false);
 
   async function handleDelete() {
-    if (!confirm(`Delete ${client.name}? This cannot be undone.`)) return;
+    if (!client) return;
     setPending(true);
     try {
       await deleteClient(client.id);
-      onRefresh();
+      onDeleted();
+      onOpenChange(false);
     } finally {
       setPending(false);
     }
   }
 
   return (
-    <tr className="transition hover:bg-zinc-50">
-      <td className="px-4 py-3 font-medium text-zinc-900">{client.name}</td>
-      <td className="px-4 py-3 text-zinc-500">{client.email}</td>
-      <td className="px-4 py-3 text-zinc-500">{client.company ?? "—"}</td>
-      <td className="px-4 py-3 text-zinc-500">{client.phone ?? "—"}</td>
-      <td className="px-4 py-3 text-zinc-400">
-        {new Date(client.created_at).toLocaleDateString()}
-      </td>
-      <td className="px-4 py-3">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={onEdit}
-            disabled={pending}
-            className="rounded-lg border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-600 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 disabled:opacity-50"
-          >
-            Edit
-          </button>
-          <button
-            onClick={handleDelete}
-            disabled={pending}
-            className="rounded-lg border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-400 transition hover:border-red-200 hover:bg-red-50 hover:text-red-500 disabled:opacity-50"
-          >
-            Delete
-          </button>
-        </div>
-      </td>
-    </tr>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Delete client</DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-muted-foreground">
+          Are you sure you want to delete <span className="font-medium text-foreground">{client?.name}</span>? This cannot be undone.
+        </p>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button variant="destructive" disabled={pending} onClick={handleDelete}>
+            {pending ? "Deleting..." : "Delete"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-// ---- Page ----
 export default function Clients() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false);
-  const [formPending, setFormPending] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
+  const [editClient, setEditClient] = useState<Client | null>(null);
+  const [deleteClient_, setDeleteClient] = useState<Client | null>(null);
 
   async function fetchClients() {
     try {
@@ -157,147 +181,96 @@ export default function Clients() {
     }
   }
 
-  useEffect(() => {
-    fetchClients();
-  }, []);
-
-  async function handleCreate(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setFormError(null);
-    const fd = new FormData(e.currentTarget);
-    const data: ClientInput = {
-      name: fd.get("name") as string,
-      email: fd.get("email") as string,
-      phone: (fd.get("phone") as string) || undefined,
-      company: (fd.get("company") as string) || undefined,
-      notes: (fd.get("notes") as string) || undefined,
-    };
-    setFormPending(true);
-    try {
-      await createClient(data);
-      (e.target as HTMLFormElement).reset();
-      setShowForm(false);
-      fetchClients();
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setFormError(err.response?.data?.detail ?? "Failed to create client.");
-      } else {
-        setFormError("Failed to create client.");
-      }
-    } finally {
-      setFormPending(false);
-    }
-  }
+  useEffect(() => { fetchClients(); }, []);
 
   if (loading) {
-    return (
-      <div className="flex h-48 items-center justify-center">
-        <p className="text-sm text-zinc-500">Loading…</p>
-      </div>
-    );
+    return <div className="flex h-48 items-center justify-center"><p className="text-sm text-muted-foreground">Loading...</p></div>;
   }
 
   if (error) {
-    return (
-      <div className="rounded-2xl border border-red-100 bg-red-50 p-6">
-        <p className="text-sm text-red-600">{error}</p>
-      </div>
-    );
+    return <div className="rounded-md border border-destructive/20 bg-destructive/10 p-6"><p className="text-sm text-destructive">{error}</p></div>;
   }
 
   return (
     <div>
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900">Clients</h1>
-          <p className="mt-1 text-sm text-zinc-500">
-            {clients.length} client{clients.length !== 1 ? "s" : ""}
-          </p>
+          <h1 className="text-2xl font-bold">Clients</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{clients.length} client{clients.length !== 1 ? "s" : ""}</p>
         </div>
-        {!showForm && (
-          <button onClick={() => setShowForm(true)} className="btn-primary">
-            + Add client
-          </button>
-        )}
+        <Button onClick={() => setAddOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add client
+        </Button>
       </div>
 
-      {/* New client form */}
-      {showForm && (
-        <div className="mt-6 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-zinc-900">New client</h2>
-          <form onSubmit={handleCreate} className="flex flex-col gap-3">
-            <div className="grid grid-cols-2 gap-3">
-              <input name="name" required placeholder="Full name" className="input" />
-              <input name="email" type="email" required placeholder="Email" className="input" />
-              <input name="phone" placeholder="Phone (optional)" className="input" />
-              <input name="company" placeholder="Company (optional)" className="input" />
-            </div>
-            <textarea
-              name="notes"
-              placeholder="Notes (optional)"
-              rows={2}
-              className="input resize-none"
-            />
-            {formError && <p className="text-sm text-red-500">{formError}</p>}
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => { setShowForm(false); setFormError(null); }}
-                className="btn-ghost"
-              >
-                Cancel
-              </button>
-              <button type="submit" disabled={formPending} className="btn-primary">
-                {formPending ? "Adding…" : "Add client"}
-              </button>
-            </div>
-          </form>
+      {clients.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-16 text-center">
+          <Users className="mb-3 h-10 w-10 text-muted-foreground/50" />
+          <p className="font-medium text-muted-foreground">No clients yet</p>
+          <p className="mt-1 text-sm text-muted-foreground">Add your first client to get started.</p>
+        </div>
+      ) : (
+        <div className="rounded-lg border bg-card shadow-sm">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Company</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {clients.map((c) => (
+                <TableRow key={c.id}>
+                  <TableCell className="font-medium">{c.name}</TableCell>
+                  <TableCell className="text-muted-foreground">{c.email}</TableCell>
+                  <TableCell className="text-muted-foreground">{c.company ?? "—"}</TableCell>
+                  <TableCell className="text-muted-foreground">{c.phone ?? "—"}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Button variant="ghost" size="sm" onClick={() => setEditClient(c)}>
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => setDeleteClient(c)}>
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
 
-      {/* Table */}
-      <div className="mt-6">
-        {clients.length === 0 && !showForm ? (
-          <EmptyState icon="👥" title="No clients yet" description="Add your first client to get started." />
-        ) : (
-          <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
-            <table className="w-full text-sm">
-              <thead className="border-b border-zinc-100 bg-zinc-50">
-                <tr>
-                  {["Name", "Email", "Company", "Phone", "Added", "Actions"].map((h) => (
-                    <th
-                      key={h}
-                      className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100">
-                {clients.map((c) =>
-                  editingId === c.id ? (
-                    <EditRow
-                      key={c.id}
-                      client={c}
-                      onDone={() => setEditingId(null)}
-                      onRefresh={fetchClients}
-                    />
-                  ) : (
-                    <ClientRow
-                      key={c.id}
-                      client={c}
-                      onEdit={() => setEditingId(c.id)}
-                      onRefresh={fetchClients}
-                    />
-                  )
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      <ClientDialog
+        open={addOpen}
+        onOpenChange={setAddOpen}
+        onSave={async (data) => { await createClient(data); await fetchClients(); }}
+      />
+
+      <ClientDialog
+        open={!!editClient}
+        onOpenChange={(v) => { if (!v) setEditClient(null); }}
+        initial={editClient ?? undefined}
+        onSave={async (data) => {
+          if (editClient) {
+            await updateClient(editClient.id, data);
+            await fetchClients();
+            setEditClient(null);
+          }
+        }}
+      />
+
+      <DeleteDialog
+        client={deleteClient_}
+        open={!!deleteClient_}
+        onOpenChange={(v) => { if (!v) setDeleteClient(null); }}
+        onDeleted={fetchClients}
+      />
     </div>
   );
 }

@@ -1,31 +1,34 @@
 import { NavLink } from "react-router-dom";
+import { LayoutDashboard, Users, FileText, FileCheck, Receipt, CalendarDays } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const links = [
-  { href: "/dashboard", label: "Dashboard", icon: "▦" },
-  { href: "/clients", label: "Clients", icon: "👥" },
-  { href: "/proposals", label: "Proposals", icon: "📄" },
-  { href: "/contracts", label: "Contracts", icon: "📝" },
-  { href: "/invoices", label: "Invoices", icon: "💳" },
-  { href: "/schedule", label: "Schedule", icon: "📅" },
+const navItems = [
+  { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/clients", icon: Users, label: "Clients" },
+  { to: "/proposals", icon: FileText, label: "Proposals" },
+  { to: "/contracts", icon: FileCheck, label: "Contracts" },
+  { to: "/invoices", icon: Receipt, label: "Invoices" },
+  { to: "/schedule", icon: CalendarDays, label: "Schedule" },
 ];
 
 export default function NavLinks() {
   return (
-    <nav className="flex flex-1 flex-col gap-1">
-      {links.map((link) => (
+    <nav className="flex flex-col gap-1">
+      {navItems.map(({ to, icon: Icon, label }) => (
         <NavLink
-          key={link.href}
-          to={link.href}
+          key={to}
+          to={to}
           className={({ isActive }) =>
-            `flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition ${
+            cn(
+              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
               isActive
-                ? "bg-indigo-50 text-indigo-600"
-                : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
-            }`
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+            )
           }
         >
-          <span className="text-base">{link.icon}</span>
-          {link.label}
+          <Icon className="h-4 w-4" />
+          {label}
         </NavLink>
       ))}
     </nav>

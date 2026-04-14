@@ -1,7 +1,11 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Register() {
   const { register } = useAuth();
@@ -38,81 +42,75 @@ export default function Register() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
       <div className="w-full max-w-sm">
-        {/* Brand */}
-        <div className="mb-8 text-center">
-          <Link to="/" className="text-2xl font-extrabold text-indigo-600">
-            helio
+        <div className="mb-6 text-center">
+          <Link to="/" className="text-2xl font-bold tracking-tight">
+            alyo
           </Link>
-          <p className="mt-2 text-sm text-zinc-500">Create your free account</p>
         </div>
 
-        <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-zinc-700">
-                Full name
-              </label>
-              <input
-                type="text"
-                required
-                autoFocus
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Jane Smith"
-                className="input"
-              />
-            </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Create account</CardTitle>
+            <CardDescription>Get started with alyo for free</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="name">Full name</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  required
+                  autoFocus
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Jane Smith"
+                />
+              </div>
 
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-zinc-700">
-                Email
-              </label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="input"
-              />
-            </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                />
+              </div>
 
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-zinc-700">
-                Password
-              </label>
-              <input
-                type="password"
-                required
-                minLength={8}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Min. 8 characters"
-                className="input"
-              />
-            </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  minLength={8}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Min. 8 characters"
+                />
+              </div>
 
-            {error && (
-              <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
-                {error}
-              </p>
-            )}
+              {error && (
+                <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                  {error}
+                </p>
+              )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary mt-1 w-full text-center"
-            >
-              {loading ? "Creating account…" : "Create account"}
-            </button>
-          </form>
-        </div>
+              <Button type="submit" disabled={loading} className="mt-1 w-full">
+                {loading ? "Creating account..." : "Create account"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
 
-        <p className="mt-6 text-center text-sm text-zinc-500">
+        <p className="mt-6 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link to="/login" className="font-medium text-indigo-600 hover:underline">
+          <Link to="/login" className="font-medium text-foreground underline-offset-4 hover:underline">
             Sign in
           </Link>
         </p>

@@ -10,7 +10,7 @@ import {
   registerRequest,
   logoutRequest,
   type AuthUser,
-} from "../services/auth";
+} from "@/services/auth";
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -23,7 +23,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 function readStoredUser(): AuthUser | null {
   try {
-    const raw = localStorage.getItem("helio_user");
+    const raw = localStorage.getItem("alyo_user");
     return raw ? (JSON.parse(raw) as AuthUser) : null;
   } catch {
     return null;
@@ -35,16 +35,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     const data = await loginRequest(email, password);
-    localStorage.setItem("helio_token", data.access_token);
-    localStorage.setItem("helio_user", JSON.stringify(data.user));
+    localStorage.setItem("alyo_token", data.access_token);
+    localStorage.setItem("alyo_user", JSON.stringify(data.user));
     setUser(data.user);
   }, []);
 
   const register = useCallback(
     async (name: string, email: string, password: string) => {
       const data = await registerRequest(name, email, password);
-      localStorage.setItem("helio_token", data.access_token);
-      localStorage.setItem("helio_user", JSON.stringify(data.user));
+      localStorage.setItem("alyo_token", data.access_token);
+      localStorage.setItem("alyo_user", JSON.stringify(data.user));
       setUser(data.user);
     },
     []
@@ -56,8 +56,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       // ignore errors on logout
     } finally {
-      localStorage.removeItem("helio_token");
-      localStorage.removeItem("helio_user");
+      localStorage.removeItem("alyo_token");
+      localStorage.removeItem("alyo_user");
       setUser(null);
     }
   }, []);
