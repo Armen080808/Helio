@@ -7,6 +7,14 @@ datasource db {
   provider = "postgresql"
 }
 
+// ─── Waitlist ─────────────────────────────────────────────────────────────────
+
+model Waitlist {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
 // ─── Auth (Auth.js v5 required tables) ───────────────────────────────────────
 
 model User {
