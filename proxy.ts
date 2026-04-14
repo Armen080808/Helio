@@ -1,35 +1,10 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import NextAuth from "next-auth";
+import { authConfig } from "./auth.config";
 
-const PROTECTED = [
-  "/dashboard",
-  "/proposals",
-  "/contracts",
-  "/invoices",
-  "/schedule",
-  "/clients",
-];
-
-export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const isProtected = PROTECTED.some((p) => pathname.startsWith(p));
-
-  if (!isProtected) return NextResponse.next();
-
-  const token = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET,
-  });
-
-  if (!token) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("callbackUrl", request.url);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  return NextResponse.next();
-}
+// Use next-auth v5's own auth helper — reads the correct "authjs.session-token"
+// cookie instead of the v4 "next-auth.session-token" that getToken() looked for.
+// The authorized() callback in auth.config.ts handles redirects to /login.
+export const { auth: proxy } = NextAuth(authConfig);
 
 export const config = {
   matcher: [
