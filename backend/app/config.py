@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     refresh_token_expire_days: int = 7
     frontend_url: str = "http://localhost:5173"
     resend_api_key: str = ""
+    gmail_user: str = ""
+    gmail_app_password: str = ""
 
     model_config = SettingsConfigDict(
         env_file=".env",
