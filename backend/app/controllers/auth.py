@@ -1,4 +1,6 @@
+import random
 import uuid
+from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
@@ -55,21 +57,23 @@ def register(body: RegisterRequest, response: Response, db: Session = Depends(ge
             detail="An account with this email already exists",
         )
 
-    verification_token = str(uuid.uuid4())
+    code = f"{random.randint(0, 999999):06d}"
+    expires_at = datetime.utcnow() + timedelta(minutes=15)
 
     user = User(
         name=body.name,
         email=body.email,
         password_hash=hash_password(body.password),
         email_verified=False,
-        verification_token=verification_token,
+        verification_token=code,
+        verification_token_expires_at=expires_at,
     )
     db.add(user)
     db.commit()
     db.refresh(user)
 
     # Send verification email (non-blocking — failure doesn't break registration)
-    send_verification_email(body.email, body.name, verification_token)
+    send_verification_email(body.email, body.name, code)
 
     tokens = _build_token_response(user)
     _set_refresh_cookie(response, tokens["refresh_token"])
@@ -81,38 +85,44 @@ def register(body: RegisterRequest, response: Response, db: Session = Depends(ge
     )
 
 
-@router.get("/verify-email", tags=["auth"])
-def verify_email(token: str, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.verification_token == token).first()
+@router.post("/verify-email", tags=["auth"])
+def verify_email(body: dict, db: Session = Depends(get_db)):
+    email = body.get("email", "").strip().lower()
+    code = body.get("code", "").strip()
+
+    user = db.query(User).filter(User.email == email).first()
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or expired verification token",
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid code")
+
     if user.email_verified:
         return {"message": "Email already verified"}
 
+    if not user.verification_token or user.verification_token != code:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid code")
+
+    if user.verification_token_expires_at and datetime.utcnow() > user.verification_token_expires_at:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Code expired — request a new one")
+
     user.email_verified = True
-    user.verification_token = None  # invalidate token after use
+    user.verification_token = None
+    user.verification_token_expires_at = None
     db.commit()
 
-    return {"message": "Email verified successfully! You can now use all features."}
+    return {"message": "Email verified successfully!"}
 
 
 @router.post("/resend-verification", tags=["auth"])
 def resend_verification(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if current_user.email_verified:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email is already verified",
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email is already verified")
 
-    token = str(uuid.uuid4())
-    current_user.verification_token = token
+    code = f"{random.randint(0, 999999):06d}"
+    current_user.verification_token = code
+    current_user.verification_token_expires_at = datetime.utcnow() + timedelta(minutes=15)
     db.commit()
 
-    send_verification_email(current_user.email, current_user.name or "", token)
-    return {"message": "Verification email sent"}
+    send_verification_email(current_user.email, current_user.name or "", code)
+    return {"message": "Verification code sent"}
 
 
 @router.post("/login", response_model=TokenResponse)
