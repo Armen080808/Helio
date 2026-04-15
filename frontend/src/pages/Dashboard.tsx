@@ -1,73 +1,154 @@
 import { useEffect, useState } from "react";
-import { getDashboard } from "@/services/dashboard";
+import { getDashboard, type DashboardStats } from "@/services/dashboard";
+import { getApplications, type Application } from "@/services/pipeline";
 import { useAuth } from "@/context/AuthContext";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
-import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";
-import { FileText, FileCheck, DollarSign, CalendarDays, TrendingUp } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Briefcase, Users, CalendarDays, TrendingUp } from "lucide-react";
 
-const chartData = [
-  { month: "Jan", revenue: 1200 },
-  { month: "Feb", revenue: 2100 },
-  { month: "Mar", revenue: 1800 },
-  { month: "Apr", revenue: 3200 },
-  { month: "May", revenue: 2800 },
-  { month: "Jun", revenue: 4100 },
+type Stage =
+  | "Wishlist"
+  | "Applied"
+  | "OA"
+  | "Phone Screen"
+  | "Superday"
+  | "Offer"
+  | "Rejected";
+
+const STAGES: Stage[] = [
+  "Wishlist",
+  "Applied",
+  "OA",
+  "Phone Screen",
+  "Superday",
+  "Offer",
+  "Rejected",
 ];
 
-const chartConfig = {
-  revenue: { label: "Revenue", color: "hsl(var(--chart-1))" },
-};
+function stageBadgeClass(stage: Stage): string {
+  switch (stage) {
+    case "Wishlist":
+      return "";
+    case "Applied":
+      return "bg-blue-100 text-blue-700 hover:bg-blue-100";
+    case "OA":
+      return "bg-purple-100 text-purple-700 hover:bg-purple-100";
+    case "Phone Screen":
+      return "bg-yellow-100 text-yellow-700 hover:bg-yellow-100";
+    case "Superday":
+      return "bg-orange-100 text-orange-700 hover:bg-orange-100";
+    case "Offer":
+      return "bg-green-100 text-green-700 hover:bg-green-100";
+    case "Rejected":
+      return "bg-red-100 text-red-700 hover:bg-red-100";
+    default:
+      return "";
+  }
+}
+
+function stageBadgeVariant(stage: Stage): "secondary" | "outline" {
+  return stage === "Wishlist" ? "secondary" : "outline";
+}
+
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [stats, setStats] = useState<{
-    active_proposals: number;
-    unsigned_contracts: number;
-    outstanding_amount: number;
-    upcoming_calls: number;
-  } | null>(null);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getDashboard().then(setStats).catch(() => {});
+    async function fetchData() {
+      try {
+        const [dashData, appsData] = await Promise.all([
+          getDashboard(),
+          getApplications(),
+        ]);
+        setStats(dashData);
+        setApplications(appsData);
+      } catch {
+        setError("Failed to load dashboard data.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
   }, []);
+
+  const activeCount = applications.filter(
+    (a) => a.stage !== "Rejected" && a.stage !== "Offer" && a.stage !== "Wishlist"
+  ).length;
+
+  const recentApps = [...applications]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 3);
+
+  const firstName = user?.name?.split(" ")[0] ?? "there";
 
   const statCards = [
     {
-      label: "Active Proposals",
-      value: stats?.active_proposals ?? "—",
-      icon: FileText,
-      desc: "Awaiting response",
+      label: "Total Applications",
+      value: stats?.applications_total ?? "—",
+      icon: Briefcase,
+      desc: "All tracked applications",
     },
     {
-      label: "Unsigned Contracts",
-      value: stats?.unsigned_contracts ?? "—",
-      icon: FileCheck,
-      desc: "Needs signature",
+      label: "Contacts",
+      value: stats?.contacts_total ?? "—",
+      icon: Users,
+      desc: "Networking contacts",
     },
     {
-      label: "Outstanding",
-      value: stats ? `$${stats.outstanding_amount.toLocaleString()}` : "—",
-      icon: DollarSign,
-      desc: "Unpaid invoices",
-    },
-    {
-      label: "Upcoming Calls",
-      value: stats?.upcoming_calls ?? "—",
+      label: "Upcoming Deadlines",
+      value: stats?.upcoming_deadlines ?? "—",
       icon: CalendarDays,
-      desc: "This week",
+      desc: "In the next 7 days",
+    },
+    {
+      label: "Active Pipeline",
+      value: activeCount,
+      icon: TrendingUp,
+      desc: "In-progress applications",
     },
   ];
+
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <p className="text-sm text-muted-foreground">Loading dashboard...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="rounded-md border border-destructive/20 bg-destructive/10 p-4">
+          <p className="text-sm text-destructive">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6 p-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">
-          Good morning, {user?.name?.split(" ")[0] ?? "there"} 👋
+          Welcome back, {firstName}
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Here&apos;s what&apos;s happening with your business today.
+        <p className="mt-1 text-sm text-muted-foreground">
+          Here&apos;s an overview of your finance recruiting pipeline.
         </p>
       </div>
 
@@ -76,64 +157,82 @@ export default function Dashboard() {
         {statCards.map(({ label, value, icon: Icon, desc }) => (
           <Card key={label}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                {label}
+              </CardTitle>
               <Icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{value}</div>
-              <p className="text-xs text-muted-foreground mt-1">{desc}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{desc}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Chart */}
+      {/* Pipeline stage breakdown */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Revenue overview</CardTitle>
-              <CardDescription>Your income trend over the last 6 months</CardDescription>
-            </div>
-            <div className="flex items-center gap-1 text-sm text-emerald-600 font-medium">
-              <TrendingUp className="h-4 w-4" />
-              +24.5%
-            </div>
-          </div>
+          <CardTitle className="text-base">Pipeline Breakdown</CardTitle>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={chartConfig} className="h-[240px] w-full">
-            <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                className="text-xs"
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(v) => `$${v}`}
-                className="text-xs"
-              />
-              <Tooltip content={<ChartTooltipContent />} />
-              <Area
-                type="monotone"
-                dataKey="revenue"
-                stroke="hsl(var(--chart-1))"
-                strokeWidth={2}
-                fill="url(#revenueGrad)"
-              />
-            </AreaChart>
-          </ChartContainer>
+          <div className="flex flex-wrap gap-3">
+            {STAGES.map((stage) => {
+              const count =
+                stats?.applications_by_stage?.[stage] ??
+                applications.filter((a) => a.stage === stage).length;
+              return (
+                <div key={stage} className="flex flex-col items-center gap-1">
+                  <Badge
+                    variant={stageBadgeVariant(stage)}
+                    className={stageBadgeClass(stage)}
+                  >
+                    {stage}
+                  </Badge>
+                  <span className="text-sm font-semibold">{count}</span>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Recent Activity */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Recent Activity</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {recentApps.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No applications yet. Start by adding one in the Pipeline.
+            </p>
+          ) : (
+            <div className="flex flex-col divide-y">
+              {recentApps.map((app) => (
+                <div
+                  key={app.id}
+                  className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
+                >
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-sm font-medium">{app.firm_name}</span>
+                    <span className="text-xs text-muted-foreground">{app.role}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Badge
+                      variant={stageBadgeVariant(app.stage as Stage)}
+                      className={stageBadgeClass(app.stage as Stage)}
+                    >
+                      {app.stage}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">
+                      {timeAgo(app.created_at)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

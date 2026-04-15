@@ -6,18 +6,58 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
-  LayoutDashboard, Users, FileText, FileCheck, Receipt,
-  CalendarDays, LogOut, PanelLeftClose, PanelLeftOpen, Zap
+  LayoutDashboard,
+  Kanban,
+  Users,
+  CalendarDays,
+  BookOpen,
+  Building2,
+  GraduationCap,
+  CalendarCheck,
+  TrendingUp,
+  Newspaper,
+  Briefcase,
+  MessageSquare,
+  LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const NAV = [
-  { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/proposals", icon: FileText, label: "Proposals" },
-  { to: "/contracts", icon: FileCheck, label: "Contracts" },
-  { to: "/invoices", icon: Receipt, label: "Invoices" },
-  { to: "/clients", icon: Users, label: "Clients" },
-  { to: "/schedule", icon: CalendarDays, label: "Schedule" },
+const NAV_GROUPS = [
+  {
+    label: "Recruiting",
+    items: [
+      { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+      { to: "/pipeline", icon: Kanban, label: "Pipeline" },
+      { to: "/contacts", icon: Users, label: "Contacts" },
+      { to: "/deadlines", icon: CalendarDays, label: "Deadlines" },
+      { to: "/events", icon: CalendarCheck, label: "Events" },
+    ],
+  },
+  {
+    label: "Research",
+    items: [
+      { to: "/firms", icon: Building2, label: "Firms" },
+      { to: "/questions", icon: BookOpen, label: "Interview Prep" },
+      { to: "/community", icon: MessageSquare, label: "Community" },
+    ],
+  },
+  {
+    label: "Markets",
+    items: [
+      { to: "/market", icon: TrendingUp, label: "Markets" },
+      { to: "/news", icon: Newspaper, label: "News" },
+      { to: "/jobs", icon: Briefcase, label: "Jobs" },
+    ],
+  },
+  {
+    label: "Tools",
+    items: [
+      { to: "/gpa", icon: GraduationCap, label: "GPA Calculator" },
+    ],
+  },
 ];
 
 export default function Layout() {
@@ -26,7 +66,12 @@ export default function Layout() {
   const [collapsed, setCollapsed] = useState(false);
 
   const initials = user?.name
-    ? user.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)
+    ? user.name
+        .split(" ")
+        .map((n: string) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
     : "??";
 
   async function handleLogout() {
@@ -38,15 +83,19 @@ export default function Layout() {
     <TooltipProvider delayDuration={0}>
       <div className="flex h-screen overflow-hidden bg-background">
         {/* Sidebar */}
-        <aside className={cn(
-          "flex flex-col border-r bg-card transition-all duration-300",
-          collapsed ? "w-14" : "w-56"
-        )}>
+        <aside
+          className={cn(
+            "flex flex-col border-r bg-card transition-all duration-300",
+            collapsed ? "w-14" : "w-56"
+          )}
+        >
           {/* Brand + collapse toggle */}
-          <div className={cn(
-            "flex h-14 items-center border-b",
-            collapsed ? "justify-center px-3" : "justify-between px-4"
-          )}>
+          <div
+            className={cn(
+              "flex h-14 items-center border-b",
+              collapsed ? "justify-center px-3" : "justify-between px-4"
+            )}
+          >
             {!collapsed && (
               <div className="flex items-center gap-2">
                 <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
@@ -61,50 +110,65 @@ export default function Layout() {
               className="h-8 w-8 shrink-0"
               onClick={() => setCollapsed(!collapsed)}
             >
-              {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+              {collapsed ? (
+                <PanelLeftOpen className="h-4 w-4" />
+              ) : (
+                <PanelLeftClose className="h-4 w-4" />
+              )}
             </Button>
           </div>
 
           {/* Nav */}
-          <nav className="flex flex-1 flex-col gap-1 p-2 pt-3">
-            {NAV.map(({ to, icon: Icon, label }) =>
-              collapsed ? (
-                <Tooltip key={to}>
-                  <TooltipTrigger asChild>
-                    <NavLink
-                      to={to}
-                      className={({ isActive }) =>
-                        cn(
-                          "flex h-9 w-9 items-center justify-center rounded-md transition-colors mx-auto",
-                          isActive
-                            ? "bg-accent text-accent-foreground font-medium"
-                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                        )
-                      }
-                    >
-                      <Icon className="h-4 w-4" />
-                    </NavLink>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">{label}</TooltipContent>
-                </Tooltip>
-              ) : (
-                <NavLink
-                  key={to}
-                  to={to}
-                  className={({ isActive }) =>
-                    cn(
-                      "flex h-9 items-center gap-3 rounded-md px-3 text-sm transition-colors",
-                      isActive
-                        ? "bg-accent text-accent-foreground font-medium"
-                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+          <nav className="flex flex-1 flex-col gap-4 overflow-y-auto p-2 pt-3">
+            {NAV_GROUPS.map((group) => (
+              <div key={group.label}>
+                {!collapsed && (
+                  <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    {group.label}
+                  </p>
+                )}
+                <div className="flex flex-col gap-0.5">
+                  {group.items.map(({ to, icon: Icon, label }) =>
+                    collapsed ? (
+                      <Tooltip key={to}>
+                        <TooltipTrigger asChild>
+                          <NavLink
+                            to={to}
+                            className={({ isActive }) =>
+                              cn(
+                                "mx-auto flex h-9 w-9 items-center justify-center rounded-md transition-colors",
+                                isActive
+                                  ? "bg-accent text-accent-foreground font-medium"
+                                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                              )
+                            }
+                          >
+                            <Icon className="h-4 w-4" />
+                          </NavLink>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">{label}</TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      <NavLink
+                        key={to}
+                        to={to}
+                        className={({ isActive }) =>
+                          cn(
+                            "flex h-9 items-center gap-3 rounded-md px-3 text-sm transition-colors",
+                            isActive
+                              ? "bg-accent text-accent-foreground font-medium"
+                              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                          )
+                        }
+                      >
+                        <Icon className="h-4 w-4 shrink-0" />
+                        {label}
+                      </NavLink>
                     )
-                  }
-                >
-                  <Icon className="h-4 w-4 shrink-0" />
-                  {label}
-                </NavLink>
-              )
-            )}
+                  )}
+                </div>
+              </div>
+            ))}
           </nav>
 
           {/* User */}
@@ -116,7 +180,7 @@ export default function Layout() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-9 w-9 mx-auto flex"
+                    className="mx-auto flex h-9 w-9"
                     onClick={handleLogout}
                   >
                     <LogOut className="h-4 w-4" />
@@ -130,8 +194,12 @@ export default function Layout() {
                   <AvatarFallback className="text-xs">{initials}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-1 flex-col overflow-hidden">
-                  <span className="truncate text-sm font-medium leading-none">{user?.name}</span>
-                  <span className="truncate text-xs text-muted-foreground">{user?.email}</span>
+                  <span className="truncate text-sm font-medium leading-none">
+                    {user?.name}
+                  </span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {user?.email}
+                  </span>
                 </div>
                 <Button
                   variant="ghost"

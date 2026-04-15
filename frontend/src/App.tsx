@@ -6,13 +6,19 @@ import Layout from "@/components/Layout";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
-import Dashboard from "@/pages/Dashboard";
-import Clients from "@/pages/Clients";
-import Proposals from "@/pages/Proposals";
-import Contracts from "@/pages/Contracts";
-import Invoices from "@/pages/Invoices";
-import Schedule from "@/pages/Schedule";
 import VerifyEmail from "@/pages/VerifyEmail";
+import Dashboard from "@/pages/Dashboard";
+import Pipeline from "@/pages/Pipeline";
+import Contacts from "@/pages/Contacts";
+import Deadlines from "@/pages/Deadlines";
+import Questions from "@/pages/Questions";
+import Firms from "@/pages/Firms";
+import GPA from "@/pages/GPA";
+import Events from "@/pages/Events";
+import Market from "@/pages/Market";
+import News from "@/pages/News";
+import Jobs from "@/pages/Jobs";
+import Community from "@/pages/Community";
 
 export default function App() {
   return (
@@ -27,11 +33,17 @@ export default function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/clients" element={<Clients />} />
-              <Route path="/proposals" element={<Proposals />} />
-              <Route path="/contracts" element={<Contracts />} />
-              <Route path="/invoices" element={<Invoices />} />
-              <Route path="/schedule" element={<Schedule />} />
+              <Route path="/pipeline" element={<Pipeline />} />
+              <Route path="/contacts" element={<Contacts />} />
+              <Route path="/deadlines" element={<Deadlines />} />
+              <Route path="/questions" element={<Questions />} />
+              <Route path="/firms" element={<Firms />} />
+              <Route path="/gpa" element={<GPA />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="/market" element={<Market />} />
+              <Route path="/news" element={<News />} />
+              <Route path="/jobs" element={<Jobs />} />
+              <Route path="/community" element={<Community />} />
             </Route>
           </Route>
 
