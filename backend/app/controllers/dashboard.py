@@ -1,14 +1,16 @@
-from datetime import datetime
-
+from datetime import date, timedelta
 from fastapi import APIRouter, Depends
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from ..database import get_db
-from ..models.booking import Booking
-from ..models.contract import Contract
-from ..models.invoice import Invoice
-from ..models.proposal import Proposal
+from ..models.application import Application
+from ..models.contact import Contact
+from ..models.course import Course
+from ..models.market_snapshot import MarketSnapshot
+from ..models.news_article import NewsArticle
+from ..models.recruiting_deadline import RecruitingDeadline
+from ..models.recruiting_event import RecruitingEvent
 from ..models.user import User
 from ..schemas.dashboard import DashboardStats
 from ..services.auth import get_current_user
@@ -18,56 +20,115 @@ router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 
 @router.get("/", response_model=DashboardStats)
 def get_dashboard(
-    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
-    uid = current_user.id
+    # Pipeline stats
+    apps = db.query(Application).filter(Application.user_id == current_user.id).all()
+    total = len(apps)
+    active = len([a for a in apps if a.stage not in ["Rejected", "Withdrawn"]])
+    offers = len([a for a in apps if a.stage == "Offer"])
 
-    active_proposals = (
-        db.query(func.count(Proposal.id))
+    # Contacts count
+    contacts_count = db.query(Contact).filter(Contact.user_id == current_user.id).count()
+
+    # Upcoming deadlines (next 7 days) from global recruiting calendar
+    today = date.today()
+    week = today + timedelta(days=7)
+    deadlines = (
+        db.query(RecruitingDeadline)
         .filter(
-            Proposal.user_id == uid,
-            Proposal.status.in_(["DRAFT", "SENT", "VIEWED"]),
+            RecruitingDeadline.application_deadline >= today,
+            RecruitingDeadline.application_deadline <= week,
         )
-        .scalar()
-        or 0
+        .order_by(RecruitingDeadline.application_deadline)
+        .limit(5)
+        .all()
     )
 
-    unsigned_contracts = (
-        db.query(func.count(Contract.id))
-        .filter(
-            Contract.user_id == uid,
-            Contract.status != "SIGNED",
-        )
-        .scalar()
-        or 0
-    )
-
-    outstanding_amount = (
-        db.query(func.coalesce(func.sum(Invoice.total), 0.0))
-        .filter(
-            Invoice.user_id == uid,
-            Invoice.status.in_(["SENT", "VIEWED", "PARTIAL", "OVERDUE"]),
-        )
-        .scalar()
-        or 0.0
-    )
-
+    # Upcoming events (next 7 days)
+    from datetime import datetime
     now = datetime.utcnow()
-    upcoming_calls = (
-        db.query(func.count(Booking.id))
+    week_dt = now + timedelta(days=7)
+    events = (
+        db.query(RecruitingEvent)
         .filter(
-            Booking.user_id == uid,
-            Booking.status == "CONFIRMED",
-            Booking.start_at >= now,
+            (RecruitingEvent.user_id == current_user.id) | (RecruitingEvent.is_public == True),  # noqa: E712
+            RecruitingEvent.date >= now,
+            RecruitingEvent.date <= week_dt,
         )
-        .scalar()
-        or 0
+        .order_by(RecruitingEvent.date)
+        .limit(5)
+        .all()
     )
+
+    # GPA
+    courses = (
+        db.query(Course)
+        .filter(Course.user_id == current_user.id, Course.grade_point.isnot(None))
+        .all()
+    )
+    gpa = None
+    if courses:
+        total_credits = sum(c.credits for c in courses)
+        if total_credits > 0:
+            gpa = round(sum(c.grade_point * c.credits for c in courses) / total_credits, 2)
+
+    # Market data — latest snapshot
+    latest_date = db.query(func.max(MarketSnapshot.snapshot_date)).scalar()
+    market = []
+    if latest_date:
+        snaps = (
+            db.query(MarketSnapshot)
+            .filter(
+                MarketSnapshot.snapshot_date == latest_date,
+                MarketSnapshot.symbol.in_(["^GSPTSE", "^GSPC", "TD.TO", "RY.TO"]),
+            )
+            .all()
+        )
+        market = [
+            {
+                "symbol": s.symbol,
+                "name": s.name,
+                "price": s.price,
+                "change_pct": s.change_pct,
+            }
+            for s in snaps
+        ]
+
+    # Recent news
+    news_items = (
+        db.query(NewsArticle)
+        .order_by(NewsArticle.published_at.desc().nullslast())
+        .limit(3)
+        .all()
+    )
+    news = [{"title": n.title, "source": n.source, "url": n.url} for n in news_items]
 
     return DashboardStats(
-        active_proposals=active_proposals,
-        unsigned_contracts=unsigned_contracts,
-        outstanding_amount=float(outstanding_amount),
-        upcoming_calls=upcoming_calls,
+        total_applications=total,
+        active_applications=active,
+        offers_count=offers,
+        contacts_count=contacts_count,
+        upcoming_deadlines=[
+            {
+                "firm": d.firm_name,
+                "role": d.role,
+                "deadline": str(d.application_deadline),
+            }
+            for d in deadlines
+        ],
+        upcoming_events=[
+            {
+                "title": e.title,
+                "firm": e.firm_name,
+                "date": str(e.date),
+                "type": e.event_type,
+            }
+            for e in events
+        ],
+        gpa=gpa,
+        courses_count=len(courses),
+        market_summary=market,
+        recent_news=news,
     )

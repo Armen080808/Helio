@@ -4,37 +4,57 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
-from .database import init_db
-from .controllers import auth, clients, proposals, contracts, invoices, bookings, dashboard
+from .database import init_db, SessionLocal
+from .scheduler import start_scheduler, stop_scheduler
+from .seeds.runner import seed_all
+from .controllers import (
+    auth, firms, pipeline, contacts, deadlines, questions,
+    prep, gpa, events, market, news, jobs, community, dashboard,
+)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Init DB tables
     init_db()
+    # Seed data
+    db = SessionLocal()
+    try:
+        seed_all(db)
+    finally:
+        db.close()
+    # Start background scheduler
+    start_scheduler()
     yield
+    stop_scheduler()
 
 
-app = FastAPI(title="Helio API", lifespan=lifespan)
+app = FastAPI(title="alyo API — UofT Finance Platform", lifespan=lifespan)
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_url, "http://localhost:5173"],
+    allow_origins=[settings.frontend_url, "http://localhost:5173", "http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Routers
 app.include_router(auth.router)
-app.include_router(clients.router)
-app.include_router(proposals.router)
-app.include_router(contracts.router)
-app.include_router(invoices.router)
-app.include_router(bookings.router)
+app.include_router(firms.router)
+app.include_router(pipeline.router)
+app.include_router(contacts.router)
+app.include_router(deadlines.router)
+app.include_router(questions.router)
+app.include_router(prep.router)
+app.include_router(gpa.router)
+app.include_router(events.router)
+app.include_router(market.router)
+app.include_router(news.router)
+app.include_router(jobs.router)
+app.include_router(community.router)
 app.include_router(dashboard.router)
 
 
 @app.get("/", tags=["health"])
-def health_check():
-    return {"status": "ok"}
+def health():
+    return {"status": "ok", "app": "alyo", "version": "2.0"}

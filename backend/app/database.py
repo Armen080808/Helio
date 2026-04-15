@@ -19,5 +19,9 @@ def get_db():
 
 def init_db():
     # Import all models so Base picks them up before create_all
-    from .models import user, client, proposal, contract, invoice, booking, waitlist  # noqa: F401
+    from .models import (  # noqa: F401
+        user, firm, application, contact, recruiting_deadline,
+        interview_question, interview_prep, course, recruiting_event,
+        market_snapshot, news_article, job_posting, interview_review, offer_report,
+    )
     Base.metadata.create_all(bind=engine)
