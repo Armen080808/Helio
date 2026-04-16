@@ -52,13 +52,22 @@ def seed_questions(db: Session):
 
 
 def seed_news(db: Session):
-    existing_urls = {n.url for n in db.query(NewsArticle).all()}
-    added = 0
+    # Build a title→row map so we can update stale URLs in-place
+    existing_by_title = {n.title: n for n in db.query(NewsArticle).all()}
+    existing_urls = {n.url for n in existing_by_title.values()}
+    added = updated = 0
     for item in NEWS_ARTICLES:
-        if item["url"] not in existing_urls:
-            pub = item.get("published_at")
-            if pub and hasattr(pub, "year"):
-                pub = datetime(pub.year, pub.month, pub.day, 12, 0, 0)
+        pub = item.get("published_at")
+        if pub and hasattr(pub, "year"):
+            pub = datetime(pub.year, pub.month, pub.day, 12, 0, 0)
+        if item["url"] in existing_urls:
+            continue  # already correct
+        if item["title"] in existing_by_title:
+            # Old fake URL stored under same title — update it
+            row = existing_by_title[item["title"]]
+            row.url = item["url"]
+            updated += 1
+        else:
             db.add(NewsArticle(
                 title=item["title"],
                 url=item["url"],
@@ -69,4 +78,4 @@ def seed_news(db: Session):
             ))
             added += 1
     db.commit()
-    print(f"[SEED] News: added {added}")
+    print(f"[SEED] News: added {added}, url-fixed {updated}")
