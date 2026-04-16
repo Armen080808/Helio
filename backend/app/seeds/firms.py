@@ -335,4 +335,541 @@ FIRMS = [
             "Less intense recruiting."
         ),
     },
+    # ── More US Banks ──────────────────────────────────────────────────
+    {
+        "name": "Citi",
+        "type": "IB",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Citigroup's Canadian investment banking division. Strong in capital markets, "
+            "emerging markets, and global M&A advisory."
+        ),
+        "website": "https://www.citi.com/icg",
+        "avg_gpa_requirement": 3.7,
+        "notes": (
+            "Smaller Toronto team than Goldman/JPM. Good for EM exposure. "
+            "Recruiting via campus events and HireVue. Often overlooked — less competition."
+        ),
+    },
+    {
+        "name": "Deutsche Bank",
+        "type": "IB",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "German global investment bank with Toronto IBD presence. "
+            "Strong in leveraged finance and fixed income."
+        ),
+        "website": "https://www.db.com",
+        "avg_gpa_requirement": 3.6,
+        "notes": (
+            "Leaner Canadian team. Good for leveraged finance interest. "
+            "Less brand recognition in Canada vs. US BBs."
+        ),
+    },
+    {
+        "name": "UBS",
+        "type": "IB",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Swiss global bank. UBS absorbed Credit Suisse in 2023. "
+            "Strong wealth management and global M&A advisory."
+        ),
+        "website": "https://www.ubs.com",
+        "avg_gpa_requirement": 3.7,
+        "notes": (
+            "Post-Credit Suisse merger created enlarged platform. "
+            "Strong in wealth management for HNW clients. Unique combination of WM + IB exposure."
+        ),
+    },
+    {
+        "name": "Wells Fargo Securities",
+        "type": "IB",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Wells Fargo's investment banking arm. Strong in US mid-market M&A, "
+            "leveraged finance, and equity capital markets."
+        ),
+        "website": "https://www.wellsfargo.com/com/financing/investment-banking",
+        "avg_gpa_requirement": 3.6,
+        "notes": (
+            "More US-focused. Good if targeting US banking post-Canada. "
+            "Less competitive than Goldman/JPM for Bay Street."
+        ),
+    },
+    {
+        "name": "BofA Securities",
+        "type": "IB",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Bank of America's investment banking and capital markets division. "
+            "Large global platform with strong M&A and ECM capability."
+        ),
+        "website": "https://business.bofa.com/en-us/content/investment-banking.html",
+        "avg_gpa_requirement": 3.7,
+        "notes": (
+            "Smaller Toronto presence. Apply to US offices for larger pipeline. "
+            "Strong mergers & acquisitions and leveraged finance globally."
+        ),
+    },
+    # ── Mid-Market & Canadian Boutiques ────────────────────────────────
+    {
+        "name": "Canaccord Genuity",
+        "type": "IB",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Canadian independent investment bank and wealth management firm. "
+            "Strong in small/mid-cap ECM, particularly mining, cannabis, and tech."
+        ),
+        "website": "https://www.canaccordgenuity.com",
+        "avg_gpa_requirement": 3.3,
+        "notes": (
+            "Good entry-level IB for smaller deals. Strong mining/resource coverage. "
+            "Less structured program than Big 5 but excellent deal exposure early in career."
+        ),
+    },
+    {
+        "name": "Peters & Co",
+        "type": "IB",
+        "headquarters": "Calgary, AB",
+        "description": (
+            "Independent energy-focused investment bank. Canada's leading oil & gas boutique. "
+            "Strong in upstream M&A and ECM for E&P companies."
+        ),
+        "website": "https://www.petersco.com",
+        "avg_gpa_requirement": 3.5,
+        "notes": (
+            "Best energy boutique in Canada. Strong analyst program. "
+            "Must demonstrate genuine interest in energy sector. Calgary-based."
+        ),
+    },
+    {
+        "name": "Greenhill & Co",
+        "type": "IB",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Independent advisory firm. Pure-play M&A and restructuring advisory. "
+            "Strong Canadian presence relative to size."
+        ),
+        "website": "https://www.greenhill.com",
+        "avg_gpa_requirement": 3.7,
+        "notes": (
+            "Pure advisory boutique. Smaller team = more deal exposure per analyst. "
+            "Acquired by Mizuho in 2023 — transitioning."
+        ),
+    },
+    {
+        "name": "Eight Capital",
+        "type": "IB",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Canadian independent investment dealer. Focused on growth companies in tech, "
+            "life sciences, and cannabis sectors."
+        ),
+        "website": "https://www.eightcapital.com",
+        "avg_gpa_requirement": 3.2,
+        "notes": (
+            "Good for early-stage deal exposure. Less prestigious than Big 5 but "
+            "excellent for small-cap ECM experience."
+        ),
+    },
+    {
+        "name": "Blair Franklin Capital Partners",
+        "type": "IB",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Canadian independent advisory firm focused on M&A and restructuring. "
+            "Strong in mid-market Canadian deals."
+        ),
+        "website": "https://www.blairfranklin.com",
+        "avg_gpa_requirement": 3.5,
+        "notes": (
+            "Small team, high exposure. Good for M&A advisory without Big 5 competition. "
+            "Boutique culture — very relationship-driven."
+        ),
+    },
+    # ── Private Equity ─────────────────────────────────────────────────
+    {
+        "name": "Blackstone",
+        "type": "PE",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "World's largest alternative asset manager ($1T+ AUM). "
+            "Invests in PE, real estate, credit, infrastructure."
+        ),
+        "website": "https://www.blackstone.com",
+        "avg_gpa_requirement": 3.9,
+        "notes": (
+            "Very limited Toronto hiring. Most recruiting for NY/London offices. "
+            "Typically hires post-IB analysts. Extremely competitive globally."
+        ),
+    },
+    {
+        "name": "KKR",
+        "type": "PE",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Global investment firm with $500B+ AUM. Active in Canadian infrastructure, "
+            "PE, and real estate."
+        ),
+        "website": "https://www.kkr.com",
+        "avg_gpa_requirement": 3.9,
+        "notes": (
+            "Growing Canadian presence. KKR has invested in Canadian infrastructure and real estate. "
+            "Usually hires from BB IB analysts. Extremely competitive."
+        ),
+    },
+    {
+        "name": "Apollo Global Management",
+        "type": "PE",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Alternative investment firm with $600B+ AUM. Known for credit investing, "
+            "private equity, and real assets."
+        ),
+        "website": "https://www.apollo.com",
+        "avg_gpa_requirement": 3.9,
+        "notes": (
+            "Strong credit/private debt platform. Apollo's insurance arm (Athene) drives credit AUM. "
+            "Interviews are highly technical — LBO model + credit analysis."
+        ),
+    },
+    {
+        "name": "Torquest Partners",
+        "type": "PE",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Canadian mid-market private equity firm. Focuses on control investments in "
+            "profitable Canadian businesses with $15-200M EBITDA."
+        ),
+        "website": "https://www.torquest.com",
+        "avg_gpa_requirement": 3.7,
+        "notes": (
+            "Purely Canadian focus — great for students who want to stay in Canada. "
+            "Strong analyst program. Mid-market = broader exposure per deal."
+        ),
+    },
+    {
+        "name": "Novacap",
+        "type": "PE",
+        "headquarters": "Montreal, QC",
+        "description": (
+            "Canadian PE firm focused on TMT, industries, and financial services. "
+            "One of Canada's largest independent PE funds."
+        ),
+        "website": "https://www.novacap.ca",
+        "avg_gpa_requirement": 3.6,
+        "notes": (
+            "Bilingual office (French/English). Good for students interested in Quebec/Canadian mid-market. "
+            "Strong TMT and financial services portfolio."
+        ),
+    },
+    {
+        "name": "Kensington Capital Partners",
+        "type": "PE",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Canadian private equity and venture capital fund manager. "
+            "Invests in PE, infrastructure, and venture funds."
+        ),
+        "website": "https://www.kensingtoncapital.ca",
+        "avg_gpa_requirement": 3.5,
+        "notes": (
+            "Fund-of-funds model as well as direct PE. Less well-known but good exposure. "
+            "Good for students interested in private markets broadly."
+        ),
+    },
+    # ── Asset Management ───────────────────────────────────────────────
+    {
+        "name": "BlackRock",
+        "type": "AM",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "World's largest asset manager ($10T+ AUM). "
+            "Known for iShares ETFs, Aladdin risk platform, and fundamental active strategies."
+        ),
+        "website": "https://www.blackrock.com",
+        "avg_gpa_requirement": 3.7,
+        "notes": (
+            "Summer analyst program in Toronto focuses on institutional sales, "
+            "portfolio analytics (Aladdin), and market risk. Quantitative skills valued."
+        ),
+    },
+    {
+        "name": "Fidelity Canada",
+        "type": "AM",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Canadian division of Fidelity Investments. Large mutual fund platform "
+            "with fundamental equity and fixed income strategies."
+        ),
+        "website": "https://www.fidelity.ca",
+        "avg_gpa_requirement": 3.5,
+        "notes": (
+            "Good for equity research exposure. Fidelity's investment culture is "
+            "research-intensive. Strong culture of developing internal talent."
+        ),
+    },
+    {
+        "name": "AGF Management",
+        "type": "AM",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Canadian asset management firm with $36B+ AUM. Offers mutual funds, "
+            "ETFs, and institutional mandates."
+        ),
+        "website": "https://www.agf.com",
+        "avg_gpa_requirement": 3.4,
+        "notes": (
+            "More accessible than CPP/Brookfield. Good for fundamental equity research. "
+            "Smaller team = more responsibility early on."
+        ),
+    },
+    {
+        "name": "CI Financial",
+        "type": "AM",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Canadian wealth and asset management company. $300B+ in client assets. "
+            "Has been acquiring US wealth management firms aggressively."
+        ),
+        "website": "https://www.cifinancial.com",
+        "avg_gpa_requirement": 3.4,
+        "notes": (
+            "Growing US presence through acquisitions. Good for wealth management exposure. "
+            "Less traditional 'quant' focused than CPP or OTPP."
+        ),
+    },
+    {
+        "name": "Ontario Teachers' Pension Plan",
+        "type": "AM",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "One of Canada's largest pension funds ($250B+ AUM). Invests in equities, "
+            "fixed income, private equity, infrastructure, and real estate globally."
+        ),
+        "website": "https://www.otpp.com",
+        "avg_gpa_requirement": 3.8,
+        "notes": (
+            "Prestigious destination alongside CPP and Brookfield. Strong direct investing platform. "
+            "Known for investing in iconic assets (Maple Leaf Sports, Brussels Airport). "
+            "Competitive but slightly less so than CPP. Very strong campus brand."
+        ),
+    },
+    {
+        "name": "HOOPP",
+        "type": "AM",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Healthcare of Ontario Pension Plan. $112B+ AUM. "
+            "Manages pension assets for Ontario healthcare workers."
+        ),
+        "website": "https://hoopp.com",
+        "avg_gpa_requirement": 3.6,
+        "notes": (
+            "Less well-known than OTPP/CPP but excellent WLB and culture. "
+            "Smaller team = broader exposure. Strong in fixed income and real assets."
+        ),
+    },
+    {
+        "name": "Picton Mahoney Asset Management",
+        "type": "AM",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Canadian alternative investment manager focused on absolute return strategies, "
+            "long/short equity, and tactical asset allocation."
+        ),
+        "website": "https://www.pictonmahoney.com",
+        "avg_gpa_requirement": 3.6,
+        "notes": (
+            "Great for students interested in hedge fund strategies within an AM structure. "
+            "Long/short equity focus. Strong quant/analytical culture."
+        ),
+    },
+    {
+        "name": "Burgundy Asset Management",
+        "type": "AM",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Canadian independent value-oriented investment manager. "
+            "Long-only equity for HNW families and institutions."
+        ),
+        "website": "https://www.burgundyasset.com",
+        "avg_gpa_requirement": 3.7,
+        "notes": (
+            "Warren Buffett-style fundamental value investing. Tight-knit team. "
+            "Excellent for long-term investors who love reading annual reports."
+        ),
+    },
+    # ── Consulting — Big 4 Advisory ────────────────────────────────────
+    {
+        "name": "EY-Parthenon",
+        "type": "Consulting",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "EY's strategy consulting arm. Competitor to MBB for corporate strategy mandates. "
+            "Strong in PE due diligence and transaction services."
+        ),
+        "website": "https://www.ey.com/en_ca/strategy-transactions/ey-parthenon",
+        "avg_gpa_requirement": 3.5,
+        "notes": (
+            "Strong PE due diligence work — great bridge between consulting and finance. "
+            "Less prestigious than MBB but growing rapidly. Good stepping stone."
+        ),
+    },
+    {
+        "name": "PwC Strategy& (formerly Booz)",
+        "type": "Consulting",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "PwC's strategy consulting arm (formerly Booz & Company). "
+            "Corporate strategy, operating model, digital transformation."
+        ),
+        "website": "https://www.strategyand.pwc.com",
+        "avg_gpa_requirement": 3.5,
+        "notes": (
+            "More strategic than traditional Big 4. Integrated with PwC's deals and assurance. "
+            "Good for students wanting strategy + finance hybrid work."
+        ),
+    },
+    {
+        "name": "KPMG Deal Advisory",
+        "type": "Consulting",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "KPMG's corporate finance and M&A advisory practice. "
+            "Transaction services, valuations, restructuring."
+        ),
+        "website": "https://home.kpmg/ca/en/home/services/advisory/deal-advisory.html",
+        "avg_gpa_requirement": 3.3,
+        "notes": (
+            "Good for valuation and transaction services experience. "
+            "CA/CFA credential path common. Less competitive than MBB. "
+            "Good entry point for corporate finance roles."
+        ),
+    },
+    {
+        "name": "AlixPartners",
+        "type": "Consulting",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Global consulting firm specializing in turnaround management, "
+            "restructuring, and performance improvement for distressed companies."
+        ),
+        "website": "https://www.alixpartners.com",
+        "avg_gpa_requirement": 3.5,
+        "notes": (
+            "Best restructuring consulting firm. Works alongside Rothschild/Lazard on distressed deals. "
+            "Interesting if you like turnaround/distressed situations. More operational than IB."
+        ),
+    },
+    # ── Venture Capital ────────────────────────────────────────────────
+    {
+        "name": "Georgian Partners",
+        "type": "VC",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Growth equity and venture capital firm. Invests in applied AI "
+            "and machine learning-driven software companies."
+        ),
+        "website": "https://georgian.io",
+        "avg_gpa_requirement": 3.6,
+        "notes": (
+            "Strong tech and ML focus. Good for students interested in VC but with quant/CS background. "
+            "Known for data-driven investment thesis."
+        ),
+    },
+    {
+        "name": "OMERS Ventures",
+        "type": "VC",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Venture arm of OMERS pension fund. Invests in early and growth-stage "
+            "tech companies in North America and Europe."
+        ),
+        "website": "https://www.omersventures.com",
+        "avg_gpa_requirement": 3.5,
+        "notes": (
+            "Patient capital (pension-backed). Good culture. "
+            "Strong Canadian tech ecosystem relationships. "
+            "Good for students interested in tech + finance intersection."
+        ),
+    },
+    {
+        "name": "BDC Capital",
+        "type": "VC",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Venture capital and growth equity arm of BDC (Business Development Bank of Canada). "
+            "Government-backed investor in Canadian startups."
+        ),
+        "website": "https://www.bdc.ca/en/bdc-capital",
+        "avg_gpa_requirement": 3.4,
+        "notes": (
+            "Government mandate = patient capital and Canadian focus. "
+            "Good for students who want VC exposure without fierce private fund competition. "
+            "Accessible entry-level analyst roles."
+        ),
+    },
+    {
+        "name": "Inovia Capital",
+        "type": "VC",
+        "headquarters": "Montreal, QC",
+        "description": (
+            "Leading Canadian early-stage venture capital firm. "
+            "Backed Lightspeed Commerce, Hopper, Breather, and other marquee Canadian startups."
+        ),
+        "website": "https://www.inovia.vc",
+        "avg_gpa_requirement": 3.5,
+        "notes": (
+            "Most prestigious Canadian VC firm. Limited analyst openings. "
+            "Strong portfolio = deal sourcing exposure. Bilingual (Montreal HQ)."
+        ),
+    },
+    # ── Hedge Funds ────────────────────────────────────────────────────
+    {
+        "name": "Citadel",
+        "type": "AM",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "World's top hedge fund ($60B+ AUM). Quantitative and fundamental strategies. "
+            "Toronto office is growing."
+        ),
+        "website": "https://www.citadel.com",
+        "avg_gpa_requirement": 3.9,
+        "notes": (
+            "Most competitive hedge fund in the world. Requires exceptional quant skills. "
+            "Citadel Securities (market making) also recruits separately. "
+            "Summer internship in Toronto is highly coveted."
+        ),
+    },
+    {
+        "name": "Millennium Management",
+        "type": "AM",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Multi-strategy hedge fund with $60B+ AUM. "
+            "Runs hundreds of independent trading pods across strategies."
+        ),
+        "website": "https://www.mlp.com",
+        "avg_gpa_requirement": 3.8,
+        "notes": (
+            "Pod model = high autonomy. Strong quant background needed. "
+            "Recruits from top quantitative programs. Less structured than long-only AM."
+        ),
+    },
+    {
+        "name": "AQR Capital Management",
+        "type": "AM",
+        "headquarters": "Toronto, ON",
+        "description": (
+            "Quantitative global macro and alternative investment firm. "
+            "Pioneered factor investing strategies. $100B+ AUM."
+        ),
+        "website": "https://www.aqr.com",
+        "avg_gpa_requirement": 3.8,
+        "notes": (
+            "Pure quant / systematic. Ideal for students with strong math/stats/CS background. "
+            "AQR's research on factor investing is required reading for any AM candidate."
+        ),
+    },
 ]

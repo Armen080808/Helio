@@ -210,4 +210,165 @@ DEADLINES = [
         ),
         "source_url": "https://www.bain.com/careers/students",
     },
+    # ── More Consulting ──────────────────────────────────────────────
+    {
+        "firm_name": "Oliver Wyman",
+        "role": "Consultant Intern",
+        "type": "Consulting",
+        "cycle": "Summer 2027",
+        "application_open": date(2026, 9, 1),
+        "application_deadline": date(2026, 10, 31),
+        "networking_season_start": date(2026, 8, 15),
+        "notes": (
+            "Finance-focused consulting. Strong FS practice in Toronto. "
+            "Case interview required. Less brand recognition = less competition than MBB."
+        ),
+        "source_url": "https://www.oliverwyman.com/careers/students",
+    },
+    {
+        "firm_name": "EY-Parthenon",
+        "role": "Strategy Analyst Intern",
+        "type": "Consulting",
+        "cycle": "Summer 2027",
+        "application_open": date(2026, 9, 15),
+        "application_deadline": date(2026, 11, 1),
+        "networking_season_start": date(2026, 9, 1),
+        "notes": (
+            "Strong PE due diligence practice. Apply through EY campus portal. "
+            "Good alternative to MBB for finance-focused consulting."
+        ),
+        "source_url": "https://www.ey.com/en_ca/careers/students",
+    },
+    # ── Pension Funds ────────────────────────────────────────────────
+    {
+        "firm_name": "Ontario Teachers' Pension Plan",
+        "role": "Summer Analyst - Investment Management",
+        "type": "AM",
+        "cycle": "Summer 2027",
+        "application_open": date(2026, 11, 1),
+        "application_deadline": date(2027, 1, 31),
+        "networking_season_start": date(2026, 9, 1),
+        "notes": (
+            "Extremely competitive. Network through campus events. "
+            "Strong direct investing — expect case study on a real asset. "
+            "One of Canada's most prestigious internship destinations."
+        ),
+        "source_url": "https://www.otpp.com/en-ca/about/careers",
+    },
+    {
+        "firm_name": "PSP Investments",
+        "role": "Summer Analyst - Private Equity",
+        "type": "PE",
+        "cycle": "Summer 2027",
+        "application_open": date(2026, 11, 15),
+        "application_deadline": date(2027, 1, 20),
+        "networking_season_start": date(2026, 9, 15),
+        "notes": (
+            "Montreal-based. Some Toronto exposure. French preferred but not required. "
+            "Good alternative to OMERS/OTPP for PE aspirants."
+        ),
+        "source_url": "https://www.investpsp.com/en/careers",
+    },
+    # ── Elite Boutiques ──────────────────────────────────────────────
+    {
+        "firm_name": "Lazard",
+        "role": "Summer Analyst - Financial Advisory",
+        "type": "IB",
+        "cycle": "Summer 2027",
+        "application_open": date(2027, 1, 15),
+        "application_deadline": date(2027, 2, 28),
+        "networking_season_start": date(2026, 10, 1),
+        "notes": (
+            "Very small Toronto team. Strong restructuring and M&A. "
+            "Get a referral through networking if possible. "
+            "Almost all advisory — no ECM/DCM."
+        ),
+        "source_url": "https://www.lazard.com/careers/students-graduates",
+    },
+    {
+        "firm_name": "Evercore",
+        "role": "Summer Analyst - Investment Banking",
+        "type": "IB",
+        "cycle": "Summer 2027",
+        "application_open": date(2026, 9, 1),
+        "application_deadline": date(2026, 10, 31),
+        "networking_season_start": date(2026, 8, 1),
+        "notes": (
+            "Apply to US offices (NY) as Canadian presence is limited. "
+            "Extremely competitive. Pure advisory — excellent deal quality."
+        ),
+        "source_url": "https://www.evercore.com/careers",
+    },
+    # ── Networking Events (early-cycle) ─────────────────────────────
+    {
+        "firm_name": "Goldman Sachs",
+        "role": "Insight Program / Off-cycle",
+        "type": "IB",
+        "cycle": "Fall 2026",
+        "application_open": date(2026, 4, 1),
+        "application_deadline": date(2026, 5, 15),
+        "networking_season_start": date(2026, 3, 1),
+        "notes": (
+            "Goldman's Insight Program for first-year students. "
+            "Apply in April for summer program. Good brand exposure before main recruiting."
+        ),
+        "source_url": "https://www.goldmansachs.com/careers/students/programs",
+    },
+    {
+        "firm_name": "TD Securities",
+        "role": "First Year Insight Program",
+        "type": "IB",
+        "cycle": "Summer 2026",
+        "application_open": date(2026, 3, 1),
+        "application_deadline": date(2026, 4, 15),
+        "networking_season_start": date(2026, 2, 15),
+        "notes": (
+            "TD's diversity and insight programs for first-year students. "
+            "Excellent way to build TD relationship early. Apply in March."
+        ),
+        "source_url": "https://jobs.td.com/en-CA/students",
+    },
+    {
+        "firm_name": "RBC Capital Markets",
+        "role": "Diversity in Banking Program",
+        "type": "IB",
+        "cycle": "Summer 2026",
+        "application_open": date(2026, 3, 15),
+        "application_deadline": date(2026, 4, 30),
+        "networking_season_start": date(2026, 3, 1),
+        "notes": (
+            "RBC's first-year diversity program. Great way to get RBC exposure before "
+            "the main SA recruiting cycle. Leads to expedited SA interviews in Year 2."
+        ),
+        "source_url": "https://jobs.rbc.com/ca/en/students",
+    },
+    # ── Asset Management ─────────────────────────────────────────────
+    {
+        "firm_name": "BlackRock",
+        "role": "Summer Analyst - Portfolio Analytics",
+        "type": "AM",
+        "cycle": "Summer 2027",
+        "application_open": date(2026, 9, 1),
+        "application_deadline": date(2026, 10, 31),
+        "networking_season_start": date(2026, 8, 15),
+        "notes": (
+            "Apply via BlackRock campus portal. Aladdin platform knowledge is a plus. "
+            "Good for quant-oriented students. Less traditional finance, more data/risk analytics."
+        ),
+        "source_url": "https://careers.blackrock.com/students",
+    },
+    {
+        "firm_name": "Brookfield Asset Management",
+        "role": "Investment Analyst - Credit",
+        "type": "AM",
+        "cycle": "Summer 2027",
+        "application_open": date(2026, 12, 1),
+        "application_deadline": date(2027, 2, 15),
+        "networking_season_start": date(2026, 9, 1),
+        "notes": (
+            "Brookfield's credit team (separate from real assets team). "
+            "Good alternative application if real assets role is highly competitive."
+        ),
+        "source_url": "https://bam.brookfield.com/careers",
+    },
 ]

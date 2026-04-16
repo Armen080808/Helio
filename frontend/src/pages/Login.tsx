@@ -5,7 +5,19 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Zap } from "lucide-react";
+import { TrendingUp, CheckCircle2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const FEATURES = [
+  "Pipeline tracker for every stage — Wishlist to Offer",
+  "2,400+ curated interview questions with model answers",
+  "180+ Bay Street firms with GPA cutoffs & recruiter contacts",
+];
+
+const QUOTE = {
+  text: "Helio kept my recruiting season organised and my prep sharp. Landed my BB offer and I couldn't have done it without a system this clean.",
+  author: "UofT Commerce '25 · Bulge Bracket IB",
+};
 
 export default function Login() {
   const { login } = useAuth();
@@ -36,77 +48,123 @@ export default function Login() {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      {/* Left panel — hidden on mobile */}
-      <div className="hidden flex-col justify-between bg-zinc-900 p-10 text-white lg:flex">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white">
-            <Zap className="h-4 w-4 text-zinc-900" />
+      {/* ── Left panel ─────────────────────────────────────────────── */}
+      <div className="relative hidden flex-col justify-between overflow-hidden bg-zinc-950 p-10 text-white lg:flex">
+        {/* subtle grid overlay */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              "linear-gradient(hsl(0,0%,100%) 1px,transparent 1px),linear-gradient(90deg,hsl(0,0%,100%) 1px,transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        />
+
+        {/* Brand */}
+        <div className="relative flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white">
+            <TrendingUp className="h-5 w-5 text-zinc-950" />
           </div>
-          <span className="text-lg font-bold">alyo</span>
+          <span className="text-xl font-bold tracking-tight">Helio</span>
         </div>
-        <div>
-          <blockquote className="text-lg font-medium leading-relaxed text-zinc-200">
-            &ldquo;alyo cut my invoicing time in half and made me look way more professional to
-            clients.&rdquo;
+
+        {/* Features */}
+        <div className="relative space-y-8">
+          <div className="space-y-3">
+            {FEATURES.map((f) => (
+              <div key={f} className="flex items-start gap-3">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" />
+                <p className="text-sm leading-relaxed text-zinc-300">{f}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Divider */}
+          <div className="h-px w-12 bg-zinc-700" />
+
+          {/* Quote */}
+          <blockquote className="space-y-3">
+            <p className="text-base font-medium leading-relaxed text-zinc-200">
+              &ldquo;{QUOTE.text}&rdquo;
+            </p>
+            <footer className="text-sm text-zinc-500">— {QUOTE.author}</footer>
           </blockquote>
-          <div className="mt-4 text-sm text-zinc-400">— A happy freelancer</div>
         </div>
-        <div className="text-xs text-zinc-500">© 2026 alyo</div>
+
+        {/* Footer */}
+        <p className="relative text-xs text-zinc-600">© {new Date().getFullYear()} Helio</p>
       </div>
 
-      {/* Right panel — form */}
-      <div className="flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-sm">
-          <div className="mb-2 flex items-center gap-2 lg:hidden">
-            <Zap className="h-5 w-5" />
-            <span className="font-bold">alyo</span>
-          </div>
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Sign in to your alyo account</p>
+      {/* ── Right panel ────────────────────────────────────────────── */}
+      <div className="flex items-center justify-center bg-background px-6 py-12">
+        <div className="w-full max-w-sm space-y-8">
+          {/* Mobile brand */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground">
+              <TrendingUp className="h-4 w-4 text-background" />
+            </div>
+            <span className="font-bold">Helio</span>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="email">Email</Label>
+          {/* Heading */}
+          <div className="space-y-1.5">
+            <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
+            <p className="text-sm text-muted-foreground">
+              Sign in to your Helio account to continue
+            </p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="email">Email address</Label>
               <Input
                 id="email"
                 type="email"
                 required
                 autoFocus
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
+                placeholder="you@mail.utoronto.ca"
+                className={cn(error && "border-destructive focus-visible:ring-destructive")}
               />
             </div>
-            <div className="flex flex-col gap-1.5">
+
+            <div className="space-y-1.5">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
                 required
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
+                className={cn(error && "border-destructive focus-visible:ring-destructive")}
               />
             </div>
+
             {error && (
-              <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              <div className="rounded-md border border-destructive/30 bg-destructive/8 px-3 py-2.5 text-sm text-destructive">
                 {error}
-              </p>
+              </div>
             )}
-            <Button type="submit" disabled={loading} className="mt-1 w-full">
-              {loading ? "Signing in..." : "Sign in"}
+
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? "Signing in…" : "Sign in"}
             </Button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-muted-foreground">
+          {/* Footer */}
+          <p className="text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
             <Link
               to="/register"
-              className="font-medium text-foreground underline-offset-4 hover:underline"
+              className="font-semibold text-foreground underline-offset-4 hover:underline"
             >
-              Sign up
+              Create one
             </Link>
           </p>
         </div>
