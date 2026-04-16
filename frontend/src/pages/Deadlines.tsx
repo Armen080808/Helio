@@ -71,7 +71,7 @@ export default function Deadlines() {
       : deadlines.filter((d) => d.cycle === activeCycle);
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6 p-4 md:p-6">
       {/* Header */}
       <div className="flex items-start gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
@@ -80,7 +80,7 @@ export default function Deadlines() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Recruiting Calendar</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Bay Street &amp; Wall Street application timelines
+            Bay Street application timelines
           </p>
         </div>
       </div>
@@ -111,7 +111,7 @@ export default function Deadlines() {
 
       {/* Table */}
       {!error && (
-        <div className="rounded-lg border bg-card">
+        <div className="rounded-lg border bg-card overflow-hidden overflow-x-auto">
           {loading ? (
             <div className="flex flex-col gap-3 p-6">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -129,14 +129,14 @@ export default function Deadlines() {
               </p>
             </div>
           ) : (
-            <Table>
+            <Table className="min-w-[560px]">
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="font-semibold">Firm</TableHead>
                   <TableHead className="font-semibold">Role</TableHead>
-                  <TableHead className="font-semibold">Type</TableHead>
-                  <TableHead className="font-semibold">App Opens</TableHead>
-                  <TableHead className="font-semibold">App Deadline</TableHead>
+                  <TableHead className="hidden sm:table-cell font-semibold">Type</TableHead>
+                  <TableHead className="hidden md:table-cell font-semibold">App Opens</TableHead>
+                  <TableHead className="font-semibold">Deadline</TableHead>
                   <TableHead className="font-semibold">Status</TableHead>
                   <TableHead className="w-10" />
                 </TableRow>
@@ -147,13 +147,13 @@ export default function Deadlines() {
                   return (
                     <TableRow key={row.id}>
                       <TableCell className="font-medium">{row.firm_name}</TableCell>
-                      <TableCell className="text-muted-foreground">{row.role}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-muted-foreground text-sm">{row.role}</TableCell>
+                      <TableCell className="hidden sm:table-cell">
                         <Badge variant="outline" className="text-xs">
                           {row.type}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
+                      <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
                         {formatDate(row.application_open)}
                       </TableCell>
                       <TableCell className="text-sm font-medium">

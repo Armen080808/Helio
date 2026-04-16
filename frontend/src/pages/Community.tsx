@@ -491,15 +491,15 @@ function ReviewsTab() {
           </p>
         </div>
       ) : (
-        <div className="rounded-lg border overflow-hidden">
-          <Table>
+        <div className="rounded-lg border overflow-hidden overflow-x-auto">
+          <Table className="min-w-[540px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Firm</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Outcome</TableHead>
-                <TableHead>Difficulty</TableHead>
-                <TableHead className="max-w-[220px]">Tips</TableHead>
+                <TableHead className="hidden sm:table-cell">Difficulty</TableHead>
+                <TableHead className="hidden md:table-cell max-w-[220px]">Tips</TableHead>
                 <TableHead>Date</TableHead>
               </TableRow>
             </TableHeader>
@@ -517,14 +517,14 @@ function ReviewsTab() {
                       <span className="text-muted-foreground text-xs">—</span>
                     )}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden sm:table-cell">
                     {r.difficulty ? (
                       <StarRating rating={r.difficulty} />
                     ) : (
                       <span className="text-muted-foreground text-xs">—</span>
                     )}
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground max-w-[220px]">
+                  <TableCell className="hidden md:table-cell text-sm text-muted-foreground max-w-[220px]">
                     <span className="line-clamp-2">{r.tips ?? "—"}</span>
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
@@ -580,16 +580,16 @@ function OffersTab() {
           </p>
         </div>
       ) : (
-        <div className="rounded-lg border overflow-hidden">
-          <Table>
+        <div className="rounded-lg border overflow-hidden overflow-x-auto">
+          <Table className="min-w-[580px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Firm</TableHead>
                 <TableHead>Role</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Base Salary</TableHead>
-                <TableHead>Signing Bonus</TableHead>
-                <TableHead>Cycle</TableHead>
+                <TableHead className="hidden sm:table-cell">Type</TableHead>
+                <TableHead>Base</TableHead>
+                <TableHead className="hidden md:table-cell">Signing</TableHead>
+                <TableHead className="hidden sm:table-cell">Cycle</TableHead>
                 <TableHead>Date</TableHead>
               </TableRow>
             </TableHeader>
@@ -598,7 +598,7 @@ function OffersTab() {
                 <TableRow key={o.id}>
                   <TableCell className="font-medium">{o.firm_name}</TableCell>
                   <TableCell className="text-sm">{o.role}</TableCell>
-                  <TableCell>
+                  <TableCell className="hidden sm:table-cell">
                     {o.type ? (
                       <Badge variant="outline" className={typeBadgeClass(o.type)}>
                         {o.type}
@@ -610,10 +610,10 @@ function OffersTab() {
                   <TableCell className="text-sm">
                     {o.base_salary != null ? formatSalary(o.base_salary) : "—"}
                   </TableCell>
-                  <TableCell className="text-sm">
+                  <TableCell className="hidden md:table-cell text-sm">
                     {o.signing_bonus != null ? formatSalary(o.signing_bonus) : "—"}
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
                     {o.cycle ?? "—"}
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
@@ -637,7 +637,7 @@ export default function Community() {
   const [activeTab, setActiveTab] = useState<Tab>("reviews");
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6 p-4 md:p-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Community Insights</h1>
         <p className="text-sm text-muted-foreground mt-1">

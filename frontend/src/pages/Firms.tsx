@@ -87,12 +87,12 @@ export default function Firms() {
     activeType === "All" ? firms : firms.filter((f) => f.type === activeType);
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6 p-4 md:p-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Firm Directory</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          27 top Bay Street &amp; Wall Street employers
+          Bay Street employer directory
         </p>
       </div>
 

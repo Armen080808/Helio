@@ -404,17 +404,20 @@ QUESTIONS = [
         "category": "Technical",
         "subcategory": "Canadian Markets",
         "difficulty": "Hard",
-        "question": "How does Bay Street recruiting differ from Wall Street recruiting?",
+        "question": "Walk me through Bay Street IBD recruiting — timeline, process, and what banks look for.",
         "answer": (
-            "Key differences: (1) Timeline: Bay Street (Big 5 banks) recruit January-February for summer. "
-            "Wall Street (Goldman, MS, JPM) recruit September-November — much earlier. "
-            "(2) Size: US banks have hundreds of summer analysts globally. "
-            "Canadian Big 5 hire 5-20 per group. "
-            "(3) Process: Bay Street = more networking-dependent, warmer culture. "
-            "Wall Street = more formalized HireVue + superday. "
-            "(4) Compensation: US banks pay ~$110-130K USD all-in for SA. "
-            "Canadian Big 5 ~$70-90K CAD. "
-            "(5) Exit ops: Both lead to PE/AM but US gives access to larger global funds."
+            "Timeline: Big 5 banks (TD, RBC, BMO, Scotia, CIBC) recruit January-February for summer. "
+            "National Bank and boutiques (Lazard, Evercore, Rothschild) recruit slightly later or on a rolling basis. "
+            "Process: (1) Networking — coffee chats with analysts/associates from Sept-Dec are critical. "
+            "Cold emails, LinkedIn, alumni events (RCFA Bay Street Day). "
+            "(2) Resume drop — Jan, typically through firm portals. GPA cutoff ~3.0-3.5 depending on firm. "
+            "(3) First-round interview — technical + fit; video or phone. "
+            "(4) Superday — in-person or video with 4-6 back-to-back interviews. "
+            "What banks look for: Financial modelling skills (DCF, comps), market awareness, "
+            "deal knowledge (read Globe & Mail, Financial Post daily), genuine interest in the group's coverage, "
+            "and demonstrated networking effort. "
+            "Comp: Big 5 summer analysts earn ~$70-90K CAD annualized all-in. "
+            "Exit ops: Strong path to PE (Onex, Brookfield), credit funds, and Corp Dev."
         ),
     },
     {

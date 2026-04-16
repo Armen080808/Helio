@@ -45,7 +45,7 @@ function sourceBadgeClass(source: string): string {
 
 function JobCard({ job }: { job: JobPosting }) {
   return (
-    <div className="flex items-start justify-between gap-4 py-4 border-b last:border-b-0">
+    <div className="flex flex-col gap-3 py-4 border-b last:border-b-0 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
       <div className="flex-1 min-w-0">
         <div className="flex flex-wrap items-center gap-2 mb-1">
           <span className="font-semibold text-sm">{job.company}</span>
@@ -77,7 +77,7 @@ function JobCard({ job }: { job: JobPosting }) {
       <Button
         size="sm"
         variant="outline"
-        className="shrink-0 gap-1.5"
+        className="shrink-0 gap-1.5 w-full sm:w-auto"
         onClick={() => window.open(job.url, "_blank", "noopener,noreferrer")}
       >
         <ExternalLink className="h-3 w-3" />
@@ -123,7 +123,7 @@ export default function Jobs() {
         );
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6 p-4 md:p-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Job Board</h1>
         <p className="text-sm text-muted-foreground mt-1">

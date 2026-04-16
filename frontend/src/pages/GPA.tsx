@@ -155,7 +155,7 @@ export default function GPA() {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6 p-4 md:p-6">
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
@@ -366,58 +366,60 @@ export default function GPA() {
               </p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="font-semibold">Code</TableHead>
-                  <TableHead className="font-semibold">Name</TableHead>
-                  <TableHead className="font-semibold">Credits</TableHead>
-                  <TableHead className="font-semibold">Semester</TableHead>
-                  <TableHead className="font-semibold">Grade</TableHead>
-                  <TableHead className="font-semibold">GPA Points</TableHead>
-                  <TableHead className="w-10" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {courses.map((course) => (
-                  <TableRow key={course.id}>
-                    <TableCell className="font-mono font-medium text-sm">
-                      {course.code}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {course.name ?? <span className="text-muted-foreground/40">—</span>}
-                    </TableCell>
-                    <TableCell className="tabular-nums">{course.credits}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {course.semester ?? <span className="text-muted-foreground/40">—</span>}
-                    </TableCell>
-                    <TableCell>
-                      {course.grade ? (
-                        <Badge variant="outline" className="font-mono">
-                          {course.grade}
-                        </Badge>
-                      ) : (
-                        <span className="text-muted-foreground/40">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="tabular-nums font-medium">
-                      {course.grade_point != null
-                        ? course.grade_point.toFixed(1)
-                        : <span className="text-muted-foreground/40">—</span>}
-                    </TableCell>
-                    <TableCell>
-                      <button
-                        onClick={() => handleDelete(course.id)}
-                        className="text-muted-foreground hover:text-destructive transition-colors"
-                        title="Delete course"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table className="min-w-[460px]">
+                <TableHeader>
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="font-semibold">Code</TableHead>
+                    <TableHead className="hidden sm:table-cell font-semibold">Name</TableHead>
+                    <TableHead className="font-semibold">Credits</TableHead>
+                    <TableHead className="hidden md:table-cell font-semibold">Semester</TableHead>
+                    <TableHead className="font-semibold">Grade</TableHead>
+                    <TableHead className="font-semibold">Points</TableHead>
+                    <TableHead className="w-10" />
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {courses.map((course) => (
+                    <TableRow key={course.id}>
+                      <TableCell className="font-mono font-medium text-sm">
+                        {course.code}
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell text-muted-foreground">
+                        {course.name ?? <span className="text-muted-foreground/40">—</span>}
+                      </TableCell>
+                      <TableCell className="tabular-nums">{course.credits}</TableCell>
+                      <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                        {course.semester ?? <span className="text-muted-foreground/40">—</span>}
+                      </TableCell>
+                      <TableCell>
+                        {course.grade ? (
+                          <Badge variant="outline" className="font-mono">
+                            {course.grade}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground/40">—</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="tabular-nums font-medium">
+                        {course.grade_point != null
+                          ? course.grade_point.toFixed(1)
+                          : <span className="text-muted-foreground/40">—</span>}
+                      </TableCell>
+                      <TableCell>
+                        <button
+                          onClick={() => handleDelete(course.id)}
+                          className="text-muted-foreground hover:text-destructive transition-colors"
+                          title="Delete course"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </div>
       )}

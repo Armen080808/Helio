@@ -272,7 +272,7 @@ export default function Contacts() {
   return (
     <div className="flex flex-col h-full">
       {/* Page header */}
-      <div className="border-b bg-background px-6 py-4 flex items-center justify-between flex-shrink-0">
+      <div className="border-b bg-background px-4 md:px-6 py-4 flex items-center justify-between flex-shrink-0">
         <div>
           <h1 className="text-xl font-semibold">Contacts</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
@@ -283,7 +283,7 @@ export default function Contacts() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 p-6 flex flex-col gap-4">
+      <div className="flex-1 p-4 md:p-6 flex flex-col gap-4">
         {/* Warmth filter */}
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground mr-1">Filter:</span>
@@ -316,16 +316,16 @@ export default function Contacts() {
             </p>
           </div>
         ) : (
-          <div className="rounded-md border overflow-hidden">
-            <Table>
+          <div className="rounded-md border overflow-hidden overflow-x-auto">
+            <Table className="min-w-[600px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead>Title</TableHead>
+                  <TableHead className="hidden sm:table-cell">Title</TableHead>
                   <TableHead>Firm</TableHead>
                   <TableHead>Warmth</TableHead>
-                  <TableHead>Follow-up</TableHead>
-                  <TableHead className="w-[100px]">Actions</TableHead>
+                  <TableHead className="hidden md:table-cell">Follow-up</TableHead>
+                  <TableHead className="w-[80px]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -341,7 +341,7 @@ export default function Contacts() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="hidden sm:table-cell text-muted-foreground">
                       {contact.title ?? "—"}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
@@ -355,7 +355,7 @@ export default function Contacts() {
                         {contact.warmth}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground text-sm">
+                    <TableCell className="hidden md:table-cell text-muted-foreground text-sm">
                       {contact.follow_up_date
                         ? new Date(contact.follow_up_date).toLocaleDateString(
                             "en-CA",

@@ -328,7 +328,7 @@ export default function Pipeline() {
   return (
     <div className="flex flex-col h-full">
       {/* Page header */}
-      <div className="border-b bg-background px-6 py-4 flex items-center justify-between flex-shrink-0">
+      <div className="border-b bg-background px-4 md:px-6 py-4 flex items-center justify-between flex-shrink-0">
         <div>
           <h1 className="text-xl font-semibold">Pipeline</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
@@ -339,7 +339,7 @@ export default function Pipeline() {
       </div>
 
       {/* Kanban board */}
-      <div className="flex-1 overflow-x-auto p-6">
+      <div className="flex-1 overflow-x-auto p-4 md:p-6">
         <div className="flex gap-4 pb-4 min-h-full">
           {STAGES.map((stage) => {
             const stageApps = applications.filter((a) => a.stage === stage);

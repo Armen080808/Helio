@@ -30,7 +30,7 @@ const features = [
   {
     icon: CalendarDays,
     title: "Recruiting Calendar",
-    desc: "Never miss a deadline. Bay Street & Wall Street timelines — TD, RBC, Goldman, McKinsey and more.",
+    desc: "Never miss a deadline. Bay Street recruiting timelines — TD, RBC, Goldman, McKinsey and more.",
   },
   {
     icon: BookOpen,
@@ -40,7 +40,7 @@ const features = [
   {
     icon: TrendingUp,
     title: "Live Market Data",
-    desc: "TSX, S&P 500, Big 5 banks, and US bulge brackets — updated daily so you're always current.",
+    desc: "TSX Composite, Big 6 Canadian banks, Brookfield, Shopify, and Suncor — updated daily.",
   },
   {
     icon: GraduationCap,
@@ -144,7 +144,7 @@ export default function Landing() {
             Everything in one place
           </h2>
           <p className="mt-3 text-muted-foreground">
-            Built specifically for the Bay Street &amp; Wall Street recruiting cycle
+            Built specifically for the Bay Street recruiting cycle
           </p>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

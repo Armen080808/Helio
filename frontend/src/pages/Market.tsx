@@ -1,9 +1,29 @@
 import { useEffect, useState } from "react";
 import { getMarket, type MarketSnapshot } from "@/services/market";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { TrendingUp, TrendingDown, BarChart2, RefreshCw } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-function formatPrice(price: number): string {
+// ─── Symbol metadata ─────────────────────────────────────────────────────────
+
+const INDEX_SYMBOLS = new Set(["^GSPTSE"]);
+const BANK_SYMBOLS  = new Set(["TD.TO", "RY.TO", "BMO.TO", "BNS.TO", "CM.TO", "NA.TO"]);
+
+function sectionFor(symbol: string): "index" | "bank" | "other" {
+  if (INDEX_SYMBOLS.has(symbol)) return "index";
+  if (BANK_SYMBOLS.has(symbol))  return "bank";
+  return "other";
+}
+
+// ─── Formatters ───────────────────────────────────────────────────────────────
+
+function fmtPrice(price: number, isIndex = false): string {
+  if (isIndex) {
+    return new Intl.NumberFormat("en-CA", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  }
   return new Intl.NumberFormat("en-CA", {
     style: "currency",
     currency: "CAD",
@@ -12,135 +32,236 @@ function formatPrice(price: number): string {
   }).format(price);
 }
 
-function formatChange(change: number): string {
+function fmtChange(change: number, isIndex = false): string {
   const sign = change >= 0 ? "+" : "";
+  if (isIndex) return `${sign}${change.toFixed(0)} pts`;
   return `${sign}${change.toFixed(2)}`;
 }
 
-function formatChangePct(pct: number): string {
+function fmtChangePct(pct: number): string {
   const sign = pct >= 0 ? "+" : "";
   return `${sign}${pct.toFixed(2)}%`;
 }
 
-function TickerCard({ snapshot }: { snapshot: MarketSnapshot }) {
-  const isPositive = snapshot.change >= 0;
-  const colorClass = isPositive ? "text-emerald-600" : "text-red-500";
-  const Icon = isPositive ? TrendingUp : TrendingDown;
+function fmtMarketCap(cap: number | null | undefined): string {
+  if (!cap) return "";
+  if (cap >= 1e12) return `$${(cap / 1e12).toFixed(1)}T`;
+  if (cap >= 1e9)  return `$${(cap / 1e9).toFixed(1)}B`;
+  if (cap >= 1e6)  return `$${(cap / 1e6).toFixed(0)}M`;
+  return `$${cap.toLocaleString("en-CA")}`;
+}
+
+// ─── Cards ────────────────────────────────────────────────────────────────────
+
+function IndexCard({ snap }: { snap: MarketSnapshot }) {
+  const up      = snap.change >= 0;
+  const color   = up ? "text-emerald-600" : "text-red-500";
+  const bg      = up ? "bg-emerald-50 dark:bg-emerald-950/20" : "bg-red-50 dark:bg-red-950/20";
+  const Icon    = up ? TrendingUp : TrendingDown;
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-xs font-mono font-semibold text-muted-foreground uppercase tracking-wider">
-              {snapshot.symbol}
-            </p>
-            <CardTitle className="text-sm font-medium mt-0.5">{snapshot.name}</CardTitle>
+    <Card className={cn("border-2", up ? "border-emerald-200" : "border-red-200")}>
+      <CardContent className="p-5 flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className={cn("flex h-8 w-8 items-center justify-center rounded-lg", bg)}>
+              <BarChart2 className={cn("h-4 w-4", color)} />
+            </div>
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              {snap.symbol}
+            </span>
           </div>
-          <Icon className={`h-4 w-4 mt-1 ${colorClass}`} />
+          <Icon className={cn("h-5 w-5", color)} />
         </div>
-      </CardHeader>
-      <CardContent>
-        <p className="text-2xl font-bold tracking-tight">{formatPrice(snapshot.price)}</p>
-        <p className={`text-sm font-medium mt-1 ${colorClass}`}>
-          {formatChange(snapshot.change)}&nbsp;&nbsp;{formatChangePct(snapshot.change_pct)}
+
+        <p className="text-base font-semibold">{snap.name}</p>
+        <p className={cn("text-3xl font-bold tabular-nums tracking-tight")}>
+          {fmtPrice(snap.price, true)}
         </p>
+        <div className={cn("flex items-center gap-2 text-sm font-semibold", color)}>
+          <span>{fmtChange(snap.change, true)}</span>
+          <span className={cn("rounded-full px-2 py-0.5 text-xs", bg)}>
+            {fmtChangePct(snap.change_pct)}
+          </span>
+        </div>
       </CardContent>
     </Card>
   );
 }
 
-function SkeletonCard() {
+function TickerCard({ snap }: { snap: MarketSnapshot }) {
+  const up    = snap.change >= 0;
+  const color = up ? "text-emerald-600" : "text-red-500";
+  const bg    = up ? "bg-emerald-50 dark:bg-emerald-950/20" : "bg-red-50 dark:bg-red-950/20";
+  const Icon  = up ? TrendingUp : TrendingDown;
+
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <div className="h-3 w-16 bg-muted rounded animate-pulse" />
-        <div className="h-4 w-32 bg-muted rounded animate-pulse mt-1" />
-      </CardHeader>
-      <CardContent>
-        <div className="h-7 w-28 bg-muted rounded animate-pulse" />
-        <div className="h-4 w-20 bg-muted rounded animate-pulse mt-2" />
+    <Card className="transition-shadow hover:shadow-md">
+      <CardContent className="p-4 flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-muted-foreground">
+            {snap.symbol.replace(".TO", "")}
+          </span>
+          <Icon className={cn("h-4 w-4", color)} />
+        </div>
+
+        <p className="text-sm font-semibold leading-tight">{snap.name}</p>
+
+        <p className="text-xl font-bold tabular-nums tracking-tight">
+          {fmtPrice(snap.price)}
+        </p>
+
+        <div className={cn("flex items-center gap-1.5 text-xs font-medium", color)}>
+          <span>{fmtChange(snap.change)}</span>
+          <span className={cn("rounded-full px-1.5 py-0.5", bg)}>
+            {fmtChangePct(snap.change_pct)}
+          </span>
+        </div>
+
+        {snap.market_cap && (
+          <p className="text-xs text-muted-foreground">
+            Cap: {fmtMarketCap(snap.market_cap)}
+          </p>
+        )}
       </CardContent>
     </Card>
   );
 }
+
+function SkeletonIndexCard() {
+  return (
+    <div className="rounded-xl border-2 border-border bg-card animate-pulse h-40" />
+  );
+}
+
+function SkeletonTickerCard() {
+  return (
+    <Card>
+      <CardContent className="p-4 flex flex-col gap-2">
+        <div className="h-3 w-14 bg-muted rounded animate-pulse" />
+        <div className="h-4 w-24 bg-muted rounded animate-pulse" />
+        <div className="h-6 w-20 bg-muted rounded animate-pulse" />
+        <div className="h-3 w-16 bg-muted rounded animate-pulse" />
+      </CardContent>
+    </Card>
+  );
+}
+
+// ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function Market() {
   const [snapshots, setSnapshots] = useState<MarketSnapshot[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading]     = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   useEffect(() => {
     getMarket()
       .then((data) => {
         setSnapshots(data);
-        setLastUpdated(new Date().toLocaleTimeString("en-CA", { hour: "2-digit", minute: "2-digit" }));
+        setLastUpdated(
+          new Date().toLocaleString("en-CA", {
+            month: "short", day: "numeric",
+            hour: "2-digit", minute: "2-digit",
+          })
+        );
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
-  const canadian = snapshots.filter((s) => s.symbol.endsWith(".TO"));
-  const us = snapshots.filter((s) => !s.symbol.endsWith(".TO"));
-
-  const skeletonCount = 7;
+  const indices = snapshots.filter((s) => sectionFor(s.symbol) === "index");
+  const banks   = snapshots.filter((s) => sectionFor(s.symbol) === "bank");
+  const others  = snapshots.filter((s) => sectionFor(s.symbol) === "other");
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div className="flex items-start justify-between">
+    <div className="flex flex-col gap-6 p-4 md:p-6">
+
+      {/* Header */}
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Markets</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Canadian Markets</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Live market data — updated weekdays at 4:30 PM ET
+            TSX index, Big 6 banks &amp; top Canadian companies — updated weekdays at 4:30 PM ET
           </p>
         </div>
         {lastUpdated && (
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
+          <div className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground mt-1">
             <RefreshCw className="h-3 w-3" />
-            Last updated: {lastUpdated}
+            {lastUpdated}
           </div>
         )}
       </div>
 
-      {loading ? (
-        <div className="flex flex-col gap-6">
-          <div>
-            <h2 className="text-base font-semibold mb-3">Canadian Markets</h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {Array.from({ length: skeletonCount }).map((_, i) => (
-                <SkeletonCard key={i} />
+      {/* ── TSX Composite Index ──────────────────────────────────── */}
+      <section>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+          Index
+        </h2>
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <SkeletonIndexCard />
+          </div>
+        ) : indices.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No index data available.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {indices.map((s) => (
+              <IndexCard key={s.id} snap={s} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* ── Big 6 Canadian Banks ─────────────────────────────────── */}
+      <section>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+          Big 6 Banks
+        </h2>
+        {loading ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <SkeletonTickerCard key={i} />
+            ))}
+          </div>
+        ) : banks.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No bank data available.</p>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {banks.map((s) => (
+              <TickerCard key={s.id} snap={s} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* ── Other Canadian Companies ─────────────────────────────── */}
+      {(loading || others.length > 0) && (
+        <section>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+            Other Canadian
+          </h2>
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <SkeletonTickerCard key={i} />
               ))}
             </div>
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-8">
-          <div>
-            <h2 className="text-base font-semibold mb-3">Canadian Markets</h2>
-            {canadian.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No data available.</p>
-            ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {canadian.map((s) => (
-                  <TickerCard key={s.id} snapshot={s} />
-                ))}
-              </div>
-            )}
-          </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {others.map((s) => (
+                <TickerCard key={s.id} snap={s} />
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
-          <div>
-            <h2 className="text-base font-semibold mb-3">US Markets</h2>
-            {us.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No data available.</p>
-            ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {us.map((s) => (
-                  <TickerCard key={s.id} snapshot={s} />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+      {/* Footer note */}
+      {!loading && (
+        <p className="text-xs text-muted-foreground">
+          Market data sourced directly from Yahoo Finance. Prices reflect last trading session close.
+          Not financial advice.
+        </p>
       )}
     </div>
   );

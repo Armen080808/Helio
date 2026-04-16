@@ -136,7 +136,7 @@ export default function Events() {
       : events.filter((ev) => ev.event_type === activeFilter);
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6 p-4 md:p-6">
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
