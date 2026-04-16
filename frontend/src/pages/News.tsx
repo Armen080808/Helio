@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Newspaper, ExternalLink, RefreshCw, TrendingUp } from "lucide-react";
+import { Newspaper, ExternalLink, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -210,24 +210,25 @@ function SkeletonRow() {
 export default function News() {
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [activeCategory, setActiveCategory] = useState<Category>("All");
 
   const load = useCallback(async (isRefresh = false) => {
-    if (isRefresh) setRefreshing(true);
-    else setLoading(true);
+    if (!isRefresh) setLoading(true);
     try {
       const data = await getNews({ limit: 60 });
       setArticles(data);
     } catch {
       // silent — show empty state
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      if (!isRefresh) setLoading(false);
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+    const interval = setInterval(() => load(true), 60 * 60 * 1000); // refresh every hour
+    return () => clearInterval(interval);
+  }, [load]);
 
   const filtered =
     activeCategory === "All"
@@ -263,16 +264,6 @@ export default function News() {
           </div>
         </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-1.5 shrink-0"
-          onClick={() => load(true)}
-          disabled={refreshing}
-        >
-          <RefreshCw className={cn("h-3.5 w-3.5", refreshing && "animate-spin")} />
-          {refreshing ? "Refreshing…" : "Refresh"}
-        </Button>
       </div>
 
       {/* ── Category tabs ──────────────────────────────────────────── */}
