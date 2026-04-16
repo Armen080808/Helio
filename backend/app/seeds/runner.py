@@ -85,22 +85,24 @@ def seed_news(db: Session):
 
 
 def seed_market(db: Session):
-    """Insert static market snapshots for today only if no data exists for today."""
+    """
+    Upsert static Canadian market snapshots for today.
+    Runs on every startup; skips any symbol that already has a row for today
+    so live-fetched prices are never overwritten.
+    """
     today = date.today()
-    existing_count = (
-        db.query(MarketSnapshot)
+    # Build a set of symbols already stored for today
+    existing_symbols = {
+        row.symbol
+        for row in db.query(MarketSnapshot.symbol)
         .filter(MarketSnapshot.snapshot_date == today)
-        .count()
-    )
-    if existing_count > 0:
-        return  # live data already present — don't overwrite
-    # Also skip if any live data exists at all (the background fetch will fill today's rows)
-    any_exists = db.query(MarketSnapshot).first()
-    if any_exists:
-        return
+        .all()
+    }
 
     added = 0
     for snap in MARKET_SNAPSHOTS:
+        if snap["symbol"] in existing_symbols:
+            continue  # already have a live or seeded price for today
         db.add(MarketSnapshot(
             symbol=snap["symbol"],
             name=snap["name"],
@@ -112,5 +114,7 @@ def seed_market(db: Session):
             snapshot_date=today,
         ))
         added += 1
-    db.commit()
-    print(f"[SEED] Market: added {added} static snapshots (will be refreshed by live fetch)")
+
+    if added:
+        db.commit()
+    print(f"[SEED] Market: seeded {added} static snapshot(s) for {today}")
