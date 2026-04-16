@@ -1,13 +1,14 @@
 """
-Fetch Canadian market data directly from Yahoo Finance's public HTTP API.
-No third-party library — pure httpx requests to Yahoo Finance chart endpoint.
+Fetch Canadian market data via yfinance (which handles Yahoo Finance's
+session/cookie auth automatically) with a small per-symbol delay to
+avoid server-side rate limits.
 """
-import httpx
+import time
 from datetime import date, datetime
 from sqlalchemy.orm import Session
 from ..models.market_snapshot import MarketSnapshot
 
-# Canadian-only symbols: indices, Big 6 banks, major asset managers & sectors
+# Canadian-only symbols: index, Big 6 banks, asset managers & sectors
 SYMBOLS: dict[str, str] = {
     "^GSPTSE":  "TSX Composite",
     "TD.TO":    "TD Bank",
@@ -21,56 +22,29 @@ SYMBOLS: dict[str, str] = {
     "SU.TO":    "Suncor Energy",
 }
 
-_HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/124.0 Safari/537.36"
-    ),
-    "Accept": "application/json",
-}
-
-
-def _fetch_quote(symbol: str) -> dict | None:
-    """Fetch current price and previous close directly from Yahoo Finance chart API."""
-    url = (
-        f"https://query2.finance.yahoo.com/v8/finance/chart/{symbol}"
-        "?interval=1d&range=2d&includePrePost=false"
-    )
-    try:
-        with httpx.Client(timeout=12, follow_redirects=True) as client:
-            r = client.get(url, headers=_HEADERS)
-            r.raise_for_status()
-        data = r.json()
-        result = data["chart"]["result"][0]
-        meta = result["meta"]
-
-        price: float = meta.get("regularMarketPrice") or 0.0
-        prev: float = (
-            meta.get("chartPreviousClose")
-            or meta.get("previousClose")
-            or price
-        )
-        volume = meta.get("regularMarketVolume")
-        market_cap = meta.get("marketCap")
-
-        return {
-            "price": price,
-            "prev_close": prev,
-            "volume": volume,
-            "market_cap": market_cap,
-        }
-    except Exception as exc:
-        print(f"[MARKET] Quote fetch failed for {symbol}: {exc}")
-        return None
-
 
 def fetch_and_store_market_data(db: Session) -> None:
+    try:
+        import yfinance as yf
+    except ImportError:
+        print("[MARKET] yfinance not installed — skipping live fetch")
+        return
+
     today = date.today()
     added = updated = 0
 
     for symbol, name in SYMBOLS.items():
         try:
+            ticker = yf.Ticker(symbol)
+            info = ticker.fast_info
+
+            price: float = round(float(info.last_price), 2)
+            prev:  float = round(float(info.previous_close), 2)
+            change     = round(price - prev, 2)
+            change_pct = round((price - prev) / prev * 100, 2) if prev else 0.0
+            volume     = getattr(info, "three_month_average_volume", None)
+            market_cap = getattr(info, "market_cap", None)
+
             existing = (
                 db.query(MarketSnapshot)
                 .filter(
@@ -80,40 +54,31 @@ def fetch_and_store_market_data(db: Session) -> None:
                 .first()
             )
 
-            quote = _fetch_quote(symbol)
-            if not quote or not quote["price"]:
-                continue
-
-            price     = round(quote["price"], 2)
-            prev      = quote["prev_close"] or price
-            change    = round(price - prev, 2)
-            change_pct = round((price - prev) / prev * 100, 2) if prev else 0.0
-
             if existing:
-                # Refresh today's snapshot with latest price
                 existing.price      = price
                 existing.change     = change
                 existing.change_pct = change_pct
-                existing.volume     = quote.get("volume")
-                existing.market_cap = quote.get("market_cap")
+                existing.volume     = volume
+                existing.market_cap = market_cap
                 existing.fetched_at = datetime.utcnow()
                 updated += 1
             else:
-                snap = MarketSnapshot(
+                db.add(MarketSnapshot(
                     symbol=symbol,
                     name=name,
                     price=price,
                     change=change,
                     change_pct=change_pct,
-                    volume=quote.get("volume"),
-                    market_cap=quote.get("market_cap"),
+                    volume=volume,
+                    market_cap=market_cap,
                     snapshot_date=today,
-                )
-                db.add(snap)
+                ))
                 added += 1
 
         except Exception as exc:
             print(f"[MARKET] Failed {symbol}: {exc}")
+
+        time.sleep(0.5)  # 500 ms between symbols to avoid rate limits
 
     db.commit()
     print(f"[MARKET] {today} — added {added}, refreshed {updated}")

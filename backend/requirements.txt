@@ -9,5 +9,6 @@ pydantic[email]==2.11.3
 pydantic-settings==2.8.1
 python-multipart==0.0.12
 httpx==0.27.2
+yfinance==0.2.40
 feedparser==6.0.11
 apscheduler==3.10.4
