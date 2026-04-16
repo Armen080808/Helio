@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { getMarket, type MarketSnapshot } from "@/services/market";
+import { useEffect, useState, useCallback } from "react";
+import { getMarket, refreshMarket, type MarketSnapshot } from "@/services/market";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { TrendingUp, TrendingDown, BarChart2, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -150,24 +151,37 @@ function SkeletonTickerCard() {
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function Market() {
-  const [snapshots, setSnapshots] = useState<MarketSnapshot[]>([]);
-  const [loading, setLoading]     = useState(true);
+  const [snapshots, setSnapshots]     = useState<MarketSnapshot[]>([]);
+  const [loading, setLoading]         = useState(true);
+  const [refreshing, setRefreshing]   = useState(false);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
-  useEffect(() => {
-    getMarket()
-      .then((data) => {
-        setSnapshots(data);
-        setLastUpdated(
-          new Date().toLocaleString("en-CA", {
-            month: "short", day: "numeric",
-            hour: "2-digit", minute: "2-digit",
-          })
-        );
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+  const load = useCallback(async () => {
+    try {
+      const data = await getMarket();
+      setSnapshots(data);
+      setLastUpdated(
+        new Date().toLocaleString("en-CA", {
+          month: "short", day: "numeric",
+          hour: "2-digit", minute: "2-digit",
+        })
+      );
+    } catch { /* silent */ }
+    finally { setLoading(false); }
   }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function handleRefresh() {
+    setRefreshing(true);
+    try {
+      await refreshMarket();
+      // Give the background fetch ~6 s to complete, then reload
+      await new Promise((r) => setTimeout(r, 6000));
+      await load();
+    } catch { /* silent */ }
+    finally { setRefreshing(false); }
+  }
 
   const indices = snapshots.filter((s) => sectionFor(s.symbol) === "index");
   const banks   = snapshots.filter((s) => sectionFor(s.symbol) === "bank");
@@ -184,12 +198,23 @@ export default function Market() {
             TSX index, Big 6 banks &amp; top Canadian companies — updated weekdays at 4:30 PM ET
           </p>
         </div>
-        {lastUpdated && (
-          <div className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground mt-1">
-            <RefreshCw className="h-3 w-3" />
-            {lastUpdated}
-          </div>
-        )}
+        <div className="flex shrink-0 items-center gap-2 mt-1">
+          {lastUpdated && (
+            <span className="text-xs text-muted-foreground hidden sm:inline">
+              {lastUpdated}
+            </span>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 h-8 text-xs"
+            disabled={refreshing}
+            onClick={handleRefresh}
+          >
+            <RefreshCw className={cn("h-3 w-3", refreshing && "animate-spin")} />
+            {refreshing ? "Fetching…" : "Refresh"}
+          </Button>
+        </div>
       </div>
 
       {/* ── TSX Composite Index ──────────────────────────────────── */}

@@ -1,10 +1,12 @@
+import threading
 from fastapi import APIRouter, Depends
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from ..database import get_db
+from ..database import get_db, SessionLocal
 from ..models.market_snapshot import MarketSnapshot
 from ..schemas.market_snapshot import MarketSnapshotOut
+from ..services.market import fetch_and_store_market_data
 
 router = APIRouter(prefix="/api/market", tags=["market"])
 
@@ -20,6 +22,19 @@ def get_market_latest(db: Session = Depends(get_db)):
         .order_by(MarketSnapshot.symbol)
         .all()
     )
+
+
+@router.post("/refresh", status_code=202)
+def trigger_market_refresh():
+    """Kick off a live market data fetch in the background. Returns immediately."""
+    def _run():
+        db = SessionLocal()
+        try:
+            fetch_and_store_market_data(db)
+        finally:
+            db.close()
+    threading.Thread(target=_run, daemon=True).start()
+    return {"status": "refresh triggered"}
 
 
 @router.get("/history/{symbol}", response_model=list[MarketSnapshotOut])

@@ -17,3 +17,7 @@ export async function getMarket(): Promise<MarketSnapshot[]> {
   const res = await api.get("/api/market");
   return res.data;
 }
+
+export async function refreshMarket(): Promise<void> {
+  await api.post("/api/market/refresh");
+}

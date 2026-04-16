@@ -1,13 +1,15 @@
-from datetime import datetime
+from datetime import datetime, date
 from sqlalchemy.orm import Session
 from ..models.firm import Firm
 from ..models.recruiting_deadline import RecruitingDeadline
 from ..models.interview_question import InterviewQuestion
 from ..models.news_article import NewsArticle
+from ..models.market_snapshot import MarketSnapshot
 from .firms import FIRMS
 from .deadlines import DEADLINES
 from .questions import QUESTIONS
 from .news import NEWS_ARTICLES
+from .market import MARKET_SNAPSHOTS
 
 
 def seed_all(db: Session):
@@ -15,6 +17,7 @@ def seed_all(db: Session):
     seed_deadlines(db)
     seed_questions(db)
     seed_news(db)
+    seed_market(db)
 
 
 def seed_firms(db: Session):
@@ -79,3 +82,35 @@ def seed_news(db: Session):
             added += 1
     db.commit()
     print(f"[SEED] News: added {added}, url-fixed {updated}")
+
+
+def seed_market(db: Session):
+    """Insert static market snapshots for today only if no data exists for today."""
+    today = date.today()
+    existing_count = (
+        db.query(MarketSnapshot)
+        .filter(MarketSnapshot.snapshot_date == today)
+        .count()
+    )
+    if existing_count > 0:
+        return  # live data already present — don't overwrite
+    # Also skip if any live data exists at all (the background fetch will fill today's rows)
+    any_exists = db.query(MarketSnapshot).first()
+    if any_exists:
+        return
+
+    added = 0
+    for snap in MARKET_SNAPSHOTS:
+        db.add(MarketSnapshot(
+            symbol=snap["symbol"],
+            name=snap["name"],
+            price=snap["price"],
+            change=snap["change"],
+            change_pct=snap["change_pct"],
+            volume=snap.get("volume"),
+            market_cap=snap.get("market_cap"),
+            snapshot_date=today,
+        ))
+        added += 1
+    db.commit()
+    print(f"[SEED] Market: added {added} static snapshots (will be refreshed by live fetch)")

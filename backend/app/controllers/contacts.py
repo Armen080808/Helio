@@ -8,6 +8,7 @@ from ..models.contact import Contact
 from ..models.user import User
 from ..schemas.contact import ContactCreate, ContactUpdate, ContactOut
 from ..services.auth import get_current_user
+from ..seeds.contacts import build_demo_contacts
 
 router = APIRouter(prefix="/api/contacts", tags=["contacts"])
 
@@ -89,6 +90,31 @@ def update_contact(
     db.commit()
     db.refresh(contact)
     return contact
+
+
+@router.post("/demo", response_model=list[ContactOut], status_code=status.HTTP_201_CREATED)
+def seed_demo_contacts(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Seed ~10 demo Bay Street contacts for the current user.
+
+    Idempotent — only adds contacts if the user currently has fewer than 3.
+    Returns the newly created contacts (empty list if seeding was skipped).
+    """
+    existing_count = (
+        db.query(Contact).filter(Contact.user_id == current_user.id).count()
+    )
+    if existing_count >= 3:
+        return []
+
+    contact_dicts = build_demo_contacts(current_user.id)
+    new_contacts = [Contact(**fields) for fields in contact_dicts]
+    db.add_all(new_contacts)
+    db.commit()
+    for c in new_contacts:
+        db.refresh(c)
+    return new_contacts
 
 
 @router.delete("/{contact_id}", status_code=status.HTTP_204_NO_CONTENT)

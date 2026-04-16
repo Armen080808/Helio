@@ -8,6 +8,7 @@ from .database import init_db, SessionLocal
 from .scheduler import start_scheduler, stop_scheduler
 from .seeds.runner import seed_all
 from .services.jobs import fetch_and_store_jobs
+from .services.market import fetch_and_store_market_data
 from .controllers import (
     auth, firms, pipeline, contacts, deadlines, questions,
     prep, gpa, events, market, news, jobs, community, dashboard,
@@ -24,7 +25,7 @@ async def lifespan(app: FastAPI):
         seed_all(db)
     finally:
         db.close()
-    # Initial job scrape on startup (runs in background so server starts fast)
+    # Initial job + market fetches on startup (background threads so server starts fast)
     import threading
     def _initial_job_fetch():
         db2 = SessionLocal()
@@ -32,7 +33,14 @@ async def lifespan(app: FastAPI):
             fetch_and_store_jobs(db2)
         finally:
             db2.close()
+    def _initial_market_fetch():
+        db3 = SessionLocal()
+        try:
+            fetch_and_store_market_data(db3)
+        finally:
+            db3.close()
     threading.Thread(target=_initial_job_fetch, daemon=True).start()
+    threading.Thread(target=_initial_market_fetch, daemon=True).start()
     # Start background scheduler
     start_scheduler()
     yield

@@ -49,3 +49,8 @@ export async function updateContact(id: string, data: Partial<ContactCreate>): P
 export async function deleteContact(id: string): Promise<void> {
   await api.delete(`/api/contacts/${id}`);
 }
+
+export async function seedDemoContacts(): Promise<Contact[]> {
+  const res = await api.post("/api/contacts/demo");
+  return res.data;
+}

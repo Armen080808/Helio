@@ -3,6 +3,7 @@ import {
   getContacts,
   createContact,
   deleteContact,
+  seedDemoContacts,
   type Contact,
   type ContactCreate,
   type Warmth,
@@ -222,6 +223,7 @@ export default function Contacts() {
   const [error, setError] = useState<string | null>(null);
   const [warmthFilter, setWarmthFilter] = useState<Warmth | "All">("All");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [seedingDemo, setSeedingDemo] = useState(false);
 
   useEffect(() => {
     getContacts()
@@ -232,6 +234,20 @@ export default function Contacts() {
 
   function handleCreated(contact: Contact) {
     setContacts((prev) => [contact, ...prev]);
+  }
+
+  async function handleSeedDemo() {
+    setSeedingDemo(true);
+    try {
+      const seeded = await seedDemoContacts();
+      if (seeded.length > 0) {
+        setContacts(seeded);
+      }
+    } catch {
+      // silently ignore; user can retry
+    } finally {
+      setSeedingDemo(false);
+    }
   }
 
   async function handleDelete(id: string) {
@@ -314,6 +330,17 @@ export default function Contacts() {
                 ? "Try a different warmth filter."
                 : "Add your first networking contact to get started."}
             </p>
+            {warmthFilter === "All" && contacts.length === 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-5"
+                disabled={seedingDemo}
+                onClick={handleSeedDemo}
+              >
+                {seedingDemo ? "Loading..." : "Load sample contacts"}
+              </Button>
+            )}
           </div>
         ) : (
           <div className="rounded-md border overflow-hidden overflow-x-auto">
