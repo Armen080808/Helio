@@ -7,6 +7,7 @@ from .config import settings
 from .database import init_db, SessionLocal
 from .scheduler import start_scheduler, stop_scheduler
 from .seeds.runner import seed_all
+from .services.jobs import fetch_and_store_jobs
 from .controllers import (
     auth, firms, pipeline, contacts, deadlines, questions,
     prep, gpa, events, market, news, jobs, community, dashboard,
@@ -17,12 +18,21 @@ from .controllers import (
 async def lifespan(app: FastAPI):
     # Init DB tables
     init_db()
-    # Seed data
+    # Seed static data
     db = SessionLocal()
     try:
         seed_all(db)
     finally:
         db.close()
+    # Initial job scrape on startup (runs in background so server starts fast)
+    import threading
+    def _initial_job_fetch():
+        db2 = SessionLocal()
+        try:
+            fetch_and_store_jobs(db2)
+        finally:
+            db2.close()
+    threading.Thread(target=_initial_job_fetch, daemon=True).start()
     # Start background scheduler
     start_scheduler()
     yield

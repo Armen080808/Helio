@@ -35,16 +35,16 @@ def start_scheduler():
         replace_existing=True,
     )
 
-    # Jobs: daily at 8am ET
+    # Jobs: every hour (scrapes firm career pages directly)
     scheduler.add_job(
         _with_db(fetch_and_store_jobs),
-        CronTrigger(hour=8, minute=0, timezone="America/Toronto"),
+        CronTrigger(minute=0),  # top of every hour
         id="jobs",
         replace_existing=True,
     )
 
     scheduler.start()
-    print("[SCHEDULER] Started — market@4:30pm ET, news every 4h, jobs@8am ET")
+    print("[SCHEDULER] Started — market@4:30pm ET, news every 4h, jobs every 1h")
 
 
 def stop_scheduler():
