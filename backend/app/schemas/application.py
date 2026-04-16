@@ -1,3 +1,4 @@
+import uuid
 from datetime import date, datetime
 from pydantic import BaseModel, ConfigDict
 
@@ -25,8 +26,8 @@ class ApplicationUpdate(BaseModel):
 
 
 class ApplicationOut(BaseModel):
-    id: str
-    firm_id: str | None
+    id: uuid.UUID
+    firm_id: uuid.UUID | None
     firm_name: str
     role: str
     type: str

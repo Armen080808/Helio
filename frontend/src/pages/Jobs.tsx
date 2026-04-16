@@ -49,9 +49,9 @@ function JobCard({ job }: { job: JobPosting }) {
       <div className="flex-1 min-w-0">
         <div className="flex flex-wrap items-center gap-2 mb-1">
           <span className="font-semibold text-sm">{job.company}</span>
-          {job.type && (
-            <Badge variant="outline" className={typeBadgeClass(job.type)}>
-              {job.type}
+          {job.job_type && (
+            <Badge variant="outline" className={typeBadgeClass(job.job_type)}>
+              {job.job_type}
             </Badge>
           )}
           <Badge variant="outline" className={sourceBadgeClass(job.source)}>
@@ -119,7 +119,7 @@ export default function Jobs() {
     activeType === "All"
       ? jobs
       : jobs.filter(
-          (j) => (j.type ?? "Other").toLowerCase() === activeType.toLowerCase()
+          (j) => (j.job_type ?? "Other").toLowerCase() === activeType.toLowerCase()
         );
 
   return (

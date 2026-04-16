@@ -74,9 +74,9 @@ function AddContactDialog({ onCreated }: AddContactDialogProps) {
     const data: ContactCreate = {
       name: fd.get("name") as string,
       title: (fd.get("title") as string) || null,
-      firm: (fd.get("firm") as string) || null,
+      firm_name: (fd.get("firm") as string) || null,
       email: (fd.get("email") as string) || null,
-      linkedin: (fd.get("linkedin") as string) || null,
+      linkedin_url: (fd.get("linkedin") as string) || null,
       warmth,
       follow_up_date: followUp || null,
       notes: (fd.get("notes") as string) || null,
@@ -221,7 +221,7 @@ export default function Contacts() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [warmthFilter, setWarmthFilter] = useState<Warmth | "All">("All");
-  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     getContacts()
@@ -234,7 +234,7 @@ export default function Contacts() {
     setContacts((prev) => [contact, ...prev]);
   }
 
-  async function handleDelete(id: number) {
+  async function handleDelete(id: string) {
     setDeletingId(id);
     try {
       await deleteContact(id);
@@ -345,7 +345,7 @@ export default function Contacts() {
                       {contact.title ?? "—"}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {contact.firm ?? "—"}
+                      {contact.firm_name ?? "—"}
                     </TableCell>
                     <TableCell>
                       <Badge
@@ -365,9 +365,9 @@ export default function Contacts() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        {contact.linkedin && (
+                        {contact.linkedin_url && (
                           <a
-                            href={contact.linkedin}
+                            href={contact.linkedin_url}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"

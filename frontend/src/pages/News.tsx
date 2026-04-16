@@ -54,11 +54,11 @@ function ArticleRow({ article }: { article: NewsArticle }) {
           <Badge variant="outline" className={sourceBadgeClass(article.source)}>
             {article.source}
           </Badge>
-          <Badge variant="outline" className={categoryBadgeClass(article.category)}>
+          <Badge variant="outline" className={categoryBadgeClass(article.category ?? "")}>
             {article.category}
           </Badge>
           <span className="text-xs text-muted-foreground ml-auto whitespace-nowrap">
-            {timeAgo(article.published_at)}
+            {timeAgo(article.published_at ?? article.fetched_at)}
           </span>
         </div>
         <a
@@ -104,7 +104,7 @@ export default function News() {
     activeCategory === "All"
       ? articles
       : articles.filter(
-          (a) => a.category.toLowerCase() === activeCategory.toLowerCase()
+          (a) => (a.category ?? "").toLowerCase() === activeCategory.toLowerCase()
         );
 
   return (

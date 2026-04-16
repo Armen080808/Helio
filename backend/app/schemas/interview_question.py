@@ -1,9 +1,10 @@
+import uuid
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 
 class InterviewQuestionOut(BaseModel):
-    id: str
+    id: uuid.UUID
     category: str
     subcategory: str | None
     question: str

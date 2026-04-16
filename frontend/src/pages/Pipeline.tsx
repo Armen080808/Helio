@@ -239,7 +239,7 @@ function AddApplicationDialog({ onCreated }: AddApplicationDialogProps) {
 
 interface ApplicationCardProps {
   app: Application;
-  onDeleted: (id: number) => void;
+  onDeleted: (id: string) => void;
 }
 
 function ApplicationCard({ app, onDeleted }: ApplicationCardProps) {
@@ -303,7 +303,7 @@ export default function Pipeline() {
     setApplications((prev) => [app, ...prev]);
   }
 
-  function handleDeleted(id: number) {
+  function handleDeleted(id: string) {
     setApplications((prev) => prev.filter((a) => a.id !== id));
   }
 

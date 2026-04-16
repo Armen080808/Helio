@@ -3,26 +3,19 @@ import {
   getQuestions,
   upvoteQuestion,
   type InterviewQuestion,
-  type QuestionCategory,
-  type Difficulty,
 } from "@/services/questions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ChevronDown, ChevronUp, ThumbsUp } from "lucide-react";
 
-const CATEGORIES: Array<"All" | QuestionCategory> = [
-  "All",
-  "Technical",
-  "Behavioral",
-  "Market",
-  "Canadian Markets",
-  "Firm-Specific",
-];
+const CATEGORIES = ["All", "Technical", "Behavioral", "Market", "Canadian Markets", "Firm-Specific"] as const;
+type CategoryFilter = (typeof CATEGORIES)[number];
 
-const DIFFICULTIES: Array<"All" | Difficulty> = ["All", "Easy", "Medium", "Hard"];
+const DIFFICULTIES = ["All", "Easy", "Medium", "Hard"] as const;
+type DifficultyFilter = (typeof DIFFICULTIES)[number];
 
-function difficultyClass(difficulty: Difficulty): string {
+function difficultyClass(difficulty: string): string {
   switch (difficulty) {
     case "Easy":
       return "bg-green-100 text-green-800 border-green-200";
@@ -30,6 +23,8 @@ function difficultyClass(difficulty: Difficulty): string {
       return "bg-yellow-100 text-yellow-800 border-yellow-200";
     case "Hard":
       return "bg-red-100 text-red-800 border-red-200";
+    default:
+      return "bg-gray-100 text-gray-700 border-gray-200";
   }
 }
 
@@ -107,21 +102,9 @@ function QuestionCard({ question }: { question: InterviewQuestion }) {
               Model Answer
             </p>
             <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap">
-              {question.answer}
+              {question.answer ?? "No answer provided."}
             </p>
           </div>
-          {question.tags.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {question.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          )}
         </CardContent>
       )}
     </Card>
@@ -132,8 +115,8 @@ export default function Questions() {
   const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState<"All" | QuestionCategory>("All");
-  const [activeDifficulty, setActiveDifficulty] = useState<"All" | Difficulty>("All");
+  const [activeCategory, setActiveCategory] = useState<CategoryFilter>("All");
+  const [activeDifficulty, setActiveDifficulty] = useState<DifficultyFilter>("All");
 
   useEffect(() => {
     setLoading(true);

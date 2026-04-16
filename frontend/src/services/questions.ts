@@ -1,15 +1,14 @@
 import api from "./api";
 
-export type QuestionCategory = "Technical" | "Behavioral" | "Market" | "Canadian Markets" | "Firm-Specific";
-export type Difficulty = "Easy" | "Medium" | "Hard";
-
 export interface InterviewQuestion {
-  id: number;
-  category: QuestionCategory;
-  difficulty: Difficulty;
+  id: string;
+  category: string;
+  subcategory?: string | null;
   question: string;
-  answer: string;
-  tags: string[];
+  answer?: string | null;
+  difficulty: string;
+  firm_specific?: string | null;
+  source?: string | null;
   upvotes: number;
   created_at: string;
 }
@@ -19,7 +18,7 @@ export async function getQuestions(params?: { category?: string; difficulty?: st
   return res.data;
 }
 
-export async function upvoteQuestion(id: number): Promise<InterviewQuestion> {
+export async function upvoteQuestion(id: string): Promise<InterviewQuestion> {
   const res = await api.post(`/api/questions/${id}/upvote`);
   return res.data;
 }

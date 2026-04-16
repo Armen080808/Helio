@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
@@ -20,8 +21,8 @@ class InterviewPrepUpdate(BaseModel):
 
 
 class InterviewPrepOut(BaseModel):
-    id: str
-    question_id: str | None
+    id: uuid.UUID
+    question_id: uuid.UUID | None
     question_text: str
     category: str
     answer: str | None

@@ -1,3 +1,4 @@
+import uuid
 from datetime import date, datetime
 from pydantic import BaseModel, ConfigDict
 
@@ -32,8 +33,8 @@ class ContactUpdate(BaseModel):
 
 
 class ContactOut(BaseModel):
-    id: str
-    firm_id: str | None
+    id: uuid.UUID
+    firm_id: uuid.UUID | None
     name: str
     title: str | None
     firm_name: str | None

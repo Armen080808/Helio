@@ -1,7 +1,8 @@
 import api from "./api";
 
 export interface RecruitingDeadline {
-  id: number;
+  id: string;
+  firm_id?: string | null;
   firm_name: string;
   role: string;
   type: string;
@@ -11,7 +12,8 @@ export interface RecruitingDeadline {
   networking_season_start?: string | null;
   notes?: string | null;
   source_url?: string | null;
-  is_verified: boolean;
+  is_community_added: boolean;
+  verified: boolean;
 }
 
 export async function getDeadlines(): Promise<RecruitingDeadline[]> {

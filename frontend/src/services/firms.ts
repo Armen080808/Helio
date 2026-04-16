@@ -1,15 +1,16 @@
 import api from "./api";
 
 export interface Firm {
-  id: number;
+  id: string;
   name: string;
   type: string;
-  location?: string | null;
+  description: string;
+  headquarters?: string | null;
   website?: string | null;
-  description?: string | null;
-  gpa_cutoff?: number | null;
-  insider_tip?: string | null;
-  logo_url?: string | null;
+  avg_gpa_requirement?: number | null;
+  recruits_uoft?: boolean;
+  notes?: string | null;
+  is_community_added?: boolean;
 }
 
 export async function getFirms(params?: { type?: string }): Promise<Firm[]> {

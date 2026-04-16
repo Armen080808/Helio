@@ -24,12 +24,12 @@ function FirmCard({ firm }: { firm: Firm }) {
           </Badge>
         </div>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
-          {firm.location && (
-            <span className="text-xs text-muted-foreground">{firm.location}</span>
+          {firm.headquarters && (
+            <span className="text-xs text-muted-foreground">{firm.headquarters}</span>
           )}
-          {firm.gpa_cutoff != null && (
+          {firm.avg_gpa_requirement != null && (
             <span className="inline-flex items-center rounded-md bg-amber-50 border border-amber-200 px-2 py-0.5 text-xs font-medium text-amber-800">
-              GPA &ge; {firm.gpa_cutoff.toFixed(2)}
+              GPA &ge; {firm.avg_gpa_requirement.toFixed(2)}
             </span>
           )}
         </div>
@@ -42,10 +42,10 @@ function FirmCard({ firm }: { firm: Firm }) {
           </p>
         )}
 
-        {firm.insider_tip && (
+        {firm.notes && (
           <div className="rounded-lg bg-muted/60 border border-border px-3 py-2.5 flex gap-2">
             <Lightbulb className="h-4 w-4 shrink-0 mt-0.5 text-amber-500" />
-            <p className="text-xs text-muted-foreground leading-relaxed">{firm.insider_tip}</p>
+            <p className="text-xs text-muted-foreground leading-relaxed">{firm.notes}</p>
           </div>
         )}
 

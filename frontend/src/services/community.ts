@@ -1,30 +1,34 @@
 import api from "./api";
 
 export interface InterviewReview {
-  id: number;
+  id: string;
+  firm_id?: string | null;
   firm_name: string;
   role: string;
-  type?: string | null;
-  cycle?: string | null;
-  outcome: string;
-  difficulty: number;
+  interview_date?: string | null;
   rounds?: number | null;
+  outcome: string;
+  difficulty?: number | null;
   questions_asked?: string | null;
   tips?: string | null;
   anonymous: boolean;
+  upvotes: number;
   created_at: string;
 }
 
 export interface OfferReport {
-  id: number;
+  id: string;
+  firm_id?: string | null;
   firm_name: string;
   role: string;
-  type?: string | null;
-  cycle?: string | null;
+  type: string;
+  cycle: string;
   base_salary?: number | null;
   signing_bonus?: number | null;
-  notes?: string | null;
+  internship_stipend?: number | null;
+  hourly_rate?: number | null;
   anonymous: boolean;
+  notes?: string | null;
   created_at: string;
 }
 

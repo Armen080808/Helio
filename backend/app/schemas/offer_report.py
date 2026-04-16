@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
@@ -17,8 +18,8 @@ class OfferReportCreate(BaseModel):
 
 
 class OfferReportOut(BaseModel):
-    id: str
-    firm_id: str | None
+    id: uuid.UUID
+    firm_id: uuid.UUID | None
     firm_name: str
     role: str
     type: str

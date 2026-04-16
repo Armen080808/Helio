@@ -1,3 +1,4 @@
+import uuid
 from datetime import date, datetime
 from pydantic import BaseModel, ConfigDict
 
@@ -16,8 +17,8 @@ class RecruitingDeadlineCreate(BaseModel):
 
 
 class RecruitingDeadlineOut(BaseModel):
-    id: str
-    firm_id: str | None
+    id: uuid.UUID
+    firm_id: uuid.UUID | None
     firm_name: str
     role: str
     type: str

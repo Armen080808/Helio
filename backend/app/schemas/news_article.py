@@ -1,9 +1,10 @@
+import uuid
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 
 class NewsArticleOut(BaseModel):
-    id: str
+    id: uuid.UUID
     title: str
     url: str
     source: str

@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict, model_validator
 
@@ -28,7 +29,7 @@ class CourseUpdate(BaseModel):
 
 
 class CourseOut(BaseModel):
-    id: str
+    id: uuid.UUID
     code: str
     name: str
     semester: str

@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
@@ -23,9 +24,9 @@ class RecruitingEventUpdate(BaseModel):
 
 
 class RecruitingEventOut(BaseModel):
-    id: str
-    user_id: str | None
-    firm_id: str | None
+    id: uuid.UUID
+    user_id: uuid.UUID | None
+    firm_id: uuid.UUID | None
     firm_name: str
     event_type: str
     title: str

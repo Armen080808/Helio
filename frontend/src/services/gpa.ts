@@ -1,19 +1,22 @@
 import api from "./api";
 
 export interface Course {
-  id: number;
+  id: string;
   code: string;
-  name?: string | null;
-  credit_weight: number;
-  letter_grade?: string | null;
-  numeric_grade?: number | null;
-  semester?: string | null;
+  name: string;
+  semester: string;
+  grade?: string | null;
+  grade_point?: number | null;
+  credits: number;
+  notes?: string | null;
+  created_at: string;
 }
 
 export interface GpaSummary {
-  cgpa: number;
-  total_credits: number;
-  course_count: number;
+  gpa?: number | null;
+  credits: number;
+  courses: number;
+  semester_gpas: Record<string, number>;
 }
 
 export async function getCourses(): Promise<Course[]> {
@@ -21,12 +24,12 @@ export async function getCourses(): Promise<Course[]> {
   return res.data;
 }
 
-export async function addCourse(data: Omit<Course, "id">): Promise<Course> {
+export async function addCourse(data: Omit<Course, "id" | "created_at" | "grade_point">): Promise<Course> {
   const res = await api.post("/api/gpa/courses", data);
   return res.data;
 }
 
-export async function deleteCourse(id: number): Promise<void> {
+export async function deleteCourse(id: string): Promise<void> {
   await api.delete(`/api/gpa/courses/${id}`);
 }
 

@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timedelta
 
 import bcrypt as _bcrypt
@@ -14,15 +15,13 @@ security = HTTPBearer()
 
 
 def hash_password(password: str) -> str:
-    # TODO: re-enable hashing after testing
+    # TODO: re-enable when ready for production
     return password
-    # return _bcrypt.hashpw(password.encode(), _bcrypt.gensalt()).decode()
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    # TODO: re-enable hashing after testing
+    # TODO: re-enable when ready for production
     return plain == hashed
-    # return _bcrypt.checkpw(plain.encode(), hashed.encode())
 
 
 def create_access_token(data: dict) -> str:
@@ -69,7 +68,7 @@ def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    user = db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter(User.id == uuid.UUID(user_id)).first()
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

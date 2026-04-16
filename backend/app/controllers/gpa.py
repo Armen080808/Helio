@@ -54,7 +54,7 @@ def get_gpa_summary(
     )
 
 
-@router.get("/", response_model=list[CourseOut])
+@router.get("/courses", response_model=list[CourseOut])
 def list_courses(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -67,7 +67,7 @@ def list_courses(
     )
 
 
-@router.post("/", response_model=CourseOut, status_code=status.HTTP_201_CREATED)
+@router.post("/courses", response_model=CourseOut, status_code=status.HTTP_201_CREATED)
 def create_course(
     body: CourseCreate,
     current_user: User = Depends(get_current_user),
@@ -90,7 +90,7 @@ def create_course(
     return course
 
 
-@router.put("/{course_id}", response_model=CourseOut)
+@router.put("/courses/{course_id}", response_model=CourseOut)
 def update_course(
     course_id: str,
     body: CourseUpdate,
@@ -115,7 +115,7 @@ def update_course(
     return course
 
 
-@router.delete("/{course_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/courses/{course_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_course(
     course_id: str,
     current_user: User = Depends(get_current_user),

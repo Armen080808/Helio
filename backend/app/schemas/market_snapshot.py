@@ -1,9 +1,10 @@
+import uuid
 from datetime import date, datetime
 from pydantic import BaseModel, ConfigDict
 
 
 class MarketSnapshotOut(BaseModel):
-    id: str
+    id: uuid.UUID
     symbol: str
     name: str
     price: float

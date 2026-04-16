@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CalendarDays, MapPin, ExternalLink, Plus, Video } from "lucide-react";
+import { CalendarDays, MapPin, Plus } from "lucide-react";
 
 const EVENT_TYPES = ["Info Session", "Superday", "Networking", "Workshop", "Other"] as const;
 type EventTypeFilter = "All" | (typeof EVENT_TYPES)[number];
@@ -52,24 +52,22 @@ function isPast(dateStr: string): boolean {
 
 interface FormState {
   title: string;
-  firm: string;
-  type: string;
-  event_date: string;
+  firm_name: string;
+  event_type: string;
+  date: string;
   location: string;
-  virtual: boolean;
-  registration_url: string;
   notes: string;
+  is_public: boolean;
 }
 
 const EMPTY_FORM: FormState = {
   title: "",
-  firm: "",
-  type: "Info Session",
-  event_date: "",
+  firm_name: "",
+  event_type: "Info Session",
+  date: "",
   location: "",
-  virtual: false,
-  registration_url: "",
   notes: "",
+  is_public: true,
 };
 
 export default function Events() {
@@ -86,7 +84,7 @@ export default function Events() {
     try {
       const data = await getEvents();
       const sorted = [...data].sort(
-        (a, b) => new Date(a.event_date).getTime() - new Date(b.event_date).getTime()
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
       );
       setEvents(sorted);
     } catch {
@@ -106,7 +104,7 @@ export default function Events() {
       setFormError("Title is required.");
       return;
     }
-    if (!form.event_date) {
+    if (!form.date) {
       setFormError("Event date is required.");
       return;
     }
@@ -115,13 +113,12 @@ export default function Events() {
     try {
       await createEvent({
         title: form.title.trim(),
-        firm: form.firm.trim() || null,
-        type: form.type,
-        event_date: form.event_date,
+        firm_name: form.firm_name.trim() || "",
+        event_type: form.event_type,
+        date: form.date,
         location: form.location.trim() || null,
-        virtual: form.virtual,
-        registration_url: form.registration_url.trim() || null,
         notes: form.notes.trim() || null,
+        is_public: form.is_public,
       });
       setForm(EMPTY_FORM);
       setDialogOpen(false);
@@ -136,7 +133,7 @@ export default function Events() {
   const filtered =
     activeFilter === "All"
       ? events
-      : events.filter((ev) => ev.type === activeFilter);
+      : events.filter((ev) => ev.event_type === activeFilter);
 
   return (
     <div className="flex flex-col gap-6 p-6">
@@ -190,20 +187,20 @@ export default function Events() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="firm">Firm</Label>
+                  <Label htmlFor="firm_name">Firm</Label>
                   <Input
-                    id="firm"
+                    id="firm_name"
                     placeholder="Goldman Sachs"
-                    value={form.firm}
-                    onChange={(e) => setForm((f) => ({ ...f, firm: e.target.value }))}
+                    value={form.firm_name}
+                    onChange={(e) => setForm((f) => ({ ...f, firm_name: e.target.value }))}
                   />
                 </div>
 
                 <div className="flex flex-col gap-1.5">
                   <Label>Type</Label>
                   <Select
-                    value={form.type}
-                    onValueChange={(v) => setForm((f) => ({ ...f, type: v }))}
+                    value={form.event_type}
+                    onValueChange={(v) => setForm((f) => ({ ...f, event_type: v }))}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -220,14 +217,14 @@ export default function Events() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="event_date">
+                <Label htmlFor="date">
                   Date &amp; Time <span className="text-destructive">*</span>
                 </Label>
                 <Input
-                  id="event_date"
+                  id="date"
                   type="datetime-local"
-                  value={form.event_date}
-                  onChange={(e) => setForm((f) => ({ ...f, event_date: e.target.value }))}
+                  value={form.date}
+                  onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
                   required
                 />
               </div>
@@ -239,32 +236,6 @@ export default function Events() {
                   placeholder="Zoom / 200 Bay St, Toronto"
                   value={form.location}
                   onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
-                />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  id="virtual"
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-border accent-primary"
-                  checked={form.virtual}
-                  onChange={(e) => setForm((f) => ({ ...f, virtual: e.target.checked }))}
-                />
-                <Label htmlFor="virtual" className="cursor-pointer">
-                  Virtual event
-                </Label>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="registration_url">Registration Link</Label>
-                <Input
-                  id="registration_url"
-                  type="url"
-                  placeholder="https://..."
-                  value={form.registration_url}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, registration_url: e.target.value }))
-                  }
                 />
               </div>
 
@@ -349,9 +320,9 @@ export default function Events() {
           ) : (
             <div className="flex flex-col gap-3">
               {filtered.map((ev) => {
-                const past = isPast(ev.event_date);
+                const past = isPast(ev.date);
                 const typeColor =
-                  TYPE_COLORS[ev.type] ?? "bg-gray-100 text-gray-700 border-gray-200";
+                  TYPE_COLORS[ev.event_type] ?? "bg-gray-100 text-gray-700 border-gray-200";
 
                 return (
                   <Card
@@ -366,7 +337,7 @@ export default function Events() {
                           <span
                             className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${typeColor}`}
                           >
-                            {ev.type}
+                            {ev.event_type}
                           </span>
                           {past && (
                             <Badge variant="outline" className="text-xs text-muted-foreground">
@@ -375,36 +346,18 @@ export default function Events() {
                           )}
                         </div>
 
-                        {ev.firm && (
-                          <p className="text-sm text-muted-foreground">{ev.firm}</p>
+                        {ev.firm_name && (
+                          <p className="text-sm text-muted-foreground">{ev.firm_name}</p>
                         )}
 
                         <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                           <CalendarDays className="h-3.5 w-3.5 shrink-0" />
-                          <span>{formatEventDate(ev.event_date)}</span>
+                          <span>{formatEventDate(ev.date)}</span>
                         </div>
 
                         <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                          {ev.virtual ? (
-                            <>
-                              <Video className="h-3.5 w-3.5 shrink-0 text-blue-500" />
-                              <Badge
-                                variant="outline"
-                                className="text-xs bg-blue-50 text-blue-700 border-blue-200"
-                              >
-                                Virtual
-                              </Badge>
-                            </>
-                          ) : (
-                            <>
-                              <MapPin className="h-3.5 w-3.5 shrink-0" />
-                              <span>
-                                {ev.location ?? (
-                                  <span className="text-muted-foreground/40">Location TBD</span>
-                                )}
-                              </span>
-                            </>
-                          )}
+                          <MapPin className="h-3.5 w-3.5 shrink-0" />
+                          <span>{ev.location ?? "Location TBD"}</span>
                         </div>
 
                         {ev.notes && (
@@ -412,19 +365,6 @@ export default function Events() {
                         )}
                       </div>
 
-                      {ev.registration_url && (
-                        <a
-                          href={ev.registration_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="shrink-0"
-                        >
-                          <Button variant="outline" size="sm" className="gap-1.5">
-                            <ExternalLink className="h-3.5 w-3.5" />
-                            Register
-                          </Button>
-                        </a>
-                      )}
                     </CardContent>
                   </Card>
                 );

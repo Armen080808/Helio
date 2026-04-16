@@ -1,13 +1,13 @@
 import api from "./api";
 
 export interface NewsArticle {
-  id: number;
+  id: string;
   title: string;
-  source: string;
   url: string;
+  source: string;
   summary?: string | null;
-  category: string;
-  published_at: string;
+  published_at?: string | null;
+  category?: string | null;
   fetched_at: string;
 }
 

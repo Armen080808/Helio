@@ -127,14 +127,13 @@ export default function GPA() {
     setFormError(null);
     setSubmitting(true);
     try {
-      const numeric_grade = GRADE_MAP[form.letter_grade] ?? null;
       await addCourse({
         code: form.course_code.trim(),
-        name: form.course_name.trim() || null,
-        credit_weight: parseFloat(form.credit_weight),
-        letter_grade: form.letter_grade || null,
-        numeric_grade,
-        semester: form.semester.trim() || null,
+        name: form.course_name.trim() || "",
+        credits: parseFloat(form.credit_weight),
+        grade: form.letter_grade || "",
+        semester: form.semester.trim() || "",
+        notes: "",
       });
       setForm(EMPTY_FORM);
       setDialogOpen(false);
@@ -146,7 +145,7 @@ export default function GPA() {
     }
   }
 
-  async function handleDelete(id: number) {
+  async function handleDelete(id: string) {
     try {
       await deleteCourse(id);
       await load();
@@ -297,9 +296,9 @@ export default function GPA() {
             </CardHeader>
             <CardContent>
               <span
-                className={`text-4xl font-bold tabular-nums ${cgpaColor(summary?.cgpa ?? 0)}`}
+                className={`text-4xl font-bold tabular-nums ${cgpaColor(summary?.gpa ?? 0)}`}
               >
-                {summary ? summary.cgpa.toFixed(2) : "—"}
+                {summary?.gpa != null ? summary.gpa.toFixed(2) : "—"}
               </span>
               <p className="mt-1 text-xs text-muted-foreground">out of 4.0</p>
             </CardContent>
@@ -313,7 +312,7 @@ export default function GPA() {
             </CardHeader>
             <CardContent>
               <span className="text-4xl font-bold tabular-nums">
-                {summary ? summary.total_credits.toFixed(1) : "—"}
+                {summary ? summary.credits.toFixed(1) : "—"}
               </span>
               <p className="mt-1 text-xs text-muted-foreground">credit hours</p>
             </CardContent>
@@ -327,7 +326,7 @@ export default function GPA() {
             </CardHeader>
             <CardContent>
               <span className="text-4xl font-bold tabular-nums">
-                {summary ? summary.course_count : "—"}
+                {summary ? summary.courses : "—"}
               </span>
               <p className="mt-1 text-xs text-muted-foreground">added</p>
             </CardContent>
@@ -388,22 +387,22 @@ export default function GPA() {
                     <TableCell className="text-muted-foreground">
                       {course.name ?? <span className="text-muted-foreground/40">—</span>}
                     </TableCell>
-                    <TableCell className="tabular-nums">{course.credit_weight}</TableCell>
+                    <TableCell className="tabular-nums">{course.credits}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {course.semester ?? <span className="text-muted-foreground/40">—</span>}
                     </TableCell>
                     <TableCell>
-                      {course.letter_grade ? (
+                      {course.grade ? (
                         <Badge variant="outline" className="font-mono">
-                          {course.letter_grade}
+                          {course.grade}
                         </Badge>
                       ) : (
                         <span className="text-muted-foreground/40">—</span>
                       )}
                     </TableCell>
                     <TableCell className="tabular-nums font-medium">
-                      {course.numeric_grade != null
-                        ? course.numeric_grade.toFixed(1)
+                      {course.grade_point != null
+                        ? course.grade_point.toFixed(1)
                         : <span className="text-muted-foreground/40">—</span>}
                     </TableCell>
                     <TableCell>

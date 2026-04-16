@@ -1,14 +1,16 @@
 import api from "./api";
 
 export interface JobPosting {
-  id: number;
+  id: string;
   title: string;
   company: string;
-  location?: string | null;
   url: string;
-  type?: string | null;
-  source: string;
+  location?: string | null;
+  job_type?: string | null;
+  description?: string | null;
   posted_at?: string | null;
+  source: string;
+  is_finance_relevant?: boolean;
   fetched_at: string;
 }
 

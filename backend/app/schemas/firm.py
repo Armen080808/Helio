@@ -1,8 +1,9 @@
+import uuid
 from pydantic import BaseModel, ConfigDict
 
 
 class FirmOut(BaseModel):
-    id: str
+    id: uuid.UUID
     name: str
     type: str
     description: str

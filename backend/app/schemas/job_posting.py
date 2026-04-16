@@ -1,9 +1,10 @@
+import uuid
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 
 class JobPostingOut(BaseModel):
-    id: str
+    id: uuid.UUID
     title: str
     company: str
     url: str
