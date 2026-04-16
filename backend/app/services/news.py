@@ -4,11 +4,20 @@ from sqlalchemy.orm import Session
 from ..models.news_article import NewsArticle
 
 RSS_FEEDS = [
-    ("Financial Post", "https://financialpost.com/feed", "Markets"),
-    ("Globe and Mail Business", "https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/business/", "Banking"),
+    # Canadian Finance
+    ("Financial Post", "https://financialpost.com/feed", "Bay Street"),
+    ("Globe and Mail Business", "https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/business/", "Bay Street"),
+    ("Bay Street Bull", "https://baystreetbull.com/feed/", "Bay Street"),
+    # Markets
     ("Reuters Business", "https://feeds.reuters.com/reuters/businessNews", "Markets"),
-    ("Bloomberg Canada", "https://feeds.bloomberg.com/markets/news.rss", "Markets"),
-    ("Bay Street Bull", "https://baystreetbull.com/feed/", "Banking"),
+    ("Bloomberg Markets", "https://feeds.bloomberg.com/markets/news.rss", "Markets"),
+    ("MarketWatch", "https://feeds.marketwatch.com/marketwatch/topstories/", "Markets"),
+    # M&A / Deals
+    ("Deal Law Wire", "https://www.deallawwire.com/feed/", "Deals"),
+    ("Reuters M&A", "https://feeds.reuters.com/news/mergers", "Deals"),
+    # Economy / Macro
+    ("Bank of Canada", "https://www.bankofcanada.ca/feed/", "Macro"),
+    ("Reuters Economy", "https://feeds.reuters.com/reuters/economicNews", "Macro"),
 ]
 
 

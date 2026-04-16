@@ -1,16 +1,20 @@
+from datetime import datetime
 from sqlalchemy.orm import Session
 from ..models.firm import Firm
 from ..models.recruiting_deadline import RecruitingDeadline
 from ..models.interview_question import InterviewQuestion
+from ..models.news_article import NewsArticle
 from .firms import FIRMS
 from .deadlines import DEADLINES
 from .questions import QUESTIONS
+from .news import NEWS_ARTICLES
 
 
 def seed_all(db: Session):
     seed_firms(db)
     seed_deadlines(db)
     seed_questions(db)
+    seed_news(db)
 
 
 def seed_firms(db: Session):
@@ -45,3 +49,24 @@ def seed_questions(db: Session):
             added += 1
     db.commit()
     print(f"[SEED] Questions: added {added}")
+
+
+def seed_news(db: Session):
+    existing_urls = {n.url for n in db.query(NewsArticle).all()}
+    added = 0
+    for item in NEWS_ARTICLES:
+        if item["url"] not in existing_urls:
+            pub = item.get("published_at")
+            if pub and hasattr(pub, "year"):
+                pub = datetime(pub.year, pub.month, pub.day, 12, 0, 0)
+            db.add(NewsArticle(
+                title=item["title"],
+                url=item["url"],
+                source=item["source"],
+                summary=item.get("summary"),
+                published_at=pub,
+                category=item.get("category"),
+            ))
+            added += 1
+    db.commit()
+    print(f"[SEED] News: added {added}")

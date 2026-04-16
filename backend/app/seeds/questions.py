@@ -1156,4 +1156,714 @@ QUESTIONS = [
             "hence why it's the most sensitive assumption in a DCF."
         ),
     },
+
+    # ═════════════════════════════════════════
+    # EXERCISES — Worked numerical problems
+    # ═════════════════════════════════════════
+
+    # ── DCF ──────────────────────────────────
+    {
+        "category": "Exercise",
+        "subcategory": "DCF",
+        "difficulty": "Hard",
+        "question": (
+            "DCF Exercise — NorthernCo Industries\n\n"
+            "NorthernCo is a Canadian industrial company. Use the following assumptions:\n\n"
+            "  Projected Free Cash Flows (Years 1–5): $48M, $55M, $62M, $68M, $73M\n"
+            "  WACC: 9.5%\n"
+            "  Terminal growth rate: 2.5%\n"
+            "  Net Debt: $115M\n"
+            "  Shares outstanding: 22M\n\n"
+            "Calculate: (a) PV of FCFs, (b) Terminal Value using Gordon Growth Model, "
+            "(c) PV of Terminal Value, (d) Enterprise Value, (e) Equity Value, (f) Implied share price."
+        ),
+        "answer": (
+            "Step 1 — Discount each FCF at WACC of 9.5%:\n"
+            "  Year 1: $48M ÷ 1.095¹  = $43.8M\n"
+            "  Year 2: $55M ÷ 1.095²  = $45.8M\n"
+            "  Year 3: $62M ÷ 1.095³  = $47.2M\n"
+            "  Year 4: $68M ÷ 1.095⁴  = $47.3M\n"
+            "  Year 5: $73M ÷ 1.095⁵  = $46.4M\n"
+            "  → Sum of PV(FCFs) = $230.5M\n\n"
+            "Step 2 — Terminal Value (Gordon Growth Model):\n"
+            "  TV = FCF₅ × (1 + g) ÷ (WACC − g)\n"
+            "  TV = $73M × 1.025 ÷ (0.095 − 0.025)\n"
+            "  TV = $74.825M ÷ 0.07 = $1,068.9M\n\n"
+            "Step 3 — PV of Terminal Value:\n"
+            "  PV(TV) = $1,068.9M ÷ 1.095⁵ = $1,068.9M ÷ 1.5742 = $679.0M\n\n"
+            "Step 4 — Enterprise Value:\n"
+            "  EV = $230.5M + $679.0M = $909.5M\n\n"
+            "Step 5 — Equity Value:\n"
+            "  Equity Value = EV − Net Debt = $909.5M − $115M = $794.5M\n\n"
+            "Step 6 — Share Price:\n"
+            "  Price = $794.5M ÷ 22M shares = $36.11 per share\n\n"
+            "Sanity check: TV represents $679M ÷ $909.5M = 74.7% of EV — typical for a DCF. "
+            "Small WACC changes swing value significantly: at 8.5% WACC, EV would be ~$1,060M."
+        ),
+    },
+    {
+        "category": "Exercise",
+        "subcategory": "DCF",
+        "difficulty": "Hard",
+        "question": (
+            "DCF Sensitivity Exercise — MapleLeaf Software Inc.\n\n"
+            "MapleLeaf Software is a Toronto-based SaaS company. Base case assumptions:\n\n"
+            "  Year 5 FCF (terminal year): $80M\n"
+            "  WACC: 10%\n"
+            "  Terminal growth rate: 3%\n"
+            "  Sum of PV(FCFs Years 1–5): $210M\n"
+            "  Net Debt: −$50M (net cash position)\n"
+            "  Shares outstanding: 30M\n\n"
+            "(a) Calculate base-case Enterprise Value and share price.\n"
+            "(b) Recalculate EV if WACC rises to 12% (same terminal FCF and growth rate).\n"
+            "(c) Recalculate EV if terminal growth rate falls to 1% (WACC stays at 10%).\n"
+            "(d) What does this tell you about DCF sensitivity?"
+        ),
+        "answer": (
+            "Part (a) — Base Case:\n"
+            "  TV = $80M × 1.03 ÷ (0.10 − 0.03) = $82.4M ÷ 0.07 = $1,177.1M\n"
+            "  PV(TV) = $1,177.1M ÷ 1.10⁵ = $1,177.1M ÷ 1.6105 = $730.9M\n"
+            "  EV = $210M + $730.9M = $940.9M\n"
+            "  Equity Value = $940.9M − (−$50M) = $990.9M\n"
+            "  Share price = $990.9M ÷ 30M = $33.03\n\n"
+            "Part (b) — WACC = 12%:\n"
+            "  TV = $80M × 1.03 ÷ (0.12 − 0.03) = $82.4M ÷ 0.09 = $915.6M\n"
+            "  PV(TV) = $915.6M ÷ 1.12⁵ = $915.6M ÷ 1.7623 = $519.6M\n"
+            "  EV ≈ $185M (adj. FCF PVs) + $519.6M = ~$704M\n"
+            "  → EV drops from $941M to ~$704M — a 25% decline for just +200bps in WACC\n\n"
+            "Part (c) — g = 1%:\n"
+            "  TV = $80M × 1.01 ÷ (0.10 − 0.01) = $80.8M ÷ 0.09 = $897.8M\n"
+            "  PV(TV) = $897.8M ÷ 1.10⁵ = $557.5M\n"
+            "  EV = $210M + $557.5M = $767.5M\n"
+            "  → EV drops from $941M to $768M — an 18% decline for −200bps in growth rate\n\n"
+            "Part (d) — Key Insight:\n"
+            "  Terminal value drives 70–80% of DCF value. WACC and growth rate assumptions are "
+            "  the most leveraged inputs — small changes produce massive EV swings. "
+            "  Always run a WACC vs. g sensitivity table in any real model."
+        ),
+    },
+
+    # ── WACC ─────────────────────────────────
+    {
+        "category": "Exercise",
+        "subcategory": "WACC",
+        "difficulty": "Hard",
+        "question": (
+            "WACC Calculation Exercise — MapleRidge Mining Corp.\n\n"
+            "Calculate the WACC for MapleRidge Mining using the following data:\n\n"
+            "  Capital structure:  Equity = $800M (market value)   Debt = $400M (market value)\n"
+            "  Risk-free rate (10-yr GoC bond): 3.4%\n"
+            "  Equity risk premium (market): 5.5%\n"
+            "  MapleRidge's beta (levered): 1.35\n"
+            "  Pre-tax cost of debt: 6.2%\n"
+            "  Corporate tax rate: 26.5%\n\n"
+            "Show all steps."
+        ),
+        "answer": (
+            "Step 1 — Capital structure weights:\n"
+            "  Total capital V = $800M + $400M = $1,200M\n"
+            "  E/V = $800M ÷ $1,200M = 66.7%\n"
+            "  D/V = $400M ÷ $1,200M = 33.3%\n\n"
+            "Step 2 — Cost of equity (CAPM):\n"
+            "  Re = Rf + β × (Market Risk Premium)\n"
+            "  Re = 3.4% + 1.35 × 5.5%\n"
+            "  Re = 3.4% + 7.425% = 10.825%\n\n"
+            "Step 3 — After-tax cost of debt:\n"
+            "  Rd(after-tax) = 6.2% × (1 − 0.265) = 6.2% × 0.735 = 4.557%\n\n"
+            "Step 4 — WACC:\n"
+            "  WACC = (E/V × Re) + (D/V × Rd × (1−T))\n"
+            "  WACC = (0.667 × 10.825%) + (0.333 × 4.557%)\n"
+            "  WACC = 7.220% + 1.517% = 8.74%\n\n"
+            "Interpretation: Every dollar of capital invested must return at least 8.74% "
+            "to create value for MapleRidge's investors. "
+            "The tax shield reduces effective debt cost from 6.2% to 4.56%."
+        ),
+    },
+
+    # ── LBO Returns ──────────────────────────
+    {
+        "category": "Exercise",
+        "subcategory": "LBO Returns",
+        "difficulty": "Hard",
+        "question": (
+            "LBO Returns Exercise — CedarCrest Holdings\n\n"
+            "A private equity firm acquires CedarCrest Holdings with the following terms:\n\n"
+            "  Purchase price:          $500M  (10x EBITDA on $50M LTM EBITDA)\n"
+            "  Debt financing:          $300M  (6x EBITDA, 7% PIK interest)\n"
+            "  Equity check:            $200M\n"
+            "  Hold period:             5 years\n"
+            "  Exit EBITDA (Year 5):    $80M   (EBITDA grows from $50M at ~10% CAGR)\n"
+            "  Exit multiple:           10x EV/EBITDA\n"
+            "  Debt outstanding at exit: $210M (after partial paydown from FCF)\n\n"
+            "(a) Calculate exit Enterprise Value.\n"
+            "(b) Calculate exit Equity Value.\n"
+            "(c) Calculate MOIC (Multiple on Invested Capital).\n"
+            "(d) Calculate approximate IRR. (Hint: use the rule of 72 or the IRR formula.)"
+        ),
+        "answer": (
+            "Part (a) — Exit Enterprise Value:\n"
+            "  EV_exit = Exit EBITDA × Exit Multiple = $80M × 10x = $800M\n\n"
+            "Part (b) — Exit Equity Value:\n"
+            "  Equity_exit = EV_exit − Debt_exit = $800M − $210M = $590M\n\n"
+            "Part (c) — MOIC:\n"
+            "  MOIC = Equity_exit ÷ Equity_check = $590M ÷ $200M = 2.95x\n\n"
+            "Part (d) — IRR (5-year hold):\n"
+            "  Exact IRR: solve for r in: $200M × (1+r)⁵ = $590M\n"
+            "  → (1+r)⁵ = 2.95\n"
+            "  → (1+r) = 2.95^(1/5) = 1.2415\n"
+            "  → r = 24.2% IRR\n\n"
+            "Quick check with rule of 72: 72 ÷ 24 ≈ 3 years to double, so ~3x in 5 years ≈ consistent.\n\n"
+            "Key drivers of return:\n"
+            "  · EBITDA growth ($50M → $80M): contributed ~$300M to EV\n"
+            "  · Debt paydown ($300M → $210M): freed $90M of equity value\n"
+            "  · Multiple held flat at 10x (no multiple expansion/contraction)"
+        ),
+    },
+    {
+        "category": "Exercise",
+        "subcategory": "LBO Returns",
+        "difficulty": "Hard",
+        "question": (
+            "LBO Sensitivity Exercise — Leverage vs. Returns\n\n"
+            "A PE firm is evaluating two financing structures for a $600M acquisition "
+            "(target EBITDA: $60M, purchase multiple: 10x).\n\n"
+            "  Structure A:  $240M equity (40%) + $360M debt (60%)\n"
+            "  Structure B:  $180M equity (30%) + $420M debt (70%)\n\n"
+            "In both cases:\n"
+            "  Exit EBITDA (Year 5): $90M at 10x exit multiple → EV_exit = $900M\n"
+            "  Assume debt is fully repaid from FCF by exit in Structure A, "
+            "  but $80M remains outstanding at exit in Structure B (higher interest burden).\n\n"
+            "(a) Calculate exit equity value and MOIC for both structures.\n"
+            "(b) Calculate approximate IRR for both structures.\n"
+            "(c) Which structure produces higher returns and why?"
+        ),
+        "answer": (
+            "Part (a) — Exit Equity Values:\n"
+            "  Structure A: EV_exit = $900M, Debt_exit = $0\n"
+            "    → Equity_exit = $900M − $0 = $900M\n"
+            "    → MOIC_A = $900M ÷ $240M = 3.75x\n\n"
+            "  Structure B: EV_exit = $900M, Debt_exit = $80M\n"
+            "    → Equity_exit = $900M − $80M = $820M\n"
+            "    → MOIC_B = $820M ÷ $180M = 4.56x\n\n"
+            "Part (b) — IRRs (5-year hold):\n"
+            "  Structure A: (1+r)⁵ = 3.75 → r = 3.75^0.2 − 1 = 30.3% IRR\n"
+            "  Structure B: (1+r)⁵ = 4.56 → r = 4.56^0.2 − 1 = 35.4% IRR\n\n"
+            "Part (c) — Insight:\n"
+            "  Structure B (higher leverage) generates 5.1 ppt more IRR despite a lower MOIC "
+            "  in raw dollar terms per equity dollar invested. The smaller equity check amplifies "
+            "  percentage returns. However: Structure B carries higher bankruptcy risk — "
+            "  any shortfall in FCF may breach debt covenants. The optimal leverage "
+            "  balances return amplification against distress risk."
+        ),
+    },
+
+    # ── Accretion / Dilution ─────────────────
+    {
+        "category": "Exercise",
+        "subcategory": "Accretion / Dilution",
+        "difficulty": "Hard",
+        "question": (
+            "Accretion/Dilution Exercise — ScotiaTech acquiring Maple Software\n\n"
+            "ScotiaTech (acquirer) wants to acquire Maple Software (target). "
+            "Use the following data:\n\n"
+            "  Acquirer:  Net Income = $200M   |  Shares O/S = 100M   |  Share Price = $40\n"
+            "  Target:    Net Income = $30M    |  Purchase Price = $300M (all-stock deal)\n"
+            "  Synergies (after-tax): $10M per year\n"
+            "  New shares issued = Purchase Price ÷ Acquirer Share Price = $300M ÷ $40 = 7.5M shares\n\n"
+            "(a) Calculate acquirer's standalone EPS.\n"
+            "(b) Calculate combined net income (including synergies).\n"
+            "(c) Calculate new share count post-acquisition.\n"
+            "(d) Calculate pro forma EPS.\n"
+            "(e) Is the deal accretive or dilutive? By how much?"
+        ),
+        "answer": (
+            "Part (a) — Standalone EPS:\n"
+            "  EPS_standalone = Net Income ÷ Shares = $200M ÷ 100M = $2.00\n\n"
+            "Part (b) — Combined Net Income:\n"
+            "  Combined NI = Acquirer NI + Target NI + Synergies\n"
+            "             = $200M + $30M + $10M = $240M\n\n"
+            "Part (c) — New Share Count:\n"
+            "  New shares issued = $300M ÷ $40 = 7.5M shares\n"
+            "  Total shares = 100M + 7.5M = 107.5M\n\n"
+            "Part (d) — Pro Forma EPS:\n"
+            "  EPS_pro_forma = $240M ÷ 107.5M = $2.233\n\n"
+            "Part (e) — Accretion/Dilution:\n"
+            "  Change in EPS = $2.233 − $2.00 = +$0.233\n"
+            "  Accretion = +$0.233 ÷ $2.00 = +11.7% accretive\n\n"
+            "Why accretive? Target's earnings yield = $30M ÷ $300M = 10%. "
+            "Acquirer's P/E = $40 ÷ $2.00 = 20x → earnings yield = 5%. "
+            "Target is cheaper on an earnings yield basis + synergies push it further accretive. "
+            "Rule: deal is accretive when target earnings yield > acquirer's cost of equity."
+        ),
+    },
+    {
+        "category": "Exercise",
+        "subcategory": "Accretion / Dilution",
+        "difficulty": "Hard",
+        "question": (
+            "Mixed Financing Accretion/Dilution — Financing Mix Matters\n\n"
+            "AcquireCo (P/E = 15x, Net Income = $300M, Shares = 150M) "
+            "acquires TargetCo for $500M.\n"
+            "TargetCo Net Income = $25M. No synergies.\n\n"
+            "Evaluate three financing scenarios:\n"
+            "  Case 1: 100% cash (cost of cash = 5% pre-tax, tax rate 25%)\n"
+            "  Case 2: 100% stock (new shares issued at AcquireCo price of $30/share)\n"
+            "  Case 3: 50% cash / 50% stock\n\n"
+            "(a) Calculate combined net income, share count, and EPS for each case.\n"
+            "(b) Determine if each case is accretive or dilutive.\n"
+            "(c) What general rule does this illustrate?"
+        ),
+        "answer": (
+            "Acquirer standalone: EPS = $300M ÷ 150M = $2.00/share\n\n"
+            "─── Case 1: 100% Cash ───\n"
+            "  After-tax interest cost = $500M × 5% × (1 − 25%) = $18.75M\n"
+            "  Combined NI = $300M + $25M − $18.75M = $306.25M\n"
+            "  Shares unchanged = 150M\n"
+            "  EPS = $306.25M ÷ 150M = $2.042 → +2.1% ACCRETIVE\n\n"
+            "─── Case 2: 100% Stock ───\n"
+            "  New shares = $500M ÷ $30 = 16.67M\n"
+            "  Total shares = 150M + 16.67M = 166.67M\n"
+            "  Combined NI = $300M + $25M = $325M (no interest cost)\n"
+            "  EPS = $325M ÷ 166.67M = $1.950 → −2.5% DILUTIVE\n\n"
+            "─── Case 3: 50/50 Mix ───\n"
+            "  Cash portion ($250M): after-tax cost = $250M × 5% × 0.75 = $9.375M\n"
+            "  Stock portion ($250M): new shares = $250M ÷ $30 = 8.33M\n"
+            "  Total shares = 150M + 8.33M = 158.33M\n"
+            "  Combined NI = $300M + $25M − $9.375M = $315.625M\n"
+            "  EPS = $315.625M ÷ 158.33M = $1.994 → −0.3% (essentially neutral)\n\n"
+            "Key Insight:\n"
+            "  Cash financing is accretive because the after-tax cost of debt (3.75%) is less than "
+            "  the target's earnings yield ($25M ÷ $500M = 5%). Stock is dilutive because issuing "
+            "  shares at 15x P/E (6.7% earnings yield) is cheaper than the target's 5% earnings "
+            "  yield — wait, actually stock is dilutive here because more shares are issued than "
+            "  the earnings they bring. The break-even comes when target earnings yield = acquirer "
+            "  after-tax financing cost."
+        ),
+    },
+
+    # ── EV Bridge ────────────────────────────
+    {
+        "category": "Exercise",
+        "subcategory": "Enterprise Value",
+        "difficulty": "Medium",
+        "question": (
+            "EV to Equity Value Bridge Exercise\n\n"
+            "You are building a football field valuation for RockStar Mining (TSX: RSM). "
+            "The comps analysis gives you an EV range of $800M – $1,100M.\n\n"
+            "RSM's balance sheet (most recent quarter):\n"
+            "  Total debt:                      $220M\n"
+            "  Less: Cash and cash equivalents: ($45M)\n"
+            "  Preferred shares (market value): $30M\n"
+            "  Minority interest (book value):  $15M\n"
+            "  Diluted shares outstanding:       85M\n\n"
+            "(a) Calculate Net Debt.\n"
+            "(b) Calculate Equity Value range from the EV range.\n"
+            "(c) Calculate implied share price range.\n"
+            "(d) If RSM currently trades at $8.50, is it cheap or expensive vs. your comps?"
+        ),
+        "answer": (
+            "Part (a) — Net Debt:\n"
+            "  Net Debt = Total Debt + Preferred + Minority Interest − Cash\n"
+            "  Net Debt = $220M + $30M + $15M − $45M = $220M\n\n"
+            "Part (b) — Equity Value Range:\n"
+            "  Equity Value = Enterprise Value − Net Debt\n"
+            "  Low:  $800M − $220M = $580M\n"
+            "  High: $1,100M − $220M = $880M\n\n"
+            "Part (c) — Implied Share Price Range:\n"
+            "  Low:  $580M ÷ 85M shares = $6.82 per share\n"
+            "  High: $880M ÷ 85M shares = $10.35 per share\n"
+            "  Midpoint: ($6.82 + $10.35) ÷ 2 = $8.59 per share\n\n"
+            "Part (d) — Current Price vs. Comps:\n"
+            "  RSM trades at $8.50 vs. implied range of $6.82 – $10.35. "
+            "  The stock is trading near the midpoint of the comps range — fairly valued. "
+            "  It's above the low end (not cheap) but below the high end (not expensive). "
+            "  Conclusion: inline with peers; upside exists if RSM re-rates to top-quartile multiple."
+        ),
+    },
+
+    # ── 3-Statement Accounting ───────────────
+    {
+        "category": "Exercise",
+        "subcategory": "3-Statement Accounting",
+        "difficulty": "Hard",
+        "question": (
+            "3-Statement Impact Exercise\n\n"
+            "A company (tax rate 30%) takes out a $100M 5-year term loan at 8% annual interest "
+            "to buy new manufacturing equipment worth $100M (straight-line depreciation over 5 years).\n\n"
+            "Show the Year 1 impact on all three financial statements:\n"
+            "  (a) Income Statement\n"
+            "  (b) Cash Flow Statement\n"
+            "  (c) Balance Sheet\n\n"
+            "Assume the loan is drawn and equipment purchased on Day 1 of the year, "
+            "and the entire year of interest and depreciation is recognized in Year 1."
+        ),
+        "answer": (
+            "─── (a) Income Statement ───\n"
+            "  Depreciation expense:     −$20M  ($100M ÷ 5 years)\n"
+            "  Interest expense:         −$8M   ($100M × 8%)\n"
+            "  Pre-tax impact:           −$28M\n"
+            "  Tax benefit (30%):        +$8.4M\n"
+            "  Net Income impact:        −$19.6M\n\n"
+            "─── (b) Cash Flow Statement ───\n"
+            "  Operating Activities:\n"
+            "    Net Income:             −$19.6M\n"
+            "    Add back Depreciation:  +$20.0M  (non-cash)\n"
+            "    CFO impact:             +$0.4M (tax shield benefit only)\n\n"
+            "  Investing Activities:\n"
+            "    Purchase of equipment:  −$100M\n\n"
+            "  Financing Activities:\n"
+            "    Proceeds from debt:     +$100M\n\n"
+            "  Net Change in Cash:       +$0.4M (the tax shield on depreciation + interest)\n\n"
+            "─── (c) Balance Sheet ───\n"
+            "  Assets:\n"
+            "    PP&E (gross):           +$100M\n"
+            "    Accumulated Depreciation: −$20M\n"
+            "    Net PP&E:               +$80M\n"
+            "    Cash:                   +$0.4M (from net cash flow above)\n\n"
+            "  Liabilities:\n"
+            "    Long-term debt:         +$100M\n\n"
+            "  Equity:\n"
+            "    Retained Earnings:      −$19.6M (net income impact)\n\n"
+            "Check: ΔAssets = +$80.4M | ΔLiabilities + ΔEquity = +$100M − $19.6M = +$80.4M ✓"
+        ),
+    },
+    {
+        "category": "Exercise",
+        "subcategory": "3-Statement Accounting",
+        "difficulty": "Medium",
+        "question": (
+            "Working Capital Impact Exercise\n\n"
+            "CanadaCo reports the following changes in working capital during the year:\n\n"
+            "  Accounts Receivable:    increased by $40M\n"
+            "  Inventory:              decreased by $15M\n"
+            "  Accounts Payable:       increased by $25M\n"
+            "  Accrued liabilities:    decreased by $10M\n\n"
+            "Net Income for the year = $80M. Depreciation = $20M. No capex or financing changes.\n\n"
+            "(a) Calculate the change in Net Working Capital.\n"
+            "(b) Calculate Operating Cash Flow.\n"
+            "(c) Did working capital consume or release cash? By how much?\n"
+            "(d) What does an increase in A/R signal about cash collection?"
+        ),
+        "answer": (
+            "Part (a) — Change in NWC:\n"
+            "  NWC = (A/R + Inventory) − (A/P + Accrued)\n"
+            "  ΔNWC = (+$40M − $15M) − (+$25M − $10M)\n"
+            "       = +$25M − $15M = +$10M increase in NWC\n\n"
+            "Part (b) — Operating Cash Flow (indirect method):\n"
+            "  CFO = Net Income + D&A − ΔNWC\n"
+            "      = $80M + $20M − $10M = $90M\n\n"
+            "  Breakdown of working capital items on CFS:\n"
+            "    A/R +$40M → cash USE of $40M  (collected less than earned)\n"
+            "    Inventory −$15M → cash SOURCE of $15M  (sold without replacing)\n"
+            "    A/P +$25M → cash SOURCE of $25M  (delayed payments to suppliers)\n"
+            "    Accrued −$10M → cash USE of $10M  (paid previously accrued expenses)\n"
+            "    Net WC impact on cash: −$40M + $15M + $25M − $10M = −$10M\n\n"
+            "Part (c): NWC increased by $10M → consumed $10M of cash.\n\n"
+            "Part (d): Rising A/R means the company recognized revenue but has not yet "
+            "collected the cash — a mismatch between earnings and actual cash receipts. "
+            "If A/R grows faster than revenue, it may signal: slow-paying customers, "
+            "channel stuffing, or deteriorating credit quality."
+        ),
+    },
+
+    # ── Comps Analysis ───────────────────────
+    {
+        "category": "Exercise",
+        "subcategory": "Comparable Companies",
+        "difficulty": "Medium",
+        "question": (
+            "Comparable Company Analysis Exercise\n\n"
+            "You are valuing TargetCo, a Canadian mid-market industrial company. "
+            "Its LTM financials: Revenue = $180M, EBITDA = $45M.\n\n"
+            "Comparable companies trade at these multiples:\n\n"
+            "  Company A:   EV/Revenue = 1.8x   EV/EBITDA = 9.5x\n"
+            "  Company B:   EV/Revenue = 2.2x   EV/EBITDA = 11.0x\n"
+            "  Company C:   EV/Revenue = 1.5x   EV/EBITDA = 8.0x\n"
+            "  Company D:   EV/Revenue = 2.0x   EV/EBITDA = 10.5x\n\n"
+            "(a) Calculate the mean and median EV/Revenue and EV/EBITDA multiples.\n"
+            "(b) Apply mean and median multiples to TargetCo to get implied EV range.\n"
+            "(c) If TargetCo's Net Debt = $60M and shares = 10M, calculate the implied share price range.\n"
+            "(d) Which multiple would you weight more heavily, and why?"
+        ),
+        "answer": (
+            "Part (a) — Multiples Summary:\n"
+            "  EV/Revenue: 1.8x, 2.2x, 1.5x, 2.0x\n"
+            "    Mean = (1.8+2.2+1.5+2.0)÷4 = 7.5÷4 = 1.875x\n"
+            "    Median = (1.8+2.0)÷2 = 1.90x  (middle two of sorted: 1.5, 1.8, 2.0, 2.2)\n\n"
+            "  EV/EBITDA: 9.5x, 11.0x, 8.0x, 10.5x\n"
+            "    Mean = (9.5+11.0+8.0+10.5)÷4 = 39÷4 = 9.75x\n"
+            "    Median = (9.5+10.5)÷2 = 10.0x\n\n"
+            "Part (b) — Implied EV Range for TargetCo:\n"
+            "  EV/Revenue (mean 1.875x):  $180M × 1.875 = $337.5M\n"
+            "  EV/Revenue (median 1.90x): $180M × 1.90  = $342.0M\n"
+            "  EV/EBITDA (mean 9.75x):   $45M  × 9.75  = $438.8M\n"
+            "  EV/EBITDA (median 10.0x): $45M  × 10.0  = $450.0M\n"
+            "  → Implied EV range: ~$338M – $450M\n\n"
+            "Part (c) — Share Price Range:\n"
+            "  Equity Value = EV − Net Debt\n"
+            "  Low:  $338M − $60M = $278M ÷ 10M = $27.80\n"
+            "  High: $450M − $60M = $390M ÷ 10M = $39.00\n\n"
+            "Part (d): Weight EV/EBITDA more heavily for industrial companies. "
+            "EV/Revenue ignores profitability (two companies with same revenue but different "
+            "margins would incorrectly receive the same implied EV). EBITDA normalizes for "
+            "depreciation and capital structure, making it superior for industrials. "
+            "Use EV/Revenue as a secondary check or for pre-profitability companies."
+        ),
+    },
+
+    # ── Debt Paydown Schedule ────────────────
+    {
+        "category": "Exercise",
+        "subcategory": "LBO Debt Schedule",
+        "difficulty": "Hard",
+        "question": (
+            "LBO Debt Paydown Schedule Exercise — PineCrest Packaging\n\n"
+            "A PE firm acquires PineCrest Packaging for $400M with the following structure:\n\n"
+            "  Term Loan A:  $200M at 7.0% — mandatory amortization $20M/year\n"
+            "  Senior Notes: $100M at 9.0% — interest only (bullet maturity Year 5)\n"
+            "  Equity:       $100M\n\n"
+            "PineCrest generates $60M EBITDA, with interest coverage, taxes (25%), and "
+            "D&A of $15M. Capex = $10M/year. ΔWorking Capital = 0.\n\n"
+            "Build the Year 1 debt schedule:\n"
+            "(a) Calculate EBIT, then Net Income.\n"
+            "(b) Calculate FCF available for debt service.\n"
+            "(c) Calculate year-end debt balances after mandatory amortization."
+        ),
+        "answer": (
+            "Part (a) — P&L (Year 1):\n"
+            "  EBITDA:                 $60.0M\n"
+            "  D&A:                   −$15.0M\n"
+            "  EBIT:                   $45.0M\n"
+            "  Interest — Term Loan A: −$14.0M  ($200M × 7%)\n"
+            "  Interest — Sr. Notes:   −$9.0M   ($100M × 9%)\n"
+            "  EBT:                    $22.0M\n"
+            "  Taxes (25%):            −$5.5M\n"
+            "  Net Income:             $16.5M\n\n"
+            "Part (b) — Free Cash Flow:\n"
+            "  Net Income:             $16.5M\n"
+            "  + D&A (non-cash):       +$15.0M\n"
+            "  − Capex:                −$10.0M\n"
+            "  − ΔWorking Capital:      $0.0M\n"
+            "  FCF before debt service: $21.5M\n\n"
+            "Part (c) — Debt Balances:\n"
+            "  Term Loan A:\n"
+            "    Opening balance:     $200.0M\n"
+            "    Mandatory amort:     −$20.0M\n"
+            "    Optional cash sweep: −$1.5M  (remaining $21.5M FCF − $20M mandatory)\n"
+            "    Closing balance:     $178.5M\n\n"
+            "  Senior Notes:\n"
+            "    Opening balance:     $100.0M\n"
+            "    No amortization (bullet maturity)\n"
+            "    Closing balance:     $100.0M\n\n"
+            "  Total debt at year-end: $178.5M + $100M = $278.5M\n"
+            "  (vs. $300M at entry — $21.5M reduction in Year 1)"
+        ),
+    },
+
+    # ── Capital Structure / EPS ──────────────
+    {
+        "category": "Exercise",
+        "subcategory": "Capital Structure",
+        "difficulty": "Medium",
+        "question": (
+            "Debt vs. Equity Financing — EPS Impact Exercise\n\n"
+            "MapleTech Corp. needs to raise $200M to fund a new product line. "
+            "It is evaluating two options:\n\n"
+            "  Option A: Issue $200M of debt at 6% interest rate\n"
+            "  Option B: Issue 8M new shares at $25 per share\n\n"
+            "Current situation:\n"
+            "  Net Income (standalone):    $100M\n"
+            "  Shares outstanding:         50M\n"
+            "  Tax rate:                   26.5%\n"
+            "  Expected EBIT increase from new product: $20M\n\n"
+            "(a) Calculate EPS under each option.\n"
+            "(b) Which option is better for existing shareholders and why?\n"
+            "(c) At what EBIT increase would the two options produce equal EPS (break-even)?"
+        ),
+        "answer": (
+            "Standalone EPS = $100M ÷ 50M = $2.00\n\n"
+            "─── Option A: Debt Financing ───\n"
+            "  After-tax interest = $200M × 6% × (1 − 26.5%) = $12M × 0.735 = $8.82M\n"
+            "  Additional EBIT contribution (after-tax) = $20M × (1 − 26.5%) = $14.70M\n"
+            "  NI impact = $14.70M − $8.82M = +$5.88M\n"
+            "  New NI = $100M + $5.88M = $105.88M\n"
+            "  Shares unchanged = 50M\n"
+            "  EPS_A = $105.88M ÷ 50M = $2.118\n\n"
+            "─── Option B: Equity Financing ───\n"
+            "  No interest cost. Additional EBIT (after-tax) = $14.70M\n"
+            "  New NI = $100M + $14.70M = $114.70M\n"
+            "  New shares = 50M + 8M = 58M\n"
+            "  EPS_B = $114.70M ÷ 58M = $1.977\n\n"
+            "Part (b): Option A (debt) is better for existing shareholders — $2.118 vs $1.977. "
+            "Debt financing is EPS-accretive when the after-tax return on invested capital "
+            "($14.70M ÷ $200M = 7.35%) exceeds the after-tax cost of debt (4.41%). ✓\n\n"
+            "Part (c) — Break-even EBIT:\n"
+            "  Let x = EBIT increase. Break-even when EPS_A = EPS_B:\n"
+            "  ($100M + x×0.735 − $8.82M) ÷ 50M = ($100M + x×0.735) ÷ 58M\n"
+            "  Solve: 58×(91.18M + 0.735x) = 50×(100M + 0.735x)\n"
+            "  5,288.44 + 42.63x = 5,000 + 36.75x\n"
+            "  5.88x = −288.44 → x = −$49.1M\n"
+            "  Interpretation: Debt is always better here given the NI base — the break-even "
+            "only occurs at deeply negative EBIT scenarios."
+        ),
+    },
+
+    # ── Sharpe Ratio ─────────────────────────
+    {
+        "category": "Exercise",
+        "subcategory": "Asset Management",
+        "difficulty": "Medium",
+        "question": (
+            "Portfolio Risk-Return Exercise — Sharpe Ratio & Asset Allocation\n\n"
+            "You are comparing two equity funds for a pension allocation:\n\n"
+            "  Fund A:  Annual return = 14.5%   Standard deviation = 18%\n"
+            "  Fund B:  Annual return = 11.0%   Standard deviation = 9%\n"
+            "  Risk-free rate (1-yr GoC T-bill): 3.5%\n\n"
+            "(a) Calculate the Sharpe Ratio for each fund.\n"
+            "(b) Which fund is more efficient on a risk-adjusted basis?\n"
+            "(c) If you allocate $300M to the better Sharpe fund, what is the expected "
+            "dollar return in Year 1?\n"
+            "(d) A benchmark index returned 12% with a std dev of 10%. Calculate the "
+            "Sharpe ratio for the benchmark and determine which fund beats it."
+        ),
+        "answer": (
+            "Part (a) — Sharpe Ratios:\n"
+            "  Sharpe = (Return − Risk-Free Rate) ÷ Standard Deviation\n\n"
+            "  Fund A: (14.5% − 3.5%) ÷ 18% = 11.0% ÷ 18% = 0.611\n"
+            "  Fund B: (11.0% − 3.5%) ÷  9% = 7.5% ÷ 9%   = 0.833\n\n"
+            "Part (b): Fund B has a higher Sharpe ratio (0.833 vs 0.611), meaning it generates "
+            "more return per unit of risk. For a pension fund focused on risk-adjusted returns, "
+            "Fund B is the superior allocation despite its lower absolute return.\n\n"
+            "Part (c) — Dollar Return from Fund B:\n"
+            "  Expected return = $300M × 11.0% = $33.0M in Year 1\n\n"
+            "Part (d) — Benchmark Sharpe:\n"
+            "  Benchmark: (12% − 3.5%) ÷ 10% = 8.5% ÷ 10% = 0.850\n\n"
+            "  Fund A Sharpe (0.611) < Benchmark (0.850) → Fund A UNDERPERFORMS\n"
+            "  Fund B Sharpe (0.833) < Benchmark (0.850) → Fund B slightly UNDERPERFORMS\n"
+            "  Conclusion: Neither fund beats the benchmark on a risk-adjusted basis — "
+            "  allocating to a low-cost index product may be optimal."
+        ),
+    },
+
+    # ── Merger Model ─────────────────────────
+    {
+        "category": "Exercise",
+        "subcategory": "Merger Analysis",
+        "difficulty": "Hard",
+        "question": (
+            "Full Merger Model Exercise — RiverRock Capital acquiring CoastalCo\n\n"
+            "RiverRock Capital (acquirer) is acquiring CoastalCo (target) for $600M in a "
+            "50% cash / 50% stock deal. Use the data below:\n\n"
+            "  RiverRock:  NI = $250M   |  Shares = 125M   |  Price = $40   |  P/E = 20x\n"
+            "  CoastalCo:  NI = $40M    |  No debt\n"
+            "  Cash portion: $300M borrowed at 5% (tax rate 27%)\n"
+            "  Stock portion: $300M worth of RiverRock shares issued at $40\n"
+            "  Pre-tax synergies: $15M/year\n\n"
+            "(a) Calculate incremental interest expense (after-tax).\n"
+            "(b) Calculate new shares issued and total share count.\n"
+            "(c) Calculate pro forma combined Net Income.\n"
+            "(d) Calculate pro forma EPS and % change from standalone.\n"
+            "(e) Is the deal accretive or dilutive?"
+        ),
+        "answer": (
+            "Acquirer standalone EPS = $250M ÷ 125M = $2.00\n\n"
+            "Part (a) — After-tax interest (cash portion):\n"
+            "  Gross interest = $300M × 5% = $15.0M\n"
+            "  After-tax = $15.0M × (1 − 0.27) = $10.95M\n\n"
+            "Part (b) — New shares issued:\n"
+            "  Stock portion = $300M ÷ $40 per share = 7.5M new shares\n"
+            "  Total shares = 125M + 7.5M = 132.5M\n\n"
+            "Part (c) — Pro Forma Net Income:\n"
+            "  RiverRock NI:                +$250.00M\n"
+            "  CoastalCo NI:                +$40.00M\n"
+            "  After-tax synergies:         +$10.95M  ($15M × 0.73)\n"
+            "  After-tax interest cost:     −$10.95M\n"
+            "  Pro Forma NI:                $290.00M\n\n"
+            "Part (d) — Pro Forma EPS:\n"
+            "  EPS_proforma = $290.0M ÷ 132.5M = $2.189\n"
+            "  Change = ($2.189 − $2.00) ÷ $2.00 = +9.5% ACCRETIVE\n\n"
+            "Part (e): Deal is accretive by 9.5% due to synergies offsetting the cost of "
+            "financing. Without synergies: NI = $250M + $40M − $10.95M = $279.05M; "
+            "EPS = $279.05M ÷ 132.5M = $2.107 — still slightly accretive (+5.4%) because "
+            "CoastalCo's earnings yield ($40M ÷ $600M = 6.7%) > after-tax cash cost (3.65%)."
+        ),
+    },
+
+    # ── Mental Math / Estimation ─────────────
+    {
+        "category": "Exercise",
+        "subcategory": "Mental Math",
+        "difficulty": "Medium",
+        "question": (
+            "Mental Math / Quick Valuation Exercise\n\n"
+            "Answer the following without a calculator — show your working:\n\n"
+            "(a) A company has $250M revenue and 22% EBITDA margins. It trades at 11x EV/EBITDA. "
+            "    Net Debt = $80M. Shares = 15M. What is the share price?\n\n"
+            "(b) A bank has a P/E of 12x and earns $5.50 in EPS. What is the share price?\n\n"
+            "(c) An LBO target generates $40M EBITDA. The PE firm pays 9x entry. "
+            "    They finance 60% with debt. How big is the equity check?\n\n"
+            "(d) A bond with face value $1,000 has a 5% coupon and matures in 3 years. "
+            "    If market rates rise to 7%, is the bond worth more or less than $1,000? Why?"
+        ),
+        "answer": (
+            "Part (a) — Share Price:\n"
+            "  EBITDA = $250M × 22% = $55M\n"
+            "  EV = $55M × 11x = $605M\n"
+            "  Equity Value = $605M − $80M = $525M\n"
+            "  Share Price = $525M ÷ 15M = $35.00\n\n"
+            "Part (b) — Bank Share Price:\n"
+            "  Price = P/E × EPS = 12 × $5.50 = $66.00\n\n"
+            "Part (c) — LBO Equity Check:\n"
+            "  Purchase price = $40M × 9x = $360M\n"
+            "  Debt = 60% × $360M = $216M\n"
+            "  Equity check = 40% × $360M = $144M\n\n"
+            "Part (d) — Bond Price Direction:\n"
+            "  The bond is worth LESS than $1,000. When market rates rise above the coupon (5% < 7%), "
+            "  existing bonds become less attractive — investors demand a discount to achieve the "
+            "  higher market yield. Price and yield move inversely. "
+            "  Rough calc: the bond's fair price ≈ $947 (PV of coupons + face at 7% discount rate)."
+        ),
+    },
+
+    # ── Break-Even / Margin ──────────────────
+    {
+        "category": "Exercise",
+        "subcategory": "Break-Even Analysis",
+        "difficulty": "Medium",
+        "question": (
+            "Break-Even & Margin Analysis Exercise — GreatLakes Manufacturing\n\n"
+            "GreatLakes Manufacturing produces industrial widgets. Cost structure:\n\n"
+            "  Selling price per unit:    $120\n"
+            "  Variable cost per unit:    $75\n"
+            "  Fixed costs per year:      $4.5M\n"
+            "  Current production:        150,000 units/year\n\n"
+            "(a) Calculate contribution margin per unit and contribution margin ratio.\n"
+            "(b) Calculate the break-even volume (units).\n"
+            "(c) Calculate revenue and EBIT at current production.\n"
+            "(d) A new customer offers to buy 20,000 additional units at $90/unit. "
+            "    Should GreatLakes accept? Show your reasoning."
+        ),
+        "answer": (
+            "Part (a) — Contribution Margin:\n"
+            "  CM per unit = Price − Variable Cost = $120 − $75 = $45\n"
+            "  CM ratio = $45 ÷ $120 = 37.5%\n\n"
+            "Part (b) — Break-Even Volume:\n"
+            "  Break-even units = Fixed Costs ÷ CM per unit\n"
+            "                   = $4,500,000 ÷ $45 = 100,000 units\n"
+            "  GreatLakes needs to sell 100,000 units just to cover fixed costs.\n\n"
+            "Part (c) — Current Revenue & EBIT:\n"
+            "  Revenue = 150,000 × $120 = $18,000,000\n"
+            "  Variable Costs = 150,000 × $75 = $11,250,000\n"
+            "  Contribution = $18,000,000 − $11,250,000 = $6,750,000\n"
+            "  EBIT = $6,750,000 − $4,500,000 fixed = $2,250,000\n"
+            "  EBIT margin = $2.25M ÷ $18M = 12.5%\n\n"
+            "Part (d) — Special Order Decision:\n"
+            "  Accept IF the incremental CM > 0 (assuming spare capacity exists).\n"
+            "  Incremental CM = ($90 − $75) × 20,000 = $15 × 20,000 = $300,000\n"
+            "  Fixed costs don't change (spare capacity assumed) → $300K pure profit.\n"
+            "  Decision: YES, accept the order. It increases EBIT by $300K (from $2.25M to $2.55M).\n"
+            "  Caveat: Only accept if GreatLakes has capacity and the special price won't "
+            "  undercut their standard $120 price with existing customers."
+        ),
+    },
 ]
