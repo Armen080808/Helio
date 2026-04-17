@@ -5,11 +5,15 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  DialogDescription, DialogFooter, DialogClose,
+} from "@/components/ui/dialog";
 import { ChartContainer } from "@/components/ui/chart";
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip } from "recharts";
 import {
   GraduationCap, TrendingUp, DollarSign, Users, Search,
-  Clock, MapPin, ChevronDown, ChevronUp, Info,
+  Clock, MapPin, ChevronDown, ChevronUp, Info, Check, Send,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -400,40 +404,117 @@ function SpotlightCard({ profile }: { profile: AlumniProfile }) {
 
 // Alumni community card
 function CommunityCard({ profile }: { profile: AlumniProfile }) {
+  const [open, setOpen]           = useState(false);
+  const [message, setMessage]     = useState("");
+  const [requested, setRequested] = useState(false);
+
+  function handleSend() {
+    setRequested(true);
+    setOpen(false);
+    setMessage("");
+  }
+
+  const defaultMessage = `Hi ${profile.name.split(" ")[0]}, I'm a UofT student interested in ${profile.sector === "Consulting" ? "consulting" : profile.sector === "Banking" ? "investment banking" : "your work at " + profile.company}. Would you be open to a brief coffee chat? I'd love to learn about your experience.`;
+
   return (
-    <Card className="transition-shadow hover:shadow-md">
-      <CardContent className="p-4 flex gap-3">
-        <Avatar className="h-10 w-10 shrink-0 mt-0.5">
-          <AvatarFallback className={cn("text-xs font-bold text-white", profile.avatarColor)}>
-            {profile.initials}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex-1 min-w-0 flex flex-col gap-1.5">
-          <div className="flex items-start justify-between gap-2">
+    <>
+      <Card className="transition-shadow hover:shadow-md">
+        <CardContent className="p-4 flex gap-3">
+          <Avatar className="h-10 w-10 shrink-0 mt-0.5">
+            <AvatarFallback className={cn("text-xs font-bold text-white", profile.avatarColor)}>
+              {profile.initials}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="text-sm font-semibold leading-tight">{profile.name}</p>
+                <p className="text-xs text-muted-foreground leading-snug mt-0.5">
+                  {profile.role} · {profile.company}
+                </p>
+              </div>
+              {requested ? (
+                <span className="shrink-0 inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400">
+                  <Check className="h-3 w-3" /> Requested
+                </span>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="shrink-0 h-7 text-xs px-2.5"
+                  onClick={() => { setMessage(defaultMessage); setOpen(true); }}
+                >
+                  Connect
+                </Button>
+              )}
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold", SECTOR_BADGE[profile.sector] ?? "bg-muted text-muted-foreground")}>
+                {profile.sector}
+              </span>
+              <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
+                {profile.program} '{String(profile.year).slice(2)}
+              </span>
+              <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                <MapPin className="h-2.5 w-2.5" />{profile.location}
+              </span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Connection request dialog */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Connect with {profile.name}</DialogTitle>
+            <DialogDescription>
+              Send a personalised message with your connection request.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Profile preview */}
+          <div className="flex items-center gap-3 rounded-lg bg-muted/50 px-3 py-2.5">
+            <Avatar className="h-10 w-10 shrink-0">
+              <AvatarFallback className={cn("text-sm font-bold text-white", profile.avatarColor)}>
+                {profile.initials}
+              </AvatarFallback>
+            </Avatar>
             <div>
               <p className="text-sm font-semibold leading-tight">{profile.name}</p>
-              <p className="text-xs text-muted-foreground leading-snug mt-0.5">
-                {profile.role} · {profile.company}
-              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">{profile.role} · {profile.company}</p>
+              <div className="flex items-center gap-1 mt-1 text-[10px] text-muted-foreground">
+                <MapPin className="h-2.5 w-2.5" />{profile.location}
+              </div>
             </div>
-            <Button size="sm" variant="outline" className="shrink-0 h-7 text-xs px-2.5">
-              Connect
+          </div>
+
+          {/* Message textarea */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-foreground">Message</label>
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              rows={5}
+              maxLength={500}
+              className="w-full resize-none rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
+              placeholder="Write a short message introducing yourself…"
+            />
+            <p className="text-right text-[10px] text-muted-foreground">{message.length}/500</p>
+          </div>
+
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="ghost" size="sm">Cancel</Button>
+            </DialogClose>
+            <Button size="sm" onClick={handleSend} disabled={message.trim().length === 0} className="gap-1.5">
+              <Send className="h-3.5 w-3.5" />
+              Send Request
             </Button>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold", SECTOR_BADGE[profile.sector] ?? "bg-muted text-muted-foreground")}>
-              {profile.sector}
-            </span>
-            <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
-              {profile.program} '{String(profile.year).slice(2)}
-            </span>
-            <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
-              <MapPin className="h-2.5 w-2.5" />{profile.location}
-            </span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
