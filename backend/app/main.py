@@ -10,7 +10,7 @@ from .seeds.runner import seed_all
 from .services.jobs import fetch_and_store_jobs
 from .controllers import (
     auth, firms, pipeline, contacts, deadlines, questions,
-    prep, gpa, events, market, news, jobs, community, dashboard,
+    prep, gpa, events, market, news, jobs, community, dashboard, alumni,
 )
 
 
@@ -63,6 +63,7 @@ app.include_router(news.router)
 app.include_router(jobs.router)
 app.include_router(community.router)
 app.include_router(dashboard.router)
+app.include_router(alumni.router)
 
 
 @app.get("/", tags=["health"])

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -13,8 +13,9 @@ import { ChartContainer } from "@/components/ui/chart";
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip } from "recharts";
 import {
   GraduationCap, TrendingUp, DollarSign, Users, Search,
-  Clock, MapPin, ChevronDown, ChevronUp, Info, Check, Send,
+  Clock, MapPin, ChevronDown, ChevronUp, Info, Check, Send, Loader2,
 } from "lucide-react";
+import { sendConnectRequest } from "@/services/alumni";
 import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -407,11 +408,32 @@ function CommunityCard({ profile }: { profile: AlumniProfile }) {
   const [open, setOpen]           = useState(false);
   const [message, setMessage]     = useState("");
   const [requested, setRequested] = useState(false);
+  const [sending, setSending]     = useState(false);
+  const [sendError, setSendError] = useState(false);
+  // keep a stable ref so the timeout doesn't close over stale state
+  const errorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  function handleSend() {
-    setRequested(true);
-    setOpen(false);
-    setMessage("");
+  async function handleSend() {
+    setSending(true);
+    setSendError(false);
+    try {
+      await sendConnectRequest({
+        alumni_name:    profile.name,
+        alumni_role:    profile.role,
+        alumni_company: profile.company,
+        message,
+      });
+      setRequested(true);
+      setOpen(false);
+      setMessage("");
+    } catch {
+      setSendError(true);
+      // auto-clear the error after 4 s
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+      errorTimerRef.current = setTimeout(() => setSendError(false), 4000);
+    } finally {
+      setSending(false);
+    }
   }
 
   const defaultMessage = `Hi ${profile.name.split(" ")[0]}, I'm a UofT student interested in ${profile.sector === "Consulting" ? "consulting" : profile.sector === "Banking" ? "investment banking" : "your work at " + profile.company}. Would you be open to a brief coffee chat? I'd love to learn about your experience.`;
@@ -503,13 +525,33 @@ function CommunityCard({ profile }: { profile: AlumniProfile }) {
             <p className="text-right text-[10px] text-muted-foreground">{message.length}/500</p>
           </div>
 
+          {sendError && (
+            <p className="text-xs text-destructive text-center -mb-1">
+              Failed to send — please try again.
+            </p>
+          )}
+
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="ghost" size="sm">Cancel</Button>
+              <Button variant="ghost" size="sm" disabled={sending}>Cancel</Button>
             </DialogClose>
-            <Button size="sm" onClick={handleSend} disabled={message.trim().length === 0} className="gap-1.5">
-              <Send className="h-3.5 w-3.5" />
-              Send Request
+            <Button
+              size="sm"
+              onClick={handleSend}
+              disabled={message.trim().length === 0 || sending}
+              className="gap-1.5 min-w-[120px]"
+            >
+              {sending ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Sending…
+                </>
+              ) : (
+                <>
+                  <Send className="h-3.5 w-3.5" />
+                  Send Request
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
