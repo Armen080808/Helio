@@ -4,6 +4,7 @@ from .database import SessionLocal
 from .services.market import fetch_and_store_market_data
 from .services.news import fetch_and_store_news
 from .services.jobs import fetch_and_store_jobs
+from .services.events import fetch_and_store_events
 
 scheduler = BackgroundScheduler(timezone="America/Toronto")
 
@@ -43,8 +44,16 @@ def start_scheduler():
         replace_existing=True,
     )
 
+    # Events: every 30 minutes (UofT Localist API + RSS feeds)
+    scheduler.add_job(
+        _with_db(fetch_and_store_events),
+        CronTrigger(minute="0,30"),  # :00 and :30 of every hour
+        id="events",
+        replace_existing=True,
+    )
+
     scheduler.start()
-    print("[SCHEDULER] Started — market@4:30pm ET, news every 4h, jobs every 1h")
+    print("[SCHEDULER] Started — market@4:30pm ET, news every 4h, jobs every 1h, events every 30m")
 
 
 def stop_scheduler():

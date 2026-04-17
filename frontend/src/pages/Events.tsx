@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getEvents, createEvent, type RecruitingEvent } from "@/services/events";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CalendarDays, MapPin, Plus } from "lucide-react";
+
+const REFRESH_MS = 30 * 60 * 1000; // 30 minutes
 
 const EVENT_TYPES = ["Info Session", "Superday", "Networking", "Workshop", "Other"] as const;
 type EventTypeFilter = "All" | (typeof EVENT_TYPES)[number];
@@ -80,7 +82,7 @@ export default function Events() {
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       const data = await getEvents();
       const sorted = [...data].sort(
@@ -92,11 +94,13 @@ export default function Events() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     load();
-  }, []);
+    const t = setInterval(load, REFRESH_MS);
+    return () => clearInterval(t);
+  }, [load]);
 
   async function handleCreateEvent(e: React.FormEvent) {
     e.preventDefault();

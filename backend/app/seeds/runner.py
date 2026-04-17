@@ -5,11 +5,13 @@ from ..models.recruiting_deadline import RecruitingDeadline
 from ..models.interview_question import InterviewQuestion
 from ..models.news_article import NewsArticle
 from ..models.market_snapshot import MarketSnapshot
+from ..models.recruiting_event import RecruitingEvent
 from .firms import FIRMS
 from .deadlines import DEADLINES
 from .questions import QUESTIONS
 from .news import NEWS_ARTICLES
 from .market import MARKET_SNAPSHOTS
+from .events import EVENTS
 
 
 def seed_all(db: Session):
@@ -18,6 +20,7 @@ def seed_all(db: Session):
     seed_questions(db)
     seed_news(db)
     seed_market(db)
+    seed_events(db)
 
 
 def seed_firms(db: Session):
@@ -130,3 +133,36 @@ def seed_market(db: Session):
     if added:
         db.commit()
     print(f"[SEED] Market: seeded {added} static snapshot(s) for {today}")
+
+
+def seed_events(db: Session):
+    """
+    Seed public recruiting & networking events. Deduplicates by title + date
+    so re-deploys never create duplicate rows.
+    """
+    existing = {
+        (e.title, e.date)
+        for e in db.query(RecruitingEvent.title, RecruitingEvent.date)
+        .filter(RecruitingEvent.is_public == True)  # noqa: E712
+        .all()
+    }
+    added = 0
+    for ev in EVENTS:
+        key = (ev["title"], ev["date"])
+        if key in existing:
+            continue
+        db.add(RecruitingEvent(
+            user_id=None,
+            firm_id=None,
+            firm_name=ev["firm_name"],
+            event_type=ev["event_type"],
+            title=ev["title"],
+            date=ev["date"],
+            location=ev.get("location"),
+            description=ev.get("description"),
+            is_public=True,
+        ))
+        added += 1
+    if added:
+        db.commit()
+    print(f"[SEED] Events: added {added} public event(s)")
