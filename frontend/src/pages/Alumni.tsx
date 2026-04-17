@@ -9,7 +9,7 @@ import { ChartContainer } from "@/components/ui/chart";
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip } from "recharts";
 import {
   GraduationCap, TrendingUp, DollarSign, Users, Search,
-  Briefcase, Clock, MapPin, ChevronDown, ChevronUp, Info,
+  Clock, MapPin, ChevronDown, ChevronUp, Info,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
