@@ -9,7 +9,7 @@ import {
   LayoutDashboard, Kanban, Users, CalendarDays, BookOpen, Building2,
   GraduationCap, CalendarCheck, TrendingUp, Newspaper, Briefcase,
   MessageSquare, LogOut, PanelLeftClose, PanelLeftOpen, TrendingUp as Logo,
-  Menu, X,
+  Menu, X, Award,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +29,7 @@ const NAV_GROUPS = [
     items: [
       { to: "/firms",      icon: Building2,       label: "Firms" },
       { to: "/questions",  icon: BookOpen,        label: "Interview Prep" },
+      { to: "/alumni",     icon: Award,           label: "Alumni Outcomes" },
       { to: "/community",  icon: MessageSquare,   label: "Community" },
     ],
   },

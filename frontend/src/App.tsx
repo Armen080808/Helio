@@ -19,6 +19,7 @@ import Market from "@/pages/Market";
 import News from "@/pages/News";
 import Jobs from "@/pages/Jobs";
 import Community from "@/pages/Community";
+import Alumni from "@/pages/Alumni";
 
 export default function App() {
   return (
@@ -44,6 +45,7 @@ export default function App() {
               <Route path="/news" element={<News />} />
               <Route path="/jobs" element={<Jobs />} />
               <Route path="/community" element={<Community />} />
+              <Route path="/alumni" element={<Alumni />} />
             </Route>
           </Route>
 
