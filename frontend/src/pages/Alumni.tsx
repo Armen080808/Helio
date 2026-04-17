@@ -772,10 +772,6 @@ export default function Alumni() {
           <GraduationCap className="h-6 w-6 text-primary" />
           <h1 className="text-2xl font-semibold tracking-tight">Alumni Outcomes</h1>
         </div>
-        <p className="text-sm text-muted-foreground">
-          Employment data sourced from Rotman Commerce and UofT career reports (Class of 2023).
-          Figures reflect first-destination outcomes within 6 months of graduation.
-        </p>
       </div>
 
       {/* ── Program tabs ─────────────────────────────────────────── */}
