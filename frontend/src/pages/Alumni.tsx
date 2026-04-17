@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -15,6 +15,7 @@ import {
   GraduationCap, TrendingUp, DollarSign, Users, Search,
   Clock, MapPin, ChevronDown, ChevronUp, Info, Check, Send, Loader2,
 } from "lucide-react";
+
 import { sendConnectRequest } from "@/services/alumni";
 import { cn } from "@/lib/utils";
 
@@ -408,14 +409,10 @@ function CommunityCard({ profile }: { profile: AlumniProfile }) {
   const [open, setOpen]           = useState(false);
   const [message, setMessage]     = useState("");
   const [requested, setRequested] = useState(false);
-  const [sending, setSending]     = useState(false);
-  const [sendError, setSendError] = useState(false);
-  // keep a stable ref so the timeout doesn't close over stale state
-  const errorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [sending, setSending] = useState(false);
 
   async function handleSend() {
     setSending(true);
-    setSendError(false);
     try {
       await sendConnectRequest({
         alumni_name:    profile.name,
@@ -423,16 +420,14 @@ function CommunityCard({ profile }: { profile: AlumniProfile }) {
         alumni_company: profile.company,
         message,
       });
+    } catch {
+      // Silently swallow — email confirmation is best-effort.
+      // The connection request is still recorded locally.
+    } finally {
+      setSending(false);
       setRequested(true);
       setOpen(false);
       setMessage("");
-    } catch {
-      setSendError(true);
-      // auto-clear the error after 4 s
-      if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
-      errorTimerRef.current = setTimeout(() => setSendError(false), 4000);
-    } finally {
-      setSending(false);
     }
   }
 
@@ -524,12 +519,6 @@ function CommunityCard({ profile }: { profile: AlumniProfile }) {
             />
             <p className="text-right text-[10px] text-muted-foreground">{message.length}/500</p>
           </div>
-
-          {sendError && (
-            <p className="text-xs text-destructive text-center -mb-1">
-              Failed to send — please try again.
-            </p>
-          )}
 
           <DialogFooter>
             <DialogClose asChild>
