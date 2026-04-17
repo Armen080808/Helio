@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { getMarket, type MarketSnapshot } from "@/services/market";
 import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, BarChart2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { TrendingUp, TrendingDown, BarChart2, RefreshCw, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ─── Symbol metadata ─────────────────────────────────────────────────────────
@@ -152,9 +153,12 @@ function SkeletonTickerCard() {
 export default function Market() {
   const [snapshots, setSnapshots]     = useState<MarketSnapshot[]>([]);
   const [loading, setLoading]         = useState(true);
+  const [error, setError]             = useState(false);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = () => {
+    setLoading(true);
+    setError(false);
     getMarket()
       .then((data) => {
         setSnapshots(data);
@@ -165,9 +169,11 @@ export default function Market() {
           })
         );
       })
-      .catch(() => {})
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => { load(); }, []);
 
   const indices = snapshots.filter((s) => sectionFor(s.symbol) === "index");
   const banks   = snapshots.filter((s) => sectionFor(s.symbol) === "bank");
@@ -190,6 +196,18 @@ export default function Market() {
           </span>
         )}
       </div>
+
+      {/* Error banner */}
+      {error && (
+        <div className="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          <span className="flex-1">Could not load market data. The server may be waking up — please try again.</span>
+          <Button size="sm" variant="outline" onClick={load} className="shrink-0 gap-1.5">
+            <RefreshCw className="h-3.5 w-3.5" />
+            Retry
+          </Button>
+        </div>
+      )}
 
       {/* ── TSX Composite Index ──────────────────────────────────── */}
       <section>

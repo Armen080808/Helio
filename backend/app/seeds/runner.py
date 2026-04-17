@@ -87,11 +87,23 @@ def seed_news(db: Session):
 def seed_market(db: Session):
     """
     Upsert static Canadian market snapshots for today.
-    Runs on every startup; skips any symbol that already has a row for today
-    so live-fetched prices are never overwritten.
+    Runs on every startup; also purges any stale non-Canadian symbols
+    (e.g. GS, JPM, ^GSPC leftover from older deployments) so they never
+    become the 'latest_date' and hide the Canadian data.
     """
+    # ── 1. Remove any rows whose symbol is not in our Canadian set ──────────
+    known_symbols = {snap["symbol"] for snap in MARKET_SNAPSHOTS}
+    deleted = (
+        db.query(MarketSnapshot)
+        .filter(~MarketSnapshot.symbol.in_(known_symbols))
+        .delete(synchronize_session=False)
+    )
+    if deleted:
+        db.commit()
+        print(f"[SEED] Market: purged {deleted} stale non-Canadian row(s)")
+
+    # ── 2. Seed Canadian snapshots for today (skip if already present) ──────
     today = date.today()
-    # Build a set of symbols already stored for today
     existing_symbols = {
         row.symbol
         for row in db.query(MarketSnapshot.symbol)
