@@ -20,6 +20,8 @@ import News from "@/pages/News";
 import Jobs from "@/pages/Jobs";
 import Community from "@/pages/Community";
 import Alumni from "@/pages/Alumni";
+import AdminLogin from "@/pages/AdminLogin";
+import AdminPanel from "@/pages/AdminPanel";
 
 export default function App() {
   return (
@@ -48,6 +50,10 @@ export default function App() {
               <Route path="/alumni" element={<Alumni />} />
             </Route>
           </Route>
+
+          {/* Admin — standalone, no Layout or AuthProvider guard */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminPanel />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
