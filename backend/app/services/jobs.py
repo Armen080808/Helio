@@ -39,6 +39,7 @@ EXCLUDE_KEYWORDS = [
 # ─── Workday firm registry ────────────────────────────────────────────────────
 # (display_name, workday_tenant, workday_board, location, wd_version)
 
+# Only Canadian locations — no US or international offices.
 WORKDAY_FIRMS = [
     # ── Canadian Big 5 ──────────────────────────────────────────────────────
     ("TD Securities",           "td",              "TD_Bank_Careers",        "Toronto, ON", 3),
@@ -47,14 +48,12 @@ WORKDAY_FIRMS = [
     ("Scotiabank GBM",          "scotiabank",      "Scotiabank_Careers",     "Toronto, ON", 3),
     ("CIBC Capital Markets",    "cibc",            "External",               "Toronto, ON", 3),
     ("National Bank Financial", "nbc",             "External",               "Montreal, QC", 3),
-    # ── US Bulge Brackets ────────────────────────────────────────────────────
+    # ── International Banks (Toronto office only) ────────────────────────────
     ("Goldman Sachs",           "gs",              "External_Career_Website", "Toronto, ON", 5),
     ("Morgan Stanley",          "morganstanley",   "External",               "Toronto, ON", 3),
     ("JP Morgan",               "jpmc",            "campus_recruiting",      "Toronto, ON", 5),
     ("Barclays",                "barclays",        "External",               "Toronto, ON", 3),
     ("Citi",                    "citi",            "External",               "Toronto, ON", 3),
-    ("UBS",                     "ubs",             "UBS_Experienced",        "Toronto, ON", 3),
-    ("Deutsche Bank",           "db",              "External_Career_Site",   "Toronto, ON", 3),
     # ── Asset Management / Pensions ──────────────────────────────────────────
     ("Brookfield Asset Management", "brookfield",  "External",               "Toronto, ON", 3),
     ("CPP Investments",         "cppinvestments",  "CPP_Careers",            "Toronto, ON", 3),
@@ -66,11 +65,17 @@ WORKDAY_FIRMS = [
     ("KPMG",                    "kpmg",            "External",               "Toronto, ON", 3),
     ("EY",                      "ey",              "EY_External",            "Toronto, ON", 3),
     ("PwC",                     "pwc",             "Global_Campus",          "Toronto, ON", 3),
-    # ── Elite Boutiques ──────────────────────────────────────────────────────
+    # ── Elite Boutiques (Canadian offices only) ───────────────────────────────
     ("Lazard",                  "lazard",          "External",               "Toronto, ON", 3),
-    ("Evercore",                "evercore",        "External",               "New York, NY", 3),
     ("Rothschild & Co",         "rothschild",      "External",               "Toronto, ON", 3),
 ]
+
+# Canadian city/province tokens — any scraped job must match at least one.
+_CANADA_TOKENS = frozenset([
+    "toronto", "montreal", "vancouver", "calgary", "ottawa", "edmonton",
+    ", on", ", qc", ", bc", ", ab", ", mb", ", ns",
+    "canada", "ontario",
+])
 
 SEARCH_TERMS = [
     "summer analyst",
@@ -192,6 +197,11 @@ def _scrape_workday_firm(
                 f"/en-US/{board}{ext_path}"
             )
             loc = p.get("locationsText") or location
+
+            # Skip any posting whose location is not in Canada
+            loc_lower = loc.lower()
+            if not any(token in loc_lower for token in _CANADA_TOKENS):
+                continue
 
             if _save(db, title=title, company=firm_name, url=job_url,
                      location=loc, description=None, posted_at=None, source=firm_name):

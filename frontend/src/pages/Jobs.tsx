@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Briefcase, MapPin, ExternalLink } from "lucide-react";
 
-const TYPES = ["All", "IBD", "Markets", "AM", "Consulting", "Other"] as const;
+const TYPES = ["All", "Internship", "Full-time"] as const;
 type JobType = (typeof TYPES)[number];
 
 function timeAgo(dateStr: string): string {
@@ -18,26 +18,13 @@ function timeAgo(dateStr: string): string {
 }
 
 function typeBadgeClass(type: string): string {
-  switch (type.toUpperCase()) {
-    case "IBD":
+  switch (type.toLowerCase()) {
+    case "internship":
       return "bg-blue-100 text-blue-700 hover:bg-blue-100";
-    case "MARKETS":
+    case "full-time":
       return "bg-green-100 text-green-700 hover:bg-green-100";
-    case "AM":
+    case "co-op":
       return "bg-purple-100 text-purple-700 hover:bg-purple-100";
-    case "CONSULTING":
-      return "bg-amber-100 text-amber-700 hover:bg-amber-100";
-    default:
-      return "bg-secondary text-secondary-foreground";
-  }
-}
-
-function sourceBadgeClass(source: string): string {
-  switch (source.toLowerCase()) {
-    case "linkedin":
-      return "bg-sky-100 text-sky-700 hover:bg-sky-100";
-    case "indeed":
-      return "bg-indigo-100 text-indigo-700 hover:bg-indigo-100";
     default:
       return "bg-secondary text-secondary-foreground";
   }
@@ -54,9 +41,6 @@ function JobCard({ job }: { job: JobPosting }) {
               {job.job_type}
             </Badge>
           )}
-          <Badge variant="outline" className={sourceBadgeClass(job.source)}>
-            {job.source}
-          </Badge>
         </div>
         <p className="text-sm text-foreground mb-1.5">{job.title}</p>
         <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
@@ -119,7 +103,7 @@ export default function Jobs() {
     activeType === "All"
       ? jobs
       : jobs.filter(
-          (j) => (j.job_type ?? "Other").toLowerCase() === activeType.toLowerCase()
+          (j) => (j.job_type ?? "").toLowerCase() === activeType.toLowerCase()
         );
 
   return (
@@ -127,7 +111,7 @@ export default function Jobs() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Job Board</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Finance &amp; consulting roles curated for UofT students
+          Canadian finance &amp; consulting roles — Toronto, Montreal, Vancouver
         </p>
       </div>
 

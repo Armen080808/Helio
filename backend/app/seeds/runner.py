@@ -6,12 +6,23 @@ from ..models.interview_question import InterviewQuestion
 from ..models.news_article import NewsArticle
 from ..models.market_snapshot import MarketSnapshot
 from ..models.recruiting_event import RecruitingEvent
+from ..models.job_posting import JobPosting
 from .firms import FIRMS
 from .deadlines import DEADLINES
 from .questions import QUESTIONS
 from .news import NEWS_ARTICLES
 from .market import MARKET_SNAPSHOTS
 from .events import EVENTS
+from .jobs import JOBS
+
+# Canadian location indicators — any job whose location contains none of
+# these is considered non-Canadian and will be purged on startup.
+_CANADA_TOKENS = frozenset([
+    "toronto", "montreal", "vancouver", "calgary", "ottawa", "edmonton",
+    "winnipeg", "quebec", "hamilton", "kitchener",
+    ", on", ", qc", ", bc", ", ab", ", mb", ", ns", ", sk",
+    "canada", "ontario", "british columbia", "alberta",
+])
 
 
 def seed_all(db: Session):
@@ -21,6 +32,7 @@ def seed_all(db: Session):
     seed_news(db)
     seed_market(db)
     seed_events(db)
+    seed_jobs(db)
 
 
 def seed_firms(db: Session):
@@ -133,6 +145,46 @@ def seed_market(db: Session):
     if added:
         db.commit()
     print(f"[SEED] Market: seeded {added} static snapshot(s) for {today}")
+
+
+def seed_jobs(db: Session):
+    """
+    1. Purge any existing job posting whose location is not Canadian.
+    2. Seed static Canadian job postings (deduped by URL).
+    """
+    # ── 1. Purge non-Canadian rows ───────────────────────────────────────────
+    all_jobs = db.query(JobPosting).all()
+    purged = 0
+    for job in all_jobs:
+        loc = (job.location or "").lower()
+        if not any(token in loc for token in _CANADA_TOKENS):
+            db.delete(job)
+            purged += 1
+    if purged:
+        db.commit()
+        print(f"[SEED] Jobs: purged {purged} non-Canadian posting(s)")
+
+    # ── 2. Seed static entries ───────────────────────────────────────────────
+    existing_urls = {j.url for j in db.query(JobPosting.url).all()}
+    added = 0
+    for job in JOBS:
+        if job["url"] in existing_urls:
+            continue
+        db.add(JobPosting(
+            title=job["title"],
+            company=job["company"],
+            location=job["location"],
+            url=job["url"],
+            job_type=job.get("job_type"),
+            description=job.get("description"),
+            posted_at=job.get("posted_at"),
+            source=job["source"],
+            is_finance_relevant=True,
+        ))
+        added += 1
+    if added:
+        db.commit()
+    print(f"[SEED] Jobs: added {added} Canadian posting(s)")
 
 
 def seed_events(db: Session):
