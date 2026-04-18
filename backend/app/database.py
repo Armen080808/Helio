@@ -1,8 +1,21 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.pool import NullPool
 from .config import settings
 
-engine = create_engine(settings.database_url, pool_pre_ping=True)
+# NullPool is required for Neon serverless PostgreSQL.
+# Neon uses pgBouncer for its own connection pooling; SQLAlchemy's built-in
+# pool conflicts with it and causes stale-connection errors that silently
+# swallow writes (users register → 201 but row never commits).
+# With NullPool every request opens + closes its own connection via pgBouncer.
+engine = create_engine(
+    settings.database_url,
+    poolclass=NullPool,
+    connect_args={
+        "sslmode": "require",
+        "connect_timeout": 10,
+    },
+)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
