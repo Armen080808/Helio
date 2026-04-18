@@ -99,11 +99,11 @@ export default function Landing() {
       {/* Hero */}
       <section className="mx-auto max-w-6xl px-6 py-20 text-center">
         <Badge variant="outline" className="mb-6">
-          Built for UofT St. George — Finance &amp; Econ
+          Built for Canadian students
         </Badge>
         <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
           The recruiting platform{" "}
-          <span className="text-primary">UofT finance students</span> actually
+          <span className="text-primary">finance students</span> actually
           need
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
