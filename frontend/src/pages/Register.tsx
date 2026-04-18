@@ -29,9 +29,7 @@ export default function Register() {
     setLoading(true);
     try {
       await register(name, email, password);
-      // TODO: re-enable when email verification is configured
-      // navigate("/verify-email", { state: { email, name } });
-      navigate("/dashboard");
+      navigate("/verify-email", { state: { email, name } });
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const detail = err.response?.data?.detail;

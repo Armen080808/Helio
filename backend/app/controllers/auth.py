@@ -60,8 +60,7 @@ def register(body: RegisterRequest, response: Response, db: Session = Depends(ge
     code = f"{random.randint(0, 999999):06d}"
     expires_at = datetime.utcnow() + timedelta(minutes=15)
 
-    # TODO: re-enable email verification when SMTP is configured
-    VERIFY_EMAIL = False
+    VERIFY_EMAIL = True
 
     user = User(
         name=body.name,
