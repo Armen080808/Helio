@@ -166,10 +166,13 @@ def seed_jobs(db: Session):
 
     # ── 2. Seed static entries ───────────────────────────────────────────────
     existing_urls = {j.url for j in db.query(JobPosting.url).all()}
+    # Track within-seed seen URLs to avoid inserting duplicates from the list
+    seen_urls = set(existing_urls)
     added = 0
     for job in JOBS:
-        if job["url"] in existing_urls:
+        if job["url"] in seen_urls:
             continue
+        seen_urls.add(job["url"])
         db.add(JobPosting(
             title=job["title"],
             company=job["company"],

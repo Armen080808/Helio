@@ -7,6 +7,20 @@ import { Briefcase, MapPin, ExternalLink } from "lucide-react";
 const TYPES = ["All", "Internship", "Full-time"] as const;
 type JobType = (typeof TYPES)[number];
 
+// Frontend Canada guard — filters out any non-Canadian jobs that may exist in
+// the DB from before the server-side location filter was deployed.
+const CANADA_TOKENS = [
+  "toronto", "montreal", "vancouver", "calgary", "ottawa", "edmonton",
+  "winnipeg", "hamilton", ", on", ", qc", ", bc", ", ab", "ontario",
+  "canada", "québec", "quebec",
+];
+
+function isCanadian(location: string | null | undefined): boolean {
+  if (!location) return false;
+  const loc = location.toLowerCase();
+  return CANADA_TOKENS.some((t) => loc.includes(t));
+}
+
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const minutes = Math.floor(diff / 60000);
@@ -99,10 +113,13 @@ export default function Jobs() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Always restrict to Canadian postings (client-side guard for stale DB data)
+  const canadian = jobs.filter((j) => isCanadian(j.location));
+
   const filtered =
     activeType === "All"
-      ? jobs
-      : jobs.filter(
+      ? canadian
+      : canadian.filter(
           (j) => (j.job_type ?? "").toLowerCase() === activeType.toLowerCase()
         );
 
