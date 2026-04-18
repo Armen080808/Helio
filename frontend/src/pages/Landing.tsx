@@ -81,7 +81,7 @@ export default function Landing() {
             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
               <Zap className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="text-base font-bold tracking-tight">alyo</span>
+            <span className="text-base font-bold tracking-tight">Helio</span>
           </div>
           <div className="flex items-center gap-3">
             <Link to="/login">
@@ -184,7 +184,7 @@ export default function Landing() {
       <footer className="border-t py-6 text-center text-xs text-muted-foreground">
         <div className="flex items-center justify-center gap-2">
           <Briefcase className="h-3 w-3" />
-          © 2026 alyo · Built for UofT St. George finance students
+          © 2026 Helio · Built for UofT St. George finance students
         </div>
       </footer>
     </div>

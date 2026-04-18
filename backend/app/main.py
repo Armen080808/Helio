@@ -39,7 +39,7 @@ async def lifespan(app: FastAPI):
     stop_scheduler()
 
 
-app = FastAPI(title="alyo API — UofT Finance Platform", lifespan=lifespan)
+app = FastAPI(title="Helio API — UofT Finance Platform", lifespan=lifespan)
 
 _origins = [
     # Production custom domain
@@ -82,4 +82,4 @@ app.include_router(admin.router)
 
 @app.get("/", tags=["health"])
 def health():
-    return {"status": "ok", "app": "alyo", "version": "2.0"}
+    return {"status": "ok", "app": "helio", "version": "2.0"}

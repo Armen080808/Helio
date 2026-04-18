@@ -9,7 +9,7 @@ export const api = axios.create({
 
 // Request interceptor: attach access token
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("alyo_token");
+  const token = localStorage.getItem("helio_token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -62,16 +62,16 @@ api.interceptors.response.use(
           { withCredentials: true }
         );
         const { access_token, user } = response.data;
-        localStorage.setItem("alyo_token", access_token);
-        localStorage.setItem("alyo_user", JSON.stringify(user));
+        localStorage.setItem("helio_token", access_token);
+        localStorage.setItem("helio_user", JSON.stringify(user));
         api.defaults.headers.common.Authorization = `Bearer ${access_token}`;
         processQueue(null, access_token);
         originalRequest.headers.Authorization = `Bearer ${access_token}`;
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        localStorage.removeItem("alyo_token");
-        localStorage.removeItem("alyo_user");
+        localStorage.removeItem("helio_token");
+        localStorage.removeItem("helio_user");
         window.location.href = "/login";
         return Promise.reject(refreshError);
       } finally {
