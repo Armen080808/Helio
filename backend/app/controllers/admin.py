@@ -11,8 +11,10 @@ attempts from the same IP address the IP is blocked for BLOCK_DURATION (1 h).
 Credentials are stored only on the server — never shipped to the browser.
 """
 
+import uuid as _uuid
 from collections import defaultdict
 from datetime import datetime, timedelta
+from typing import Optional
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from pydantic import BaseModel
@@ -205,6 +207,69 @@ def get_users(db: Session = Depends(get_db), _: None = Depends(_verify)):
             "created_at": u.created_at.isoformat() if u.created_at else None,
         })
     return result
+
+
+# ─── Update user ─────────────────────────────────────────────────────────────
+
+class UpdateUserRequest(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    email_verified: Optional[bool] = None
+
+
+@router.patch("/users/{user_id}")
+def update_user(
+    user_id: _uuid.UUID,
+    body: UpdateUserRequest,
+    db: Session = Depends(get_db),
+    _: None = Depends(_verify),
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if body.name is not None:
+        user.name = body.name.strip() or None
+
+    if body.email is not None:
+        new_email = body.email.strip().lower()
+        conflict = (
+            db.query(User)
+            .filter(User.email == new_email, User.id != user_id)
+            .first()
+        )
+        if conflict:
+            raise HTTPException(status_code=409, detail="Email is already in use by another account")
+        user.email = new_email
+
+    if body.email_verified is not None:
+        user.email_verified = body.email_verified
+        # Clear the verification token if we're manually verifying
+        if body.email_verified:
+            user.verification_token = None
+            user.verification_token_expires_at = None
+
+    db.commit()
+    return {"success": True}
+
+
+# ─── Delete user ──────────────────────────────────────────────────────────────
+
+@router.delete("/users/{user_id}")
+def delete_user(
+    user_id: _uuid.UUID,
+    db: Session = Depends(get_db),
+    _: None = Depends(_verify),
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Cascade deletes (applications, contacts, etc.) are handled by the FK
+    # ondelete="CASCADE" constraint defined on each child table.
+    db.delete(user)
+    db.commit()
+    return {"success": True, "deleted_email": user.email}
 
 
 # ─── Applications overview ────────────────────────────────────────────────────

@@ -113,3 +113,17 @@ export const getAdminJobs = (): Promise<AdminJob[]> =>
 
 export const getAdminEvents = (): Promise<AdminEvent[]> =>
   api.get("/api/admin/events").then((r) => r.data);
+
+// ─── User management ──────────────────────────────────────────────────────────
+
+export interface UpdateUserPayload {
+  name?: string;
+  email?: string;
+  email_verified?: boolean;
+}
+
+export const updateAdminUser = (id: string, data: UpdateUserPayload): Promise<void> =>
+  api.patch(`/api/admin/users/${id}`, data).then(() => undefined);
+
+export const deleteAdminUser = (id: string): Promise<void> =>
+  api.delete(`/api/admin/users/${id}`).then(() => undefined);

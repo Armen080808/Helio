@@ -8,14 +8,20 @@ import {
   Users, LayoutDashboard, Briefcase, CalendarDays, FileText,
   TrendingUp, Shield, LogOut, ChevronRight, CheckCircle2,
   XCircle, ExternalLink, Search, MapPin, Activity,
+  Pencil, Trash2, AlertTriangle, UserCog,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog";
 import {
   getAdminStats, getAdminRegistrations, getAdminUsers,
   getAdminApplications, getAdminJobs, getAdminEvents,
+  updateAdminUser, deleteAdminUser,
   type AdminStats, type AdminUser, type AdminJob, type AdminEvent, type AdminApplication,
 } from "@/services/admin";
 
@@ -380,18 +386,124 @@ function OverviewSection({
 
 // ─── Users Section ────────────────────────────────────────────────────────────
 
-function UsersSection({ users }: { users: AdminUser[] }) {
+function UsersSection({
+  users,
+  onRefresh,
+}: {
+  users: AdminUser[];
+  onRefresh: () => void;
+}) {
   const [q, setQ] = useState("");
+
+  // ── Edit state ────────────────────────────────────────────────────────────
+  const [editTarget, setEditTarget] = useState<AdminUser | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editVerified, setEditVerified] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState("");
+  const [editSuccess, setEditSuccess] = useState(false);
+
+  // ── Delete state ──────────────────────────────────────────────────────────
+  const [deleteTarget, setDeleteTarget] = useState<AdminUser | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+
+  function openEdit(u: AdminUser) {
+    setEditTarget(u);
+    setEditName(u.name === "—" ? "" : u.name);
+    setEditEmail(u.email);
+    setEditVerified(u.email_verified);
+    setEditError("");
+    setEditSuccess(false);
+  }
+
+  function openDelete(u: AdminUser) {
+    setDeleteTarget(u);
+    setDeleteError("");
+    setDeleteConfirmText("");
+  }
+
+  async function handleEdit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editTarget) return;
+    setEditLoading(true);
+    setEditError("");
+    setEditSuccess(false);
+    try {
+      await updateAdminUser(editTarget.id, {
+        name: editName.trim() || undefined,
+        email: editEmail.trim(),
+        email_verified: editVerified,
+      });
+      setEditSuccess(true);
+      setTimeout(() => {
+        setEditTarget(null);
+        onRefresh();
+      }, 800);
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ??
+        "Failed to update user.";
+      setEditError(msg);
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
+    setDeleteError("");
+    try {
+      await deleteAdminUser(deleteTarget.id);
+      setDeleteTarget(null);
+      onRefresh();
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ??
+        "Failed to delete user.";
+      setDeleteError(msg);
+    } finally {
+      setDeleteLoading(false);
+    }
+  }
+
   const filtered = users.filter(
     (u) =>
       u.name.toLowerCase().includes(q.toLowerCase()) ||
-      u.email.toLowerCase().includes(q.toLowerCase())
+      u.email.toLowerCase().includes(q.toLowerCase()),
   );
+
+  const verifiedCount = users.filter((u) => u.email_verified).length;
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-3">
-        <SectionTitle>All Users ({users.length})</SectionTitle>
+      {/* Header row */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-2">
+          <UserCog className="h-5 w-5 text-muted-foreground" />
+          <h2 className="text-lg font-semibold tracking-tight">
+            User Management
+          </h2>
+          <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+            {users.length}
+          </span>
+        </div>
+
+        {/* Quick stats */}
+        <div className="flex items-center gap-3 ml-2">
+          <span className="flex items-center gap-1 text-xs text-emerald-600">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            {verifiedCount} verified
+          </span>
+          <span className="flex items-center gap-1 text-xs text-rose-500">
+            <XCircle className="h-3.5 w-3.5" />
+            {users.length - verifiedCount} unverified
+          </span>
+        </div>
+
         <div className="ml-auto relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
@@ -403,6 +515,7 @@ function UsersSection({ users }: { users: AdminUser[] }) {
         </div>
       </div>
 
+      {/* Table */}
       <Card>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -414,18 +527,22 @@ function UsersSection({ users }: { users: AdminUser[] }) {
                 <th className="text-right px-4 py-2.5 font-medium text-muted-foreground">Apps</th>
                 <th className="text-right px-4 py-2.5 font-medium text-muted-foreground">Contacts</th>
                 <th className="text-right px-4 py-2.5 font-medium text-muted-foreground">Joined</th>
+                <th className="text-right px-4 py-2.5 font-medium text-muted-foreground">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-muted-foreground text-sm">
+                  <td colSpan={7} className="py-12 text-center text-muted-foreground text-sm">
                     No users found
                   </td>
                 </tr>
               ) : (
                 filtered.map((u) => (
-                  <tr key={u.id} className="border-b last:border-b-0 hover:bg-muted/30 transition-colors">
+                  <tr
+                    key={u.id}
+                    className="group border-b last:border-b-0 hover:bg-muted/30 transition-colors"
+                  >
                     <td className="px-4 py-3 font-medium">{u.name}</td>
                     <td className="px-4 py-3 text-muted-foreground">{u.email}</td>
                     <td className="px-4 py-3 text-center">
@@ -437,7 +554,25 @@ function UsersSection({ users }: { users: AdminUser[] }) {
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums">{u.applications}</td>
                     <td className="px-4 py-3 text-right tabular-nums">{u.contacts}</td>
-                    <td className="px-4 py-3 text-right text-muted-foreground">{timeAgo(u.created_at)}</td>
+                    <td className="px-4 py-3 text-right text-muted-foreground text-xs">{timeAgo(u.created_at)}</td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => openEdit(u)}
+                          className="flex h-7 w-7 items-center justify-center rounded-md border bg-background hover:bg-muted transition-colors"
+                          title="Edit user"
+                        >
+                          <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                        </button>
+                        <button
+                          onClick={() => openDelete(u)}
+                          className="flex h-7 w-7 items-center justify-center rounded-md border border-rose-200 bg-rose-50 hover:bg-rose-100 transition-colors"
+                          title="Delete user"
+                        >
+                          <Trash2 className="h-3.5 w-3.5 text-rose-500" />
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}
@@ -445,6 +580,198 @@ function UsersSection({ users }: { users: AdminUser[] }) {
           </table>
         </div>
       </Card>
+
+      {/* ── Edit Dialog ──────────────────────────────────────────────────────── */}
+      <Dialog open={!!editTarget} onOpenChange={(open) => !open && setEditTarget(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Pencil className="h-4 w-4 text-primary" />
+              Edit User
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Changes take effect immediately. The user will see their updated info on next login.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleEdit} className="flex flex-col gap-4 pt-1">
+            {/* Name */}
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="edit-name">Display Name</Label>
+              <Input
+                id="edit-name"
+                placeholder="Full name"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+              />
+            </div>
+
+            {/* Email */}
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="edit-email">
+                Email <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="edit-email"
+                type="email"
+                required
+                placeholder="user@example.com"
+                value={editEmail}
+                onChange={(e) => setEditEmail(e.target.value)}
+              />
+            </div>
+
+            {/* Verified toggle */}
+            <div className="flex items-center justify-between rounded-lg border px-4 py-3">
+              <div className="flex flex-col gap-0.5">
+                <span className="text-sm font-medium">Email Verified</span>
+                <span className="text-xs text-muted-foreground">
+                  Force-verify or unverify this account
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditVerified((v) => !v)}
+                className={`relative h-6 w-11 rounded-full transition-colors focus:outline-none ${
+                  editVerified ? "bg-emerald-500" : "bg-muted"
+                }`}
+              >
+                <span
+                  className={`block h-4 w-4 rounded-full bg-white shadow-sm transition-transform absolute top-1 ${
+                    editVerified ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Status */}
+            {editError && (
+              <div className="flex items-center gap-2 rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2 text-sm text-destructive">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                {editError}
+              </div>
+            )}
+            {editSuccess && (
+              <div className="flex items-center gap-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 text-sm text-emerald-700">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                User updated successfully!
+              </div>
+            )}
+
+            <div className="flex justify-end gap-2 pt-1">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setEditTarget(null)}
+                disabled={editLoading}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={editLoading || editSuccess}>
+                {editLoading ? (
+                  <span className="flex items-center gap-2">
+                    <span className="h-3.5 w-3.5 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                    Saving…
+                  </span>
+                ) : (
+                  "Save Changes"
+                )}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Delete Dialog ─────────────────────────────────────────────────────── */}
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <Trash2 className="h-4 w-4" />
+              Delete Account
+            </DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">
+              This action is permanent and cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-4 pt-1">
+            {/* User summary */}
+            <div className="rounded-lg border bg-muted/30 px-4 py-3 flex flex-col gap-1">
+              <p className="text-sm font-semibold">{deleteTarget?.name}</p>
+              <p className="text-xs text-muted-foreground">{deleteTarget?.email}</p>
+              <div className="flex gap-3 mt-1 text-xs text-muted-foreground">
+                <span>{deleteTarget?.applications} application{deleteTarget?.applications !== 1 ? "s" : ""}</span>
+                <span>·</span>
+                <span>{deleteTarget?.contacts} contact{deleteTarget?.contacts !== 1 ? "s" : ""}</span>
+              </div>
+            </div>
+
+            {/* Warning */}
+            <div className="rounded-lg bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-700">
+              <p className="font-semibold mb-1 flex items-center gap-1.5">
+                <AlertTriangle className="h-4 w-4" />
+                All data will be permanently deleted:
+              </p>
+              <ul className="list-disc list-inside text-xs space-y-0.5 text-rose-600">
+                <li>Account and profile information</li>
+                <li>All applications and pipeline entries</li>
+                <li>All contacts and networking notes</li>
+                <li>All deadlines, events, and reminders</li>
+              </ul>
+            </div>
+
+            {/* Confirmation input */}
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="delete-confirm" className="text-sm">
+                Type <span className="font-mono font-bold">DELETE</span> to confirm
+              </Label>
+              <Input
+                id="delete-confirm"
+                placeholder="DELETE"
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                className="font-mono"
+              />
+            </div>
+
+            {deleteError && (
+              <div className="flex items-center gap-2 rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2 text-sm text-destructive">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                {deleteError}
+              </div>
+            )}
+
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleteLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                disabled={deleteConfirmText !== "DELETE" || deleteLoading}
+                onClick={handleDelete}
+              >
+                {deleteLoading ? (
+                  <span className="flex items-center gap-2">
+                    <span className="h-3.5 w-3.5 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                    Deleting…
+                  </span>
+                ) : (
+                  <>
+                    <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                    Delete Account
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -885,7 +1212,7 @@ export default function AdminPanel() {
                 {Array.from({ length: 8 }).map((_, i) => <Pulse key={i} className="h-10 w-full" />)}
               </div>
             ) : (
-              <UsersSection users={users} />
+              <UsersSection users={users} onRefresh={loadData} />
             )
           )}
           {section === "applications" && (
