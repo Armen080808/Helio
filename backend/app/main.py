@@ -42,20 +42,21 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="alyo API — UofT Finance Platform", lifespan=lifespan)
 
 _origins = [
-    settings.frontend_url,                          # e.g. https://yourdomain.com
+    # Production custom domain
+    "https://baystreet.cc",
+    "https://www.baystreet.cc",
+    # Legacy Vercel preview URL (keep so existing sessions don't break)
+    "https://helio-lac.vercel.app",
+    # Dynamic env var (lets you override via FRONTEND_URL on Render)
+    settings.frontend_url,
+    # Local dev
     "http://localhost:5173",
     "http://localhost:3000",
 ]
-# Also allow the www variant and the Vercel preview URL automatically
-if settings.frontend_url.startswith("https://"):
-    bare = settings.frontend_url[len("https://"):]
-    if not bare.startswith("www."):
-        _origins.append(f"https://www.{bare}")     # www redirect origin
-_origins.append("https://helio-lac.vercel.app")    # keep old Vercel URL working
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_origins,
+    allow_origins=list(dict.fromkeys(_origins)),   # deduplicate while preserving order
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
