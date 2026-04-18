@@ -1,11 +1,21 @@
 """
 Admin API — protected by X-Admin-Key header.
 All endpoints return aggregate / cross-user data for the admin panel.
+
+Security layer
+--------------
+POST /api/admin/auth/login  validates credentials server-side and enforces
+IP-based rate limiting: after MAX_FAILURES (3) consecutive wrong-password
+attempts from the same IP address the IP is blocked for BLOCK_DURATION (1 h).
+
+Credentials are stored only on the server — never shipped to the browser.
 """
 
+from collections import defaultdict
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from pydantic import BaseModel
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -19,8 +29,102 @@ from ..models.user import User
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
-_ADMIN_KEY = "helio-admin-2026"
+# ─── Admin credentials (server-side only) ────────────────────────────────────
 
+_ADMIN_EMAIL    = "armen08082008@gmail.com"
+_ADMIN_PASSWORD = "Armen200808))"
+_ADMIN_KEY      = "helio-admin-2026"
+
+# ─── IP rate-limiting state (in-memory, resets on server restart) ─────────────
+
+MAX_FAILURES   = 3
+BLOCK_DURATION = timedelta(hours=1)
+
+# ip → number of consecutive failed attempts
+_failed: dict[str, int] = defaultdict(int)
+# ip → datetime when the block was applied
+_blocked: dict[str, datetime] = {}
+
+
+def _client_ip(request: Request) -> str:
+    """
+    Return the real client IP, respecting Render / Vercel reverse-proxy headers.
+    Priority: X-Forwarded-For → X-Real-IP → direct connection.
+    """
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    real_ip = request.headers.get("X-Real-IP")
+    if real_ip:
+        return real_ip.strip()
+    return request.client.host if request.client else "unknown"
+
+
+def _check_ip(ip: str) -> None:
+    """Raise 429 if the IP is currently blocked."""
+    if ip in _blocked:
+        elapsed = datetime.utcnow() - _blocked[ip]
+        if elapsed < BLOCK_DURATION:
+            remaining_s = int((BLOCK_DURATION - elapsed).total_seconds())
+            remaining_m = remaining_s // 60
+            raise HTTPException(
+                status_code=429,
+                detail=(
+                    f"IP blocked after {MAX_FAILURES} failed attempts. "
+                    f"Try again in {remaining_m} minute(s)."
+                ),
+            )
+        # Block expired — clear it
+        del _blocked[ip]
+        _failed.pop(ip, None)
+
+
+# ─── Admin login endpoint ─────────────────────────────────────────────────────
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+@router.post("/auth/login")
+def admin_login(body: LoginRequest, request: Request):
+    ip = _client_ip(request)
+
+    # 1. Check if this IP is currently blocked
+    _check_ip(ip)
+
+    # 2. Validate credentials
+    if body.email == _ADMIN_EMAIL and body.password == _ADMIN_PASSWORD:
+        # Success — clear any previous failure count for this IP
+        _failed.pop(ip, None)
+        _blocked.pop(ip, None)
+        return {"success": True}
+
+    # 3. Wrong credentials — increment failure counter
+    _failed[ip] += 1
+    attempts = _failed[ip]
+    remaining = MAX_FAILURES - attempts
+
+    if attempts >= MAX_FAILURES:
+        _blocked[ip] = datetime.utcnow()
+        raise HTTPException(
+            status_code=429,
+            detail=(
+                f"IP blocked after {MAX_FAILURES} failed attempts. "
+                f"Try again in {int(BLOCK_DURATION.total_seconds() // 60)} minute(s)."
+            ),
+        )
+
+    raise HTTPException(
+        status_code=401,
+        detail=(
+            f"Invalid credentials. "
+            f"{remaining} attempt{'s' if remaining != 1 else ''} remaining before IP block."
+        ),
+    )
+
+
+# ─── API-key guard (used by all data endpoints) ───────────────────────────────
 
 def _verify(x_admin_key: str = Header(None, alias="x-admin-key")):
     if x_admin_key != _ADMIN_KEY:

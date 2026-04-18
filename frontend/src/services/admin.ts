@@ -1,11 +1,42 @@
 import axios from "axios";
 
+const BASE = (import.meta.env.VITE_API_URL as string) || "";
 const ADMIN_KEY = "helio-admin-2026";
 
+// Unauthenticated instance — used only for the login endpoint
+const openApi = axios.create({ baseURL: BASE });
+
+// Authenticated instance — requires x-admin-key header
 const api = axios.create({
-  baseURL: (import.meta.env.VITE_API_URL as string) || "",
+  baseURL: BASE,
   headers: { "x-admin-key": ADMIN_KEY },
 });
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
+export interface LoginResult {
+  /** true on success */
+  success?: boolean;
+  /** error message from the server */
+  error?: string;
+  /** HTTP status code (401 = wrong creds, 429 = IP blocked) */
+  status?: number;
+}
+
+export async function loginAdmin(email: string, password: string): Promise<LoginResult> {
+  try {
+    await openApi.post("/api/admin/auth/login", { email, password });
+    return { success: true };
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err) && err.response) {
+      return {
+        error: err.response.data?.detail ?? "Login failed.",
+        status: err.response.status,
+      };
+    }
+    return { error: "Network error — could not reach the server.", status: 0 };
+  }
+}
 
 export interface AdminStats {
   total_users: number;
