@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, Shield, Eye, EyeOff, Ban, AlertTriangle } from "lucide-react";
+import { Shield, Eye, EyeOff, Ban, AlertTriangle } from "lucide-react";
+import { HelioLogo } from "@/components/HelioLogo";
 import { loginAdmin } from "@/services/admin";
 
 const MAX_ATTEMPTS = 3;
@@ -78,9 +79,7 @@ export default function AdminLogin() {
         />
         <div className="relative w-full max-w-md text-center">
           <div className="inline-flex items-center gap-2.5 mb-8">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
-              <TrendingUp className="h-5 w-5 text-primary-foreground" />
-            </div>
+            <HelioLogo size={40} />
             <span className="text-2xl font-bold text-white tracking-tight">Helio</span>
           </div>
 
@@ -128,9 +127,7 @@ export default function AdminLogin() {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2.5 mb-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
-              <TrendingUp className="h-5 w-5 text-primary-foreground" />
-            </div>
+            <HelioLogo size={40} />
             <span className="text-2xl font-bold text-white tracking-tight">Helio</span>
           </div>
           <div className="flex items-center justify-center gap-1.5 mt-1">

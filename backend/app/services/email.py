@@ -66,10 +66,15 @@ def send_verification_email(to_email: str, name: str, code: str) -> bool:
                 border-radius:16px;color:#18181b">
 
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:32px">
-        <div style="background:#4f46e5;border-radius:10px;width:36px;height:36px;
-                    display:flex;align-items:center;justify-content:center">
-          <span style="color:#fff;font-weight:800;font-size:16px">H</span>
-        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="36" height="36" style="display:block;flex-shrink:0">
+          <rect width="32" height="32" rx="7" fill="#1e1b4b"/>
+          <rect x="4"    y="21" width="4.5" height="7"  rx="1" fill="#4338ca"/>
+          <rect x="10"   y="16" width="4.5" height="12" rx="1" fill="#4f46e5"/>
+          <rect x="16.5" y="11" width="4.5" height="17" rx="1" fill="#6366f1"/>
+          <rect x="23"   y="5"  width="4.5" height="23" rx="1" fill="#818cf8"/>
+          <polyline points="6.25,21 12.25,16 18.75,11 25.25,5" fill="none" stroke="#fbbf24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="25.25" cy="5" r="2" fill="#fbbf24"/>
+        </svg>
         <span style="font-size:20px;font-weight:700;letter-spacing:-0.5px">Helio</span>
       </div>
 
@@ -124,10 +129,15 @@ def send_connection_email(
                 border-radius:16px;color:#18181b">
 
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:32px">
-        <div style="background:#4f46e5;border-radius:10px;width:36px;height:36px;
-                    display:flex;align-items:center;justify-content:center">
-          <span style="color:#fff;font-weight:800;font-size:16px">H</span>
-        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="36" height="36" style="display:block;flex-shrink:0">
+          <rect width="32" height="32" rx="7" fill="#1e1b4b"/>
+          <rect x="4"    y="21" width="4.5" height="7"  rx="1" fill="#4338ca"/>
+          <rect x="10"   y="16" width="4.5" height="12" rx="1" fill="#4f46e5"/>
+          <rect x="16.5" y="11" width="4.5" height="17" rx="1" fill="#6366f1"/>
+          <rect x="23"   y="5"  width="4.5" height="23" rx="1" fill="#818cf8"/>
+          <polyline points="6.25,21 12.25,16 18.75,11 25.25,5" fill="none" stroke="#fbbf24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="25.25" cy="5" r="2" fill="#fbbf24"/>
+        </svg>
         <span style="font-size:20px;font-weight:700;letter-spacing:-0.5px">Helio</span>
       </div>
 

@@ -8,10 +8,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import {
   LayoutDashboard, Kanban, Users, CalendarDays, BookOpen, Building2,
   GraduationCap, CalendarCheck, TrendingUp, Newspaper, Briefcase,
-  MessageSquare, LogOut, PanelLeftClose, PanelLeftOpen, TrendingUp as Logo,
+  MessageSquare, LogOut, PanelLeftClose, PanelLeftOpen,
   Menu, X, Award,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { HelioLogo } from "@/components/HelioLogo";
 
 const NAV_GROUPS = [
   {
@@ -89,9 +90,7 @@ export default function Layout() {
           )}>
             {!collapsed && (
               <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
-                  <Logo className="h-4 w-4 text-primary-foreground" />
-                </div>
+                <HelioLogo size={28} />
                 <span className="text-base font-bold tracking-tight">Helio</span>
               </div>
             )}
@@ -177,9 +176,7 @@ export default function Layout() {
           {/* Mobile top bar */}
           <header className="flex h-14 items-center justify-between border-b bg-card px-4 lg:hidden">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
-                <Logo className="h-4 w-4 text-primary-foreground" />
-              </div>
+              <HelioLogo size={28} />
               <span className="text-base font-bold tracking-tight">Helio</span>
             </div>
             <button
@@ -239,9 +236,7 @@ export default function Layout() {
               {/* header */}
               <div className="flex h-14 items-center justify-between border-b px-4">
                 <div className="flex items-center gap-2">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
-                    <Logo className="h-4 w-4 text-primary-foreground" />
-                  </div>
+                  <HelioLogo size={28} />
                   <span className="text-base font-bold">Helio</span>
                 </div>
                 <button

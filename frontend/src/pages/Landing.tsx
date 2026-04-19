@@ -11,10 +11,10 @@ import {
   GraduationCap,
   Newspaper,
   Briefcase,
-  Zap,
   Building2,
   MessageSquare,
 } from "lucide-react";
+import { HelioLogo } from "@/components/HelioLogo";
 
 const features = [
   {
@@ -78,9 +78,7 @@ export default function Landing() {
       <header className="border-b">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
-              <Zap className="h-4 w-4 text-primary-foreground" />
-            </div>
+            <HelioLogo size={28} />
             <span className="text-base font-bold tracking-tight">Helio</span>
           </div>
           <div className="flex items-center gap-3">

@@ -5,7 +5,8 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
+import { HelioLogo } from "@/components/HelioLogo";
 import { cn } from "@/lib/utils";
 
 const FEATURES = [
@@ -63,9 +64,7 @@ export default function Login() {
 
         {/* Brand */}
         <div className="relative flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white">
-            <TrendingUp className="h-5 w-5 text-zinc-950" />
-          </div>
+          <HelioLogo size={36} />
           <span className="text-xl font-bold tracking-tight">Helio</span>
         </div>
 
@@ -101,9 +100,7 @@ export default function Login() {
         <div className="w-full max-w-sm space-y-8">
           {/* Mobile brand */}
           <div className="flex items-center gap-2 lg:hidden">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground">
-              <TrendingUp className="h-4 w-4 text-background" />
-            </div>
+            <HelioLogo size={28} />
             <span className="font-bold">Helio</span>
           </div>
 
