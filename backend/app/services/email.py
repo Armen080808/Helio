@@ -14,19 +14,20 @@ from email.mime.text import MIMEText
 from ..config import settings
 
 _SMTP_HOST = "mail.privateemail.com"
-_SMTP_PORT = 465          # SSL
 _FROM_NAME = "Helio"
 _FROM_ADDR = "helio@baystreet.cc"
 
 
 def _send(*, to: str, subject: str, html: str) -> bool:
-    """Send via Namecheap Private Email SMTP. Returns True on success."""
+    """Send via Namecheap Private Email SMTP (port 587 STARTTLS). Returns True on success."""
     if not settings.smtp_user or not settings.smtp_password:
         print(
-            f"\n[EMAIL SKIPPED — SMTP_USER/SMTP_PASSWORD not set]\n"
-            f"To: {to}\nSubject: {subject}\n"
+            f"[EMAIL SKIPPED] SMTP_USER/SMTP_PASSWORD not set on Render.\n"
+            f"  To: {to} | Subject: {subject}"
         )
-        return True  # Don't crash the app — just log
+        return True  # Don't crash the app
+
+    print(f"[EMAIL] Connecting to {_SMTP_HOST}:587 as {settings.smtp_user} ...")
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
@@ -34,14 +35,24 @@ def _send(*, to: str, subject: str, html: str) -> bool:
     msg["To"] = to
     msg.attach(MIMEText(html, "html"))
 
+    # Try port 587 (STARTTLS) — more reliable from cloud hosts than 465
     try:
-        with smtplib.SMTP_SSL(_SMTP_HOST, _SMTP_PORT) as server:
+        with smtplib.SMTP(_SMTP_HOST, 587, timeout=15) as server:
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
             server.login(settings.smtp_user, settings.smtp_password)
             server.sendmail(_FROM_ADDR, to, msg.as_string())
         print(f"[EMAIL SENT] '{subject}' → {to}")
         return True
+    except smtplib.SMTPAuthenticationError as e:
+        print(f"[EMAIL ERROR] Authentication failed — check SMTP_USER/SMTP_PASSWORD: {e}")
+        return False
+    except smtplib.SMTPException as e:
+        print(f"[EMAIL ERROR] SMTP error: {e}")
+        return False
     except Exception as e:
-        print(f"[EMAIL ERROR] {e}")
+        print(f"[EMAIL ERROR] Unexpected error: {e}")
         return False
 
 
