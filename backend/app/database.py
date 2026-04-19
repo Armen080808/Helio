@@ -38,3 +38,15 @@ def init_db():
         market_snapshot, news_article, job_posting, interview_review, offer_report,
     )
     Base.metadata.create_all(bind=engine)
+
+    # ── Column migrations (idempotent) ────────────────────────────────────────
+    # create_all only creates missing *tables*, not missing columns in existing
+    # tables.  Run ALTER TABLE … ADD COLUMN IF NOT EXISTS for any new fields.
+    from sqlalchemy import text
+    with engine.connect() as conn:
+        conn.execute(text(
+            "ALTER TABLE alyo_users "
+            "ADD COLUMN IF NOT EXISTS password_reset_token VARCHAR(10), "
+            "ADD COLUMN IF NOT EXISTS password_reset_token_expires_at TIMESTAMP"
+        ))
+        conn.commit()

@@ -16,7 +16,7 @@ from ..services.auth import (
     hash_password,
     verify_password,
 )
-from ..services.email import send_verification_email
+from ..services.email import send_verification_email, send_password_reset_email
 from ..config import settings
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -185,6 +185,51 @@ def refresh(request: Request, response: Response, db: Session = Depends(get_db))
         token_type="bearer",
         user=tokens["user_out"],
     )
+
+
+@router.post("/forgot-password", tags=["auth"])
+def forgot_password(body: dict, db: Session = Depends(get_db)):
+    email = body.get("email", "").strip().lower()
+    user = db.query(User).filter(User.email == email).first()
+
+    # Always return success to avoid leaking which emails are registered
+    if not user:
+        return {"message": "If that email is registered, a reset code has been sent."}
+
+    code = f"{random.randint(0, 999999):06d}"
+    user.password_reset_token = code
+    user.password_reset_token_expires_at = datetime.utcnow() + timedelta(minutes=15)
+    db.commit()
+
+    send_password_reset_email(user.email, user.name or "", code)
+    return {"message": "If that email is registered, a reset code has been sent."}
+
+
+@router.post("/reset-password", tags=["auth"])
+def reset_password(body: dict, db: Session = Depends(get_db)):
+    email = body.get("email", "").strip().lower()
+    code = body.get("code", "").strip()
+    new_password = body.get("new_password", "")
+
+    if len(new_password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Password must be at least 8 characters",
+        )
+
+    user = db.query(User).filter(User.email == email).first()
+    if not user or not user.password_reset_token or user.password_reset_token != code:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired code")
+
+    if user.password_reset_token_expires_at and datetime.utcnow() > user.password_reset_token_expires_at:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Code expired — request a new one")
+
+    user.password_hash = hash_password(new_password)
+    user.password_reset_token = None
+    user.password_reset_token_expires_at = None
+    db.commit()
+
+    return {"message": "Password updated successfully"}
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)

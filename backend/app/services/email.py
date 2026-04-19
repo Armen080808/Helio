@@ -175,3 +175,61 @@ def send_connection_email(
         subject=f"Connection request sent to {alumni_name} — Helio",
         html=html,
     )
+
+
+# ─── Password reset email ─────────────────────────────────────────────────────
+
+def send_password_reset_email(to_email: str, name: str, code: str) -> bool:
+    first = name.split()[0] if name else "there"
+    _LOGO_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="36" height="36" style="display:block;flex-shrink:0">
+          <rect width="32" height="32" rx="7" fill="#1e1b4b"/>
+          <rect x="4"    y="21" width="4.5" height="7"  rx="1" fill="#4338ca"/>
+          <rect x="10"   y="16" width="4.5" height="12" rx="1" fill="#4f46e5"/>
+          <rect x="16.5" y="11" width="4.5" height="17" rx="1" fill="#6366f1"/>
+          <rect x="23"   y="5"  width="4.5" height="23" rx="1" fill="#818cf8"/>
+          <polyline points="6.25,21 12.25,16 18.75,11 25.25,5" fill="none" stroke="#fbbf24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="25.25" cy="5" r="2" fill="#fbbf24"/>
+        </svg>"""
+    html = f"""
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+                max-width:480px;margin:auto;padding:40px 32px;background:#ffffff;
+                border-radius:16px;color:#18181b">
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:32px">
+        {_LOGO_SVG}
+        <span style="font-size:20px;font-weight:700;letter-spacing:-0.5px">Helio</span>
+      </div>
+
+      <h1 style="font-size:22px;font-weight:700;margin:0 0 8px;line-height:1.3">
+        Reset your password, {first}
+      </h1>
+      <p style="color:#71717a;font-size:14px;margin:0 0 32px;line-height:1.6">
+        Enter this code in Helio to set a new password.
+        It expires in <strong style="color:#18181b">15 minutes</strong>.
+      </p>
+
+      <div style="background:#f4f4f5;border-radius:14px;padding:28px 20px;
+                  text-align:center;margin-bottom:32px">
+        <span style="font-family:'Courier New',monospace;font-size:48px;font-weight:800;
+                     letter-spacing:14px;color:#18181b;display:inline-block;
+                     padding-left:14px">{code}</span>
+      </div>
+
+      <p style="color:#a1a1aa;font-size:12px;margin:0;line-height:1.6">
+        If you didn't request a password reset, you can safely ignore this email.
+        Your password won't change.
+      </p>
+
+      <hr style="border:none;border-top:1px solid #f4f4f5;margin:28px 0">
+      <p style="color:#d4d4d8;font-size:11px;margin:0">
+        Helio &middot;
+        <a href="https://baystreet.cc" style="color:#d4d4d8">baystreet.cc</a>
+        &middot; Built for Canadian finance students
+      </p>
+    </div>
+    """
+    return _send(
+        to=to_email,
+        subject=f"{code} is your Helio password reset code",
+        html=html,
+    )
