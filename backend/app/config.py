@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     resend_api_key: str = ""
     gmail_user: str = ""
     gmail_app_password: str = ""
+    # Namecheap Private Email SMTP (preferred — sends from helio@baystreet.cc)
+    smtp_user: str = ""       # helio@baystreet.cc
+    smtp_password: str = ""   # mailbox password
 
     model_config = SettingsConfigDict(
         env_file=".env",

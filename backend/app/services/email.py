@@ -1,36 +1,43 @@
 """
-Email service — sends transactional emails via Resend API.
-From address: noreply@baystreet.cc (custom domain verified in Resend).
+Email service — sends via Namecheap Private Email SMTP (mail.privateemail.com).
+From address: helio@baystreet.cc
 
-Required env var on Render:
-  RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxx
+Required env vars on Render:
+  SMTP_USER=helio@baystreet.cc
+  SMTP_PASSWORD=<mailbox password>
 """
 
-import httpx
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from ..config import settings
 
-_RESEND_URL = "https://api.resend.com/emails"
-_FROM = "Helio <noreply@baystreet.cc>"
+_SMTP_HOST = "mail.privateemail.com"
+_SMTP_PORT = 465          # SSL
+_FROM_NAME = "Helio"
+_FROM_ADDR = "helio@baystreet.cc"
 
 
 def _send(*, to: str, subject: str, html: str) -> bool:
-    """Low-level Resend API call. Returns True on success."""
-    api_key = settings.resend_api_key
-    if not api_key:
+    """Send via Namecheap Private Email SMTP. Returns True on success."""
+    if not settings.smtp_user or not settings.smtp_password:
         print(
-            f"\n[EMAIL SKIPPED — RESEND_API_KEY not set]\n"
+            f"\n[EMAIL SKIPPED — SMTP_USER/SMTP_PASSWORD not set]\n"
             f"To: {to}\nSubject: {subject}\n"
         )
-        return True  # Don't crash app — just log
+        return True  # Don't crash the app — just log
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"] = f"{_FROM_NAME} <{_FROM_ADDR}>"
+    msg["To"] = to
+    msg.attach(MIMEText(html, "html"))
 
     try:
-        r = httpx.post(
-            _RESEND_URL,
-            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-            json={"from": _FROM, "to": [to], "subject": subject, "html": html},
-            timeout=10,
-        )
-        r.raise_for_status()
+        with smtplib.SMTP_SSL(_SMTP_HOST, _SMTP_PORT) as server:
+            server.login(settings.smtp_user, settings.smtp_password)
+            server.sendmail(_FROM_ADDR, to, msg.as_string())
         print(f"[EMAIL SENT] '{subject}' → {to}")
         return True
     except Exception as e:
@@ -47,11 +54,10 @@ def send_verification_email(to_email: str, name: str, code: str) -> bool:
                 max-width:480px;margin:auto;padding:40px 32px;background:#ffffff;
                 border-radius:16px;color:#18181b">
 
-      <!-- Logo -->
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:32px">
         <div style="background:#4f46e5;border-radius:10px;width:36px;height:36px;
                     display:flex;align-items:center;justify-content:center">
-          <span style="color:#fff;font-weight:800;font-size:16px;letter-spacing:-1px">H</span>
+          <span style="color:#fff;font-weight:800;font-size:16px">H</span>
         </div>
         <span style="font-size:20px;font-weight:700;letter-spacing:-0.5px">Helio</span>
       </div>
@@ -64,7 +70,6 @@ def send_verification_email(to_email: str, name: str, code: str) -> bool:
         It expires in <strong style="color:#18181b">15 minutes</strong>.
       </p>
 
-      <!-- Code block -->
       <div style="background:#f4f4f5;border-radius:14px;padding:28px 20px;
                   text-align:center;margin-bottom:32px">
         <span style="font-family:'Courier New',monospace;font-size:48px;font-weight:800;
@@ -74,13 +79,13 @@ def send_verification_email(to_email: str, name: str, code: str) -> bool:
 
       <p style="color:#a1a1aa;font-size:12px;margin:0;line-height:1.6">
         If you didn't create a Helio account, you can safely ignore this email.
-        This code will expire automatically.
       </p>
 
       <hr style="border:none;border-top:1px solid #f4f4f5;margin:28px 0">
       <p style="color:#d4d4d8;font-size:11px;margin:0">
-        Helio · <a href="https://baystreet.cc" style="color:#d4d4d8">baystreet.cc</a>
-        · Built for Canadian finance students
+        Helio &middot;
+        <a href="https://baystreet.cc" style="color:#d4d4d8">baystreet.cc</a>
+        &middot; Built for Canadian finance students
       </p>
     </div>
     """
@@ -107,11 +112,10 @@ def send_connection_email(
                 max-width:520px;margin:auto;padding:40px 32px;background:#ffffff;
                 border-radius:16px;color:#18181b">
 
-      <!-- Logo -->
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:32px">
         <div style="background:#4f46e5;border-radius:10px;width:36px;height:36px;
                     display:flex;align-items:center;justify-content:center">
-          <span style="color:#fff;font-weight:800;font-size:16px;letter-spacing:-1px">H</span>
+          <span style="color:#fff;font-weight:800;font-size:16px">H</span>
         </div>
         <span style="font-size:20px;font-weight:700;letter-spacing:-0.5px">Helio</span>
       </div>
@@ -139,8 +143,9 @@ def send_connection_email(
 
       <hr style="border:none;border-top:1px solid #f4f4f5;margin:0 0 20px">
       <p style="color:#d4d4d8;font-size:11px;margin:0">
-        Helio · <a href="https://baystreet.cc" style="color:#d4d4d8">baystreet.cc</a>
-        · Alumni Network
+        Helio &middot;
+        <a href="https://baystreet.cc" style="color:#d4d4d8">baystreet.cc</a>
+        &middot; Alumni Network
       </p>
     </div>
     """
